@@ -38,13 +38,13 @@ gals_bulges_2=meraxes.io.read_gals(data_folder+filename2+meraxes_loc,\
                                          h=cosmo['h'],quiet=True)
 gals_bulges_2 = gals_bulges_2[(gals_bulges_2["GhostFlag"]==0)]#remove ghosts
 
-#Plot StellarM Mass Function
-prop='StellarMass'
-maxval=np.nanmax(np.log10(gals_default[prop][gals_default[prop]>0]*1e10)) 
-minval=np.nanmin(np.log10(gals_default[prop][gals_default[prop]>0]*1e10))
-hist_default, bin_edges = np.histogram(np.log10(gals_default[prop][gals_default[prop]>0]*1e10),range=(minval,maxval),bins=30)
-hist_bulges, bin_edges = np.histogram(np.log10(gals_bulges[prop][gals_bulges[prop]>0]*1e10),range=(minval,maxval),bins=30)
-hist_bulges_2, bin_edges = np.histogram(np.log10(gals_bulges_2[prop][gals_bulges_2[prop]>0]*1e10),range=(minval,maxval),bins=30)
+#Plot SFR Function
+prop='Sfr'
+maxval=np.nanmax(np.log10(gals_default[prop][gals_default[prop]>0])) 
+minval=np.nanmin(np.log10(gals_default[prop][gals_default[prop]>0]))
+hist_default, bin_edges = np.histogram(np.log10(gals_default[prop][gals_default[prop]>0]),range=(minval,maxval),bins=30)
+hist_bulges, bin_edges = np.histogram(np.log10(gals_bulges[prop][gals_bulges[prop]>0]),range=(minval,maxval),bins=30)
+hist_bulges_2, bin_edges = np.histogram(np.log10(gals_bulges_2[prop][gals_bulges_2[prop]>0]),range=(minval,maxval),bins=30)
 
 bin_edges=np.array(bin_edges, dtype=np.float128)
 
@@ -52,11 +52,11 @@ Max=bin_edges[0:-1] + (bin_edges[1]-bin_edges[0])/2.
 plt.plot(Max,hist_default/(bin_edges[1]-bin_edges[0])/100.**3,label='Default')
 plt.plot(Max,hist_bulges/(bin_edges[1]-bin_edges[0])/100.**3,'--',label=filename1)
 plt.plot(Max,hist_bulges_2/(bin_edges[1]-bin_edges[0])/100.**3,'--',label=filename2)
-plt.xlabel('log(Mass)')
+plt.xlabel('log(SFR (Msol / yr))')
 plt.ylabel(r'$\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3}$')
-plt.title('Stellar Mass Function')
+plt.title('SFR Function')
 plt.yscale('log')
-plt.xlim([7.5,10.5])
-plt.ylim([10.**-4,10.**-0.8])
+#plt.xlim([7.5,10.5])
+#plt.ylim([10.**-4,10.**-0.8])
 plt.legend()
 plt.show()
