@@ -8,11 +8,11 @@ filename=[]
 #nfiles=len(sys.argv)-1
 nfiles=len(sys.argv)-3
 prop=str(sys.argv[-2])
-redshift=bool(sys.argv[-1])
+redshift=sys.argv[-1]
 for ii in range(1,nfiles+1):
   filename.append(sys.argv[ii])
 
-if redshift:
+if (redshift==True):
   hist={}
   EXPANSION_FACTOR_PATH = "/lustre/projects/p070_astro/smutch/input_trees/Tiamat/a_list.txt"
   a_list = np.loadtxt(EXPANSION_FACTOR_PATH, dtype=float)
@@ -57,7 +57,6 @@ else:
         plt.plot(hist["{}".format(filename[ii])][prop],label=filename[ii])
         plt.yscale('log')
   plt.xlabel('Snapshot')
-
 plt.ylabel(prop)
 plt.legend()
 plt.title('Evolution of {} for Host of Most Massive BH Host at z=6'.format(prop))
