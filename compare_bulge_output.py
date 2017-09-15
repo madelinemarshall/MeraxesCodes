@@ -21,7 +21,6 @@ cosmo = {'omega_M_0' : 0.308,
 }
 data_folder='/home/mmarshal/data_dragons/'
 meraxes_loc='/output/meraxes.hdf5'
-snapshot=81
 
 filename=[]
 nfiles=len(sys.argv)-2
@@ -94,4 +93,5 @@ ax4.set_yscale('log')
 
 f.subplots_adjust(hspace=.5)
 plt.legend()
+plt.suptitle('Snapshot '+str(snapshot))
 plt.show()

@@ -28,7 +28,10 @@ gals,sim_props=meraxes.io.read_gals(fmeraxes, sim_props=True,\
                                     snapshot=snapshot,h=cosmo['h'],quiet=True)
 props = gals.dtype.names 
 ID    = gals['ID']
-dr    = 70016445421
+if len(sys.argv)==2:
+  dr = 70016445421
+else:
+  dr = int(sys.argv[2])
 index = np.where(ID==dr)
 
 gal_history = np.zeros(len(snapshots),dtype=gals.dtype)
@@ -55,3 +58,10 @@ while tmp>=0 and snap<len(snapshots)-1:
     snap+=1    
 
 np.save('gal_history'+filename,gal_history)
+
+#save_dir = '/home/mmarshal/PhD/results'
+#if not os.path.exists(save_dir+'/history/%d/'%(dr)):
+#    os.makedirs(save_dir+'/history/%d/'%(dr))
+#for prop in props:
+#    gal_history[prop].astype(np.float).tofile(save_dir+'/history/%d/%s.bin'%(dr,prop))
+
