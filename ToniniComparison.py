@@ -17,13 +17,13 @@ cosmo = {'omega_M_0' : 0.308,
 }
 data_folder='/home/mmarshal/data_dragons/'
 meraxes_loc='/output/meraxes.hdf5'
-filename='bulges_update0915_ddsf'#update0901_ddsf'
+filename='bulges_update0921_ddsf'#update0901_ddsf'
 snapshot=158
 gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
                                           snapshot=snapshot,\
                                           h=cosmo['h'],quiet=True)
 gals=gals[(gals["GhostFlag"]==0)&(gals["StellarMass"]>1e-1)&(gals["Mvir"]*1e10>8.6e8*100/cosmo['h'])]
-
+gals=gals[gals["Type"]==0]
 #Figure 3
 #Gas disk radius is the radius where the surface density drops to 0.1*original value
 diskdiam=-2*np.log(0.1)*gals['GasDiskScaleLength']*1000
