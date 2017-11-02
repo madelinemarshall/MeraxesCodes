@@ -16,7 +16,7 @@ cosmo = {'omega_M_0' : 0.308,
 }
 data_folder='/home/mmarshal/data_dragons/'
 meraxes_loc='/output/meraxes.hdf5'
-snapshot=158
+snapshot=60#158
 
 #Load data:
 #Default parameters

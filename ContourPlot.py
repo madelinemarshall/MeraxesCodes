@@ -14,11 +14,17 @@ def density_estimation(m1, m2):
     Z = np.reshape(kernel(positions).T, X.shape)
     return X, Y, Z
 
-def contour_plot(x,y,xlab,ylab):
+def contour_plot(x,y,xlab,ylab,xlims,ylims):
     X,Y,Z=density_estimation(x,y)
     plt.contour(X, Y, Z)
     plt.xlabel('{}'.format(xlab))
     plt.ylabel('{}'.format(ylab))
-    plt.xlim([min(x),max(x)])
-    plt.ylim([min(y),max(y)])
+    if xlims==0:
+      plt.xlim([min(x),max(x)])
+    else:
+      plt.xlim(xlims);
+    if ylims==0:
+      plt.ylim([min(y),max(y)])
+    else:
+      plt.ylim(ylims);
     plt.show()

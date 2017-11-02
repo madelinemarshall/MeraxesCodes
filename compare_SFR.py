@@ -16,12 +16,12 @@ cosmo = {'omega_M_0' : 0.308,
 }
 data_folder='/home/mmarshal/data_dragons/'
 meraxes_loc='/output/meraxes.hdf5'
-snapshot=81
+snapshot=60#81
 
 #Load data:
 #Default parameters
-gals_default=meraxes.io.read_gals(data_folder+'snap81_default'+meraxes_loc,\
-                                        snapshot=81,\
+gals_default=meraxes.io.read_gals(data_folder+'default'+meraxes_loc,\
+                                        snapshot=snapshot,\
                                         h=cosmo['h'],quiet=True)
 gals_default = gals_default[(gals_default["GhostFlag"]==0)]#remove ghosts
 
@@ -29,12 +29,12 @@ filename1=str(sys.argv[1])
 filename2=str(sys.argv[2])
 
 gals_bulges=meraxes.io.read_gals(data_folder+filename1+meraxes_loc,\
-                                         snapshot=81,\
+                                         snapshot=snapshot,\
                                          h=cosmo['h'],quiet=True)
 gals_bulges = gals_bulges[(gals_bulges["GhostFlag"]==0)]#remove ghosts
 
 gals_bulges_2=meraxes.io.read_gals(data_folder+filename2+meraxes_loc,\
-                                         snapshot=81,\
+                                         snapshot=snapshot,\
                                          h=cosmo['h'],quiet=True)
 gals_bulges_2 = gals_bulges_2[(gals_bulges_2["GhostFlag"]==0)]#remove ghosts
 

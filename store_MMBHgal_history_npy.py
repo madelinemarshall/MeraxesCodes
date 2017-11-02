@@ -57,11 +57,11 @@ while tmp>=0 and snap<len(snapshots)-1:
     tmp = descendant
     snap+=1    
 
-#np.save('gal_history'+filename,gal_history)
+np.save('gal_history'+filename,gal_history)
 
-save_dir = '/home/mmarshal/PhD/results/bulges'
-if not os.path.exists(save_dir+'/history/%d/'%(dr)):
-    os.makedirs(save_dir+'/history/%d/'%(dr))
-for prop in props:
-    gal_history[prop].astype(np.float).tofile(save_dir+'/history/%d/%s.bin'%(dr,prop))
+#save_dir = '/home/mmarshal/PhD/results/bulges'
+#if not os.path.exists(save_dir+'/history/%d/'%(dr)):
+#    os.makedirs(save_dir+'/history/%d/'%(dr))
+#for prop in props:
+#    gal_history[prop].astype(np.float).tofile(save_dir+'/history/%d/%s.bin'%(dr,prop))
 

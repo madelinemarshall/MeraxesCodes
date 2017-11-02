@@ -20,16 +20,31 @@ if (redshift==True):
   for ii in range(0,nfiles):
     hist["{}".format(filename[ii])]=np.load('gal_history_{}.npy'.format(filename[ii]))
     n_snaps=len(hist["{}".format(filename[ii])]['ID'])
-    if (prop == 'DiskScaleLength'):
+    if (prop == 'StellarDiskScaleLength'):
       if ('DiskScaleLength' in hist["{}".format(filename[ii])].dtype.names):
         plt.plot(z_list[0:n_snaps],hist["{}".format(filename[ii])]['DiskScaleLength'],label=filename[ii])
         plt.yscale('log')
       else:
         plt.plot(z_list[0:n_snaps],hist["{}".format(filename[ii])]['StellarDiskScaleLength'],label=filename[ii])
         plt.yscale('log')
+    elif (prop == 'GasDiskScaleLength'):
+      if ('DiskScaleLength' in hist["{}".format(filename[ii])].dtype.names):
+        plt.plot(z_list[0:n_snaps],hist["{}".format(filename[ii])]['DiskScaleLength'],label=filename[ii])
+        plt.yscale('log')
+      else:
+        plt.plot(z_list[0:n_snaps],hist["{}".format(filename[ii])]['GasDiskScaleLength'],label=filename[ii])
+        plt.yscale('log')
     elif (prop == 'BulgeToTotal'):
       if ('BulgeStellarMass' in hist["{}".format(filename[ii])].dtype.names):
         plt.plot(z_list[0:n_snaps],hist["{}".format(filename[ii])]['BulgeStellarMass']/hist["{}".format(filename[ii])]['StellarMass'],label=filename[ii])
+    elif (prop == 'DiskStellarMass'):
+      if ('BulgeStellarMass' in hist["{}".format(filename[ii])].dtype.names):
+        plt.plot(z_list[0:n_snaps],hist["{}".format(filename[ii])]['StellarMass']-hist["{}".format(filename[ii])]['BulgeStellarMass'],label=filename[ii])
+        plt.yscale('log')
+    elif (prop == 'AMstars'):
+      if ('AMstars' in hist["{}".format(filename[ii])].dtype.names):
+        plt.plot(z_list[0:n_snaps],np.sqrt(hist["{}".format(filename[ii])]['AMstars'][0]**2+hist["{}".format(filename[ii])]['AMstars'][1]**2+hist["{}".format(filename[ii])]['AMstars'][2]**2),label=filename[ii])
+        plt.yscale('log')
     else:
       if (prop in hist["{}".format(filename[ii])].dtype.names):
         plt.plot(z_list[0:n_snaps],hist["{}".format(filename[ii])][prop],label=filename[ii])
@@ -52,6 +67,10 @@ else:
     elif (prop == 'BulgeToTotal'):
       if ('BulgeStellarMass' in hist["{}".format(filename[ii])].dtype.names):
         plt.plot(hist["{}".format(filename[ii])]['BulgeStellarMass']/hist["{}".format(filename[ii])]['StellarMass'],label=filename[ii])
+    elif (prop == 'DiskStellarMass'):
+      if ('BulgeStellarMass' in hist["{}".format(filename[ii])].dtype.names):
+        plt.plot(hist["{}".format(filename[ii])]['StellarMass']-hist["{}".format(filename[ii])]['BulgeStellarMass'],label=filename[ii])
+        plt.yscale('log')
     else:
       if (prop in hist["{}".format(filename[ii])].dtype.names):
         plt.plot(hist["{}".format(filename[ii])][prop],label=filename[ii])
