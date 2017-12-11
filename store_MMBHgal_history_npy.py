@@ -22,7 +22,7 @@ filename=str(sys.argv[1])
 
 fmeraxes = '/home/mmarshal/data_dragons/'+filename+'/output/meraxes.hdf5'
 snapshots, zs, lbts = meraxes.io.read_snaplist(fmeraxes,h=cosmo['h'])
-snapshot = 19
+snapshot = 50
 
 gals,sim_props=meraxes.io.read_gals(fmeraxes, sim_props=True,\
                                     snapshot=snapshot,h=cosmo['h'],quiet=True)

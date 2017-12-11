@@ -47,7 +47,7 @@ for snapshot in snaps:
 #  f5=G*(gals['StellarMass']-gals['BulgeStellarMass'])*gals['BulgeStellarMass']/gals['StellarDiskScaleLength']
   sigmav=10**(0.31*np.log10(gals['BulgeStellarMass']*1e10)-1.15)
   print(np.mean(sigmav))
-  f5=(gals['StellarMass']-gals['BulgeStellarMass'])*((3*sigmav)**2)         
+  f5=(gals['StellarMass']-gals['BulgeStellarMass'])*((np.sqrt(3)*sigmav)**2)         
   Mvir=np.log10(gals['Mvir'])+10
   M_split=(max(Mvir)-min(Mvir))/n_split
   for ii in range(0,n_split):

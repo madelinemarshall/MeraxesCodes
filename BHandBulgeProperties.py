@@ -21,7 +21,7 @@ cosmo = {'omega_M_0' : 0.308,
 'sigma_8' : 0.815
 }
 
-sim = 'bulges_update0901_ddsf' #str(sys.argv[1])
+sim = 'bulges_update1102_full'#0901_ddsf' #str(sys.argv[1])
 fmeraxes = '/home/mmarshal/data_dragons/'+sim+'/output/meraxes.hdf5'
 snapshot=int(sys.argv[1])
 gals=meraxes.io.read_gals(fmeraxes,\

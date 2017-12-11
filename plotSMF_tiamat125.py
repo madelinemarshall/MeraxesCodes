@@ -17,13 +17,13 @@ def load_data(filename,snapshot,prop,cosmo):
   return gals
 
 
-def plot_SMF(gals,prop,axes,label):
+def plot_SMF(gals,prop,vol,axes,label):
     maxval=np.nanmax(np.log10(gals[prop][gals[prop]>0]*1e10)) 
     minval=np.nanmin(np.log10(gals[prop][gals[prop]>0]*1e10))
     hist, bin_edges = np.histogram(np.log10(gals[prop][gals[prop]>0]*1e10),range=(minval,maxval),bins=30)
     bin_edges=np.array(bin_edges, dtype=np.float128)
     Max=bin_edges[0:-1] + (bin_edges[1]-bin_edges[0])/2.
-    axes.plot(Max,np.log10(hist/(bin_edges[1]-bin_edges[0])/100.**3),linewidth=2.0,label=label)
+    axes.plot(Max,np.log10(hist/(bin_edges[1]-bin_edges[0])/vol**3),linewidth=2.0,label=label)
     return axes
 
 
@@ -40,32 +40,37 @@ if __name__=="__main__":
   }
   data_folder='/home/mmarshal/data_dragons/'
   meraxes_loc='/output/meraxes.hdf5'
-  redshift={63:7,78:6,100:5,116:4,134:3,158:2}
+  redshift={63:7,78:6,100:5,116:4,134:3,158:2,180:1.3,194:0.95,213:0.55}
   prop='StellarMass'
-  
-  filename='bulges_update1102_full'
 
-  fig, axes = plt.subplots(2, 3)
+#1.75: plot_obsGSMF_z1pt75,\
+#                     1.3:  plot_obsGSMF_z1pt3,\
+#                     0.95: plot_obsGSMF_z0pt95,\
+#                     0.55:
+  
+  filename='bulges_tiamat125'
+
+  fig, axes = plt.subplots(2, 4)
   ii=-1
   j=0
-  for snapshot in [158,134,116,100,78,63]:#[63,78,100,116,134,158]:
+  for snapshot in [213,194,180,158,134,116,78,63]:#[63,78,100,116,134,158]:
     ii+=1
-    if ii==3:
+    if ii==4:
       j+=1
       ii=0
-    gals_default=load_data('default',snapshot,prop,cosmo)
+    #gals_default=load_data('default',snapshot,prop,cosmo)
     gals_bulges=load_data(filename,snapshot,prop,cosmo)
   
-    plot_SMF(gals_default,prop,axes[j,ii],'Default Meraxes')
-    plot_SMF(gals_bulges,prop,axes[j,ii],'Bulge Model')
-    if snapshot==63:
+    #plot_SMF(gals_default,prop,axes[j,ii],'Default Meraxes')
+    plot_SMF(gals_bulges,prop,125/cosmo['h'],axes[j,ii],'Bulge Model')
+    if snapshot==78:
       plt.legend()
     plot_obsGSMF(axes[j,ii],redshift[snapshot],hubble_h=cosmo['h'],markersize=7,legend=True,silent=False,color=[0.5,0.5,0.5],alpha=1.0)
 
     axes[j,ii].set_xlabel('log(Mass)')
     axes[j,ii].set_ylabel(r'$\log\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3}$')
     axes[j,ii].set_title('Redshift {}'.format(redshift[snapshot]))
-    axes[j,ii].set_xlim([7.5,11])
+    axes[j,ii].set_xlim([7.5,12.5])
     axes[j,ii].set_ylim([-7,-1])
   plt.tight_layout()
   plt.show()
