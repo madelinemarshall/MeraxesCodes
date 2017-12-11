@@ -3,6 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def density_estimation(m1, m2):
+    m1_new=m1[(m1>0)&(m2>0)]
+    m2=m2[(m1>0)&(m2>0)]
+    m1_new=m1_new[np.isfinite(m1_new)]
+    m2=m2[np.isfinite(m2)]
+    m1=m1_new
     xmin = m1.min()
     xmax = m1.max()
     ymin = m2.min()
@@ -14,17 +19,34 @@ def density_estimation(m1, m2):
     Z = np.reshape(kernel(positions).T, X.shape)
     return X, Y, Z
 
-def contour_plot(x,y,xlab,ylab,xlims,ylims):
+def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None):
     X,Y,Z=density_estimation(x,y)
-    plt.contour(X, Y, Z)
-    plt.xlabel('{}'.format(xlab))
-    plt.ylabel('{}'.format(ylab))
-    if xlims==0:
-      plt.xlim([min(x),max(x)])
+    if axes==None:
+      plt.contour(X, Y, Z)
+      if xlab is not None:
+        plt.xlabel('{}'.format(xlab))
+      if ylab is not None:
+        plt.ylabel('{}'.format(ylab))
+      if xlims==None:
+        plt.xlim([min(x),max(x)])
+      else:
+        plt.xlim(xlims);
+      if ylims==None:
+        plt.ylim([min(y),max(y)])
+      else:
+        plt.ylim(ylims);
     else:
-      plt.xlim(xlims);
-    if ylims==0:
-      plt.ylim([min(y),max(y)])
-    else:
-      plt.ylim(ylims);
-    plt.show()
+      axes.contour(X, Y, Z)
+      if xlab is not None:
+        axes.set_xlabel('{}'.format(xlab))
+      if ylab is not None:
+        axes.set_ylabel('{}'.format(ylab))
+      if xlims==None:
+        axes.set_xlim([min(x),max(x)])
+      else:
+        axes.set_xlim(xlims);
+      if ylims==None:
+        axes.set_ylim([min(y),max(y)])
+      else:
+        axes.set_ylim(ylims);
+#    plt.show()
