@@ -44,20 +44,23 @@ if __name__=="__main__":
   prop='StellarMass'
   
   filename='bulges_update1102_full'
+  filename2='bulges_tiamat125_doubleSFefficiency'
 
   fig, axes = plt.subplots(2, 3)
   ii=-1
   j=0
-  for snapshot in [158,134,116,100,78,63]:#[63,78,100,116,134,158]:
+  for snapshot in [63,78,100,116,134,158]:
     ii+=1
     if ii==3:
       j+=1
       ii=0
     gals_default=load_data('default',snapshot,prop,cosmo)
     gals_bulges=load_data(filename,snapshot,prop,cosmo)
+    gals_2=load_data(filename2,snapshot,prop,cosmo)
   
     plot_SMF(gals_default,prop,axes[j,ii],'Default Meraxes')
     plot_SMF(gals_bulges,prop,axes[j,ii],'Bulge Model')
+    plot_SMF(gals_2,prop,axes[j,ii],'Bulge Model, Larger Stellar Mass')
     if snapshot==63:
       plt.legend()
     plot_obsGSMF(axes[j,ii],redshift[snapshot],hubble_h=cosmo['h'],markersize=7,legend=True,silent=False,color=[0.5,0.5,0.5],alpha=1.0)

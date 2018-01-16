@@ -49,6 +49,7 @@ if __name__=="__main__":
 #                     0.55:
   
   filename='bulges_tiamat125'
+  filename2='bulges_tiamat125_halfSNefficiency'
 
   fig, axes = plt.subplots(2, 4)
   ii=-1
@@ -60,9 +61,11 @@ if __name__=="__main__":
       ii=0
     #gals_default=load_data('default',snapshot,prop,cosmo)
     gals_bulges=load_data(filename,snapshot,prop,cosmo)
+    gals_2=load_data(filename2,snapshot,prop,cosmo)
   
     #plot_SMF(gals_default,prop,axes[j,ii],'Default Meraxes')
     plot_SMF(gals_bulges,prop,125/cosmo['h'],axes[j,ii],'Bulge Model')
+    plot_SMF(gals_2,prop,125/cosmo['h'],axes[j,ii],'Larger Stellar Mass Model')
     if snapshot==78:
       plt.legend()
     plot_obsGSMF(axes[j,ii],redshift[snapshot],hubble_h=cosmo['h'],markersize=7,legend=True,silent=False,color=[0.5,0.5,0.5],alpha=1.0)

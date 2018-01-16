@@ -3,11 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def density_estimation(m1, m2):
-    m1_new=m1[(m1>0)&(m2>0)]
-    m2=m2[(m1>0)&(m2>0)]
-    m1_new=m1_new[np.isfinite(m1_new)]
-    m2=m2[np.isfinite(m2)]
-    m1=m1_new
+    index=np.isfinite(m1)&np.invert(np.isnan(m1))&np.isfinite(m2)&np.invert(np.isnan(m2))
+    m1=m1[index]
+    m2=m2[index]
     xmin = m1.min()
     xmax = m1.max()
     ymin = m2.min()
@@ -15,14 +13,15 @@ def density_estimation(m1, m2):
     X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]                                                     
     positions = np.vstack([X.ravel(), Y.ravel()])                                                        
     values = np.vstack([m1, m2])                                                                        
+    
     kernel = stats.gaussian_kde(values)                                                                 
     Z = np.reshape(kernel(positions).T, X.shape)
     return X, Y, Z
 
-def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None):
+def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=None):
     X,Y,Z=density_estimation(x,y)
     if axes==None:
-      plt.contour(X, Y, Z)
+      plt.contour(X, Y, Z,colors=colors)
       if xlab is not None:
         plt.xlabel('{}'.format(xlab))
       if ylab is not None:
@@ -36,7 +35,7 @@ def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None):
       else:
         plt.ylim(ylims);
     else:
-      axes.contour(X, Y, Z)
+      axes.contour(X, Y, Z,colors=colors)
       if xlab is not None:
         axes.set_xlabel('{}'.format(xlab))
       if ylab is not None:
