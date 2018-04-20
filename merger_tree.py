@@ -294,5 +294,5 @@ if __name__ == '__main__':
 
     # save
     plt.tight_layout()
-    plt.savefig("{:s}/merger_tree_ID{:d}.{:s}".format(output_dir, galaxy_ID, fig_format))
-
+#    plt.savefig("{:s}/merger_tree_ID{:d}.{:s}".format(output_dir, galaxy_ID, fig_format))
+    plt.show()

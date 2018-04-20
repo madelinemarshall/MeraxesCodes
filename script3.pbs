@@ -1,0 +1,21 @@
+#PBS -S /bin/bash
+#PBS -q sstar
+#PBS -N store_gal_history
+#PBS -l nodes=1:ppn=16,walltime=23:59:59,pmem=4000mb
+#PBS -d /home/mmarshal/PhD/simulation_codes/
+#PBS -A p070_astro 
+
+source /usr/local/modules/init/bash
+
+cd $PBS_O_WORKDIR
+
+echo '-------------------------------'
+echo "DATE     is "`date`
+echo "PWD      is "$PWD
+echo "NNODES   is "`uniq $PBS_NODEFILE | wc -l`
+echo "NPROCS   is "`cat  $PBS_NODEFILE | wc -l`
+echo "Using the following nodes:"
+cat $PBS_NODEFILE | uniq
+echo '-------------------------------'
+
+ipython store_MMBHgal_history.py 'bulges_update0920_ddsf' 70016445421

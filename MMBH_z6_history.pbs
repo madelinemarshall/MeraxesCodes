@@ -1,0 +1,47 @@
+#PBS -S /bin/bash
+#PBS -q sstar
+#PBS -N store_gal_history
+#PBS -l nodes=1:ppn=16,walltime=23:59:59,pmem=4000mb
+#PBS -d /home/mmarshal/PhD/simulation_codes/
+#PBS -A p070_astro 
+
+source /usr/local/modules/init/bash
+
+cd $PBS_O_WORKDIR
+
+echo '-------------------------------'
+echo "DATE     is "`date`
+echo "PWD      is "$PWD
+echo "NNODES   is "`uniq $PBS_NODEFILE | wc -l`
+echo "NPROCS   is "`cat  $PBS_NODEFILE | wc -l`
+echo "Using the following nodes:"
+cat $PBS_NODEFILE | uniq
+echo '-------------------------------'
+
+ipython store_MMBHgal_history.py 'bulges_update1102_full' 230015526011
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 80017459020
+ipython store_MMBHgal_history.py 'bulges_update1102_full' 310017213793
+ipython store_MMBHgal_history.py 'bulges_update1102_full' 260015907765
+ipython store_MMBHgal_history.py 'bulges_update1102_full' 200017221493
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 190016663339  
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 190017367786  
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 170015845148 
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 160015525754
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 150016663529
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 150015393981
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 140016389131
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 140016332291
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 130015970208
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 130016032378
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 130017385486
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 130016214114 
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 120016389789
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 110015262048
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 100016714557
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 100016214064
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 100017474333
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 90016714673
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 90017453139
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 80017150370
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 70016445421
+#ipython store_MMBHgal_history.py 'bulges_update1102_full' 60017384810

@@ -69,9 +69,9 @@ if __name__=="__main__":
   xlims=[-24,-8]
   ylims=[6,11]
 
-  #plot_hist2d(mag_def,np.log10(default['StellarMass']*1e10),axes[0],xlims,ylims)
-  #plot_hist2d(mag_1,np.log10(gals1['StellarMass']*1e10),axes[1],xlims,ylims)
-  #plot_hist2d(mag_2,np.log10(gals2['StellarMass']*1e10),axes[2],xlims,ylims)
+  plot_hist2d(mag_def,np.log10(default['StellarMass']*1e10),axes[0],xlims,ylims)
+  plot_hist2d(mag_1,np.log10(gals1['StellarMass']*1e10),axes[1],xlims,ylims)
+  plot_hist2d(mag_2,np.log10(gals2['StellarMass']*1e10),axes[2],xlims,ylims)
 
   axes[0].set_title('Default Meraxes')
   axes[1].set_title('Bulge Model')
@@ -85,12 +85,33 @@ if __name__=="__main__":
   plt.tight_layout()
   plt.show()
 
-  ##Fig: B vs V
-  lum_def=load_mags('default',snapshot)
-  lum_1=load_mags(filename,snapshot)
-  lum_2=load_mags(filename2,snapshot)
+  ##Fig: Sfr vs M1600
+  fig, axes = plt.subplots(1, 3)
+  xlims=[-24,-8]
+  ylims=[-5,3]
 
-  
+  plot_hist2d(mag_def,np.log10(default['Sfr']),axes[0],xlims,ylims)
+  plot_hist2d(mag_1,np.log10(gals1['Sfr']),axes[1],xlims,ylims)
+  plot_hist2d(mag_2,np.log10(gals2['Sfr']),axes[2],xlims,ylims)
+
+  axes[0].set_title('Default Meraxes')
+  axes[1].set_title('Bulge Model')
+  axes[2].set_title('Bulge Model - Croton SF')
+  axes[0].set_xlabel('$M_{1600}$')
+  axes[1].set_xlabel('$M_{1600}$')
+  axes[2].set_xlabel('$M_{1600}$')
+  axes[0].set_ylabel('log(SFR)')
+  axes[1].set_ylabel('log(SFR)')
+  axes[2].set_ylabel('log(SFR)')
+  plt.tight_layout()
+  plt.show()
+
+  #Fig: B vs V
+  #lum_def=load_mags('default',snapshot)
+  lum_1=load_mags(filename,snapshot)
+  #lum_2=load_mags(filename2,snapshot)
+  plt.scatter(np.log10(gals1['StellarMass']*1e10),lum_1['B435']-lum_1['V606'],c=gals1['BulgeStellarMass']/gals1['StellarMass'])
+  plt.show()
   #fig, axes = plt.subplots(1, 3)
   #axes[0].plot(B_def-V_def,V_def,'.')
   #xlims=[-10,10]
@@ -99,10 +120,10 @@ if __name__=="__main__":
   #plt.show()
 
   ##Fig: M* - g-i
-  fig,axes=plt.subplots(1,1)
+  #fig,axes=plt.subplots(1,1)
   #plot_hist2d(np.log10(default['StellarMass']*1e10),lum_def['z850']-lum_def['J125'],axes,[6,11],[7,13])
   #plot_hist2d(lum_def['J125'],lum_def['z850']-lum_def['J125'],axes,[24,40],[0,1])
   #plot_hist2d(lum_def['z850']-lum_def['H160'],lum_def['V606']-lum_def['i775'],axes,[-0.5,1.5],[0.5,3.0])
-  plot_hist2d(lum_def['i775']-lum_def['z850'],lum_def['Y105']-lum_def['H160'],axes,[-0.5,1.5],[0.5,3.0])
-  plt.show()
+  #plot_hist2d(lum_def['i775']-lum_def['z850'],lum_def['Y105']-lum_def['H160'],axes,[-0.5,1.5],[0.5,3.0])
+  #plt.show()
   
