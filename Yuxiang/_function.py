@@ -55,12 +55,11 @@ def _function(data, volume, bins, range=None, poisson_uncert=False,
 
     vals = vals.astype(float) / (volume * width)
 
-#    if not poisson_uncert:
-#        results = np.dstack((centers, vals)).squeeze()
-#    else:
-#        uncert /= (volume * width)
-#        results = np.dstack((centers, vals, uncert)).squeeze()
-    results=vals
+    if not poisson_uncert:
+        results = np.dstack((centers, vals)).squeeze()
+    else:
+        uncert /= (volume * width)
+        results = np.dstack((centers, vals, uncert)).squeeze()
 
     if not return_edges:
         return results
@@ -73,7 +72,7 @@ def _cutinf(x,y,z=None,silence=1):
         print('x and y have different length!')
         return
     else:
-        if silence == 0: print( 'Initially, number is:', len(x))
+        if silence == 0: print('Initially, number is:', len(x)),
         if z == None:
             xx=x[(~np.isinf(x)) & (~np.isinf(y))]
             yy=y[(~np.isinf(x)) & (~np.isinf(y))]
@@ -269,28 +268,50 @@ def _aligning_axis(ax1,ax2,x=1,y=1):
         ax1.set_ylim([ylimits.min(),ylimits.max()])
         ax2.set_ylim([ylimits.min(),ylimits.max()])
 
-def _bootstrap(data, num_samples = 100000, statistic = np.mean, alpha=0.95, asymmetric=True):
+
+import bootstrapped.bootstrap as bs             
+import bootstrapped.stats_functions as bs_stats
+def _bootstrap(data, num_samples = 100000, statistic = np.mean, alpha=0.95, asymmetric=True, package=False, num_threads=1):
     data = data[~np.isnan(data)]
     n = len(data)
+    y_mean = np.nan
+    y_errl = np.nan
+    y_erru = np.nan
     if n>0:
-        samples = np.empty(num_samples)
-        for i in range(num_samples):
-            idx = np.random.randint(0, n, n)
-            samples[i] = statistic(data[idx])
-        stat = np.sort(samples)
-        y_mean = stat[int((1/2.0)*num_samples)]
-        y_err = -stat[int((1-alpha)/2.0*num_samples)]+y_mean
-        y_err2 = stat[int((1+alpha)/2.0*num_samples)]-y_mean
+        if package:
+            if statistic == np.mean:
+                stat_func=bs_stats.mean
+            elif statistic == np.std:
+                stat_func=bs_stats.std
+            elif statistic == np.sum:
+                stat_func=bs_stats.sum
+            elif statistic == np.division:
+                stat_func=bs_stats.division
+            else:
+                print("Note that the bootstrapped package does not support this statistic, I'm returning nan")
+                if asymmetric:                          
+                    return (np.nan, np.nan, np.nan) 
+                else:                                   
+                    return (np.nan, np.nan) 
+                    
+            results = bs.bootstrap(data, stat_func=stat_func, num_iterations = num_samples, alpha = 1-alpha,num_threads = num_threads)
+            y_mean = results.value
+            y_errl = results.value - results.lower_bound
+            y_erru = results.upper_bound - results.value
+        else:
+            samples = np.empty(num_samples)
+            for i in range(num_samples):
+                idx = np.random.randint(0, n, n)
+                samples[i] = statistic(data[idx])
+            stat = np.sort(samples)
+            y_mean = stat[int((1/2.0)*num_samples)]
+            y_errl = -stat[int((1-alpha)/2.0*num_samples)]+y_mean
+            y_erru = stat[int((1+alpha)/2.0*num_samples)]-y_mean
 
-        if asymmetric:
-            return (y_mean, y_err, y_err2)
-        else:
-            return (y_mean, (y_err+y_err2)/2.0)
+    if asymmetric:
+        return (y_mean, y_errl, y_erru)
     else:
-        if asymmetric:
-            return (np.nan, np.nan, np.nan)
-        else:
-            return (np.nan, np.nan)
+        return (y_mean, (y_errl+y_erru)/2.0)
 
 def gauss(x, A, mu, sigma):
     return A*np.exp(-(x-mu)**2/(2.*sigma**2))

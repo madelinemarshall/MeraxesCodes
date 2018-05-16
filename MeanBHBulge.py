@@ -16,7 +16,7 @@ matplotlib.rcParams['figure.figsize'] = (3.7,5.5)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-def load_data(filename,snapshot):
+def load_data(filename,meraxes_loc,snapshot):
   cosmo = {'omega_M_0' : 0.308,
   'omega_lambda_0' : 0.692, 'omega_b_0' : 0.04839912,
   'omega_b_0' : 0.04839912,
@@ -27,7 +27,6 @@ def load_data(filename,snapshot):
   'sigma_8' : 0.815
   } 
   data_folder='/home/mmarshal/data_dragons/'
-  meraxes_loc='/output/meraxes.hdf5'
 
   gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
   snapshot=snapshot,props=['StellarMass','BulgeStellarMass','BlackHoleMass'],\
@@ -65,19 +64,16 @@ def func_plot(x,a,b):
 
 
 if __name__=="__main__":
-  #filename='bulges_correctBHMF'
-  ##filename='bulges_noreion'
-  #filename2='bulges_correctBHMF_tiamat125'
-  ##filename='bulges_nodiskinstability'
-  filename='bulges_YQ_BHfix'
-  #filename='bulges_split_IDBH'
-  filename2='bulges_fullreion_tiamat125'
+  filename='tune_higherseed'
+  filename2='tune_higherseed'
+  meraxes_loc='/output/run1/meraxes_001.hdf5'
   #redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2}
   redshift={63:7,78:6,100:5,116:4,134:3,158:2}
   #snapshots=[52,63,78,100,116,134,158]
   snapshots=[63,78,100,116,134,158]
-  redshift2={173:1.5,192:1,213:0.55}
-  snapshots2=[173,192,213]
+  #redshift2={158:2,173:1.5,192:1,213:0.55}
+  redshift2={158:2,213:0.55}
+  snapshots2=[158,213]
   
   med={}
   pctile84={}
@@ -89,6 +85,9 @@ if __name__=="__main__":
   pctile84_125_b={}
   pctile16_125_b={}
   med_1e5bulges={}
+  med_125={}
+  pctile84_125={}
+  pctile16_125={}
   pctile84_1e5bulges={}
   pctile16_1e5bulges={}
   med_1e7bulges={}
@@ -105,7 +104,7 @@ if __name__=="__main__":
   pctile16_onlydisks={}
 
   for snapshot in snapshots:
-    gals=load_data(filename,snapshot)
+    gals=load_data(filename,meraxes_loc,snapshot)
     #gals_125=load_data(filename2,snapshot)
     #gals_125_b=gals_125[gals_125['BulgeStellarMass']*1e10>1e7]
     gals_1e5bulges=gals[(gals['BulgeStellarMass']*1e10>1e5)&(gals['BulgeStellarMass']*1e10<1e7)]
@@ -124,17 +123,17 @@ if __name__=="__main__":
     med_b[snapshot],pctile84_b[snapshot],pctile16_b[snapshot]=find_med(gals,'BulgeStellarMass')
     #med_125_b[snapshot],pctile84_125_b[snapshot],pctile16_125_b[snapshot]=find_med(gals_125_b,'BulgeStellarMass')
 
-  #for snapshot in snapshots2:
-  #  gals_125=load_data(filename2,snapshot)
-  #  med_125_b[snapshot],pctile84_125_b[snapshot],pctile16_125_b[snapshot]=find_med(gals_125_b,'BulgeStellarMass')
+  for snapshot in snapshots2:
+    gals_125=load_data(filename2,meraxes_loc,snapshot)
+    med_125[snapshot],pctile84_125[snapshot],pctile16_125[snapshot]=find_med(gals_125,'StellarMass')
+    med_125_b[snapshot],pctile84_125_b[snapshot],pctile16_125_b[snapshot]=find_med(gals_125,'BulgeStellarMass')
 
-  redshift_tot=redshift.copy()
-  redshift_tot.update(redshift2)
+  #redshift_tot=redshift.copy()
+  #redshift_tot.update(redshift2)
 
 
   fig,axes=plt.subplots(2,1,gridspec_kw = {'hspace':0})
   ##Bulge masses
-  #plot_median_ratio(redshift_tot,med_125_b,pctile84_125_b,pctile16_125_b,axes,color='r',**{'label':'Tiamat-125-HR $M_{\mathrm{bulge}}>10^7M_\odot$'})
   plot_median_ratio(redshift,med_1e5bulges,pctile84_1e5bulges,pctile16_1e5bulges,axes[1],color='turquoise',**{'label':r'$10^5M_\odot<M_{\mathrm{bulge}}<10^7M_\odot$'})
   plot_median_ratio(redshift,med_1e7bulges,pctile84_1e7bulges,pctile16_1e7bulges,axes[1],color='purple',**{'label':r'$10^7M_\odot<M_{\mathrm{bulge}}<10^9M_\odot$'})
   plot_median_ratio(redshift,med_1e9bulges,pctile84_1e9bulges,pctile16_1e9bulges,axes[1],color='r',**{'label':r'$M_{\mathrm{bulge}}>10^9M_\odot$'})
@@ -142,6 +141,8 @@ if __name__=="__main__":
 ##Total stellar masses
   plot_median_ratio(redshift,med,pctile84,pctile16,axes[0],color='orchid',**{'label':r'$M_{\ast\textrm{, total}}$'})
   plot_median_ratio(redshift,med_b,pctile84_b,pctile16_b,axes[0],color='aquamarine',**{'label':r'$M_{\textrm{bulge}}$'})
+  plot_median_ratio(redshift2,med_125,pctile84_125,pctile16_125,axes[0],color='orchid',**{'label':r'$M_{\ast\textrm{, total}}$'})
+  plot_median_ratio(redshift2,med_125_b,pctile84_125_b,pctile16_125_b,axes[0],color='aquamarine',**{'label':r'$M_{\textrm{bulge}}$'})
   #lab='N={}'.format(np.size(gals_onlybulges))
   #plot_median_ratio(redshift,med_onlybulges,pctile84_onlybulges,pctile16_onlybulges,axes[1],color='aquamarine',**{'label':r'$B/T>0.7,$ '+lab})
   #lab='N={}'.format(np.size(gals_onlydisks))
@@ -176,14 +177,14 @@ if __name__=="__main__":
 
   #axes[0].set_xlabel('Redshift')
   axes[0].set_ylabel(r'$\log(M_{\mathrm{BH}}/M_{\ast})$')
-  #axes[0].invert_xaxis()
+  axes[0].invert_xaxis()
   axes[0].set_xticklabels([])
   #axes[0].set_xlabel('Redshift')
   axes[1].set_xlabel('Redshift')
   axes[1].set_ylabel(r'$\log(M_{\mathrm{BH}}/M_{\mathrm{Bulge}})$')
-  #axes[1].invert_xaxis()
-  axes[0].set_xlim([8,2])  
-  axes[1].set_xlim([8,2])  
+  axes[1].invert_xaxis()
+  axes[0].set_xlim([8,0.5])  
+  axes[1].set_xlim([8,0.5])  
   axes[0].set_ylim([-4.79,-1.9])  
   axes[1].set_ylim([-5.49,-1.51])  
 
@@ -191,5 +192,5 @@ if __name__=="__main__":
   axes[1].yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 
   plt.tight_layout()
-  #fig.savefig('MeanBHBulge.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  fig.savefig('MeanBHBulge.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()

@@ -3,12 +3,14 @@ from dragons import meraxes
 import os
 #import matplotlib
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
 sys.path.append('/home/mmarshal/PhD/simulation_codes/Yuxiang/')
 from _plot_obsGSMF import plot_obsGSMF
+import warnings
+warnings.filterwarnings("ignore")
 
 #Sets plot defaults
 matplotlib.rcParams['font.size'] = (11)
@@ -53,10 +55,10 @@ if __name__=="__main__":
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
   prop='StellarMass'
   
-  filename='tuned_quasarfeedback'
-  meraxes_loc2='/output/meraxes.hdf5'
+  filename='tune_higherseed'
+  meraxes_loc2='/output/'+str(sys.argv[1])+'.hdf5'
   vol=125/cosmo['h']
-  filename125='tuned_quasarfeedback'
+  filename125='tune_higherseed'
   default='default_fullreion'
   fig, axes = plt.subplots(2, 4,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
@@ -72,7 +74,7 @@ if __name__=="__main__":
     gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
   
     #if snapshot!=116:
-    plot_obsGSMF(axes[j,ii],redshift[snapshot],hubble_h=cosmo['h'],markersize=3,legend=False,silent=False,color=[0.5,0.5,0.5],alpha=1.0)
+    plot_obsGSMF(axes[j,ii],redshift[snapshot],hubble_h=cosmo['h'],markersize=3,legend=False,silent=True,color=[0.5,0.5,0.5],alpha=1.0)
       #axes[j,ii].legend()
 
 
@@ -98,7 +100,7 @@ if __name__=="__main__":
     else:
       axes[j,ii].set_yticklabels([])
     #axes[j,ii].set_title('$z=${}'.format(redshift[snapshot]))
-    axes[j,ii].set_xlim([7.5,12.3])
+    axes[j,ii].set_xlim([7.5,12])
     axes[j,ii].set_ylim([-5.8,-1.2])
     axes[j,ii].text(8.1, -5.6, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
     axes[j,ii].grid(color=[0.8,0.8,0.8],linestyle='--') 
@@ -106,5 +108,6 @@ if __name__=="__main__":
   axes[1,3].axis('off')
   #fig.subplots_adjust(hspace=0, wspace=0)
   plt.tight_layout()
-  #plt.savefig('SMF.pdf',format='pdf')
-  plt.show()
+  #plt.savefig('/home/mmarshal/PhD/plots/SMF_'+str(sys.argv[2])+'.pdf',format='pdf')
+  #plt.show()
+  plt.savefig('/home/mmarshal/PhD/plots/tune_higherseed/SMF_'+str(sys.argv[2])+'.pdf',format='pdf')

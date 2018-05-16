@@ -10,7 +10,7 @@ def density_estimation(m1, m2):
     xmax = m1.max()
     ymin = m2.min()
     ymax = m2.max()
-    X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]                                                     
+    X, Y = np.mgrid[xmin:xmax:50j, ymin:ymax:50j]                                                     
     positions = np.vstack([X.ravel(), Y.ravel()])                                                        
     values = np.vstack([m1, m2])                                                                        
     

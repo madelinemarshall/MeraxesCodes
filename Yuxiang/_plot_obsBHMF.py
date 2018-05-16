@@ -11,9 +11,10 @@ def _h_convertor_y(hubble_h_obs,hubble_h=0.678):
 def plot_obsBHMF_z0pt0(ax,hubble_h=0.678,markersize=8,legend=True,color='gray'):
 
     # Shankar et al. 2009
-    file = '/home/yqin/dragons/data/bhmf_Shankar2009.txt'
+    file = '/home/yqin/dragons/data/bhmf_Shankar2009_z0pt0.txt'
     data0 = np.recfromtxt(file)
-    data = data0[data0[:,0]==0.02][:,1:]
+    data = data0[:,0:]
+    #data = data0[data0[:,0]==0.02][:,1:]
     if legend:
         ax.plot(data[:,0],10**data[:,1]*_h_convertor_y(0.7,hubble_h),color='lightgray',lw=5,alpha=0.8,label='Shankar et al. 2009, $z\sim 0$')
     #ax.errorbar(data[:,0],10**data[:,1],yerr=[(10**data[:,1]-10**data[:,2])*_h_convertor_y(0.7,hubble_h),(10**data[:,3]-10**data[:,1]])*_h_convertor_y(0.7,hubble_h),color='green')
@@ -77,12 +78,13 @@ def plot_obsBHMF_z0pt0(ax,hubble_h=0.678,markersize=8,legend=True,color='gray'):
 def plot_obsBHMF_z0pt5(ax,hubble_h=0.678,markersize=10,legend=True,color='gray'):
 
     # Shankar et al. 2009
-    file = '/home/yqin/dragons/data/bhmf_Shankar2009.txt'
+    file = '/home/yqin/dragons/data/bhmf_Shankar2009_z0pt5.txt'
     data0 = np.recfromtxt(file)
-    data = data0[data0[:,0]==0.50][:,1:]
+    data = data0[:,0:]
+    #data = data0[data0[:,0]==0.50][:,1:]
     if legend:
         ax.plot(data[:,0],10**data[:,1]*_h_convertor_y(0.7,hubble_h),color=color,alpha=0.5,lw=5,label='Shankar et al. 2009, $z\sim0.5$')
-    #ax.errorbar(data[:,0],10**data[:,1],yerr=[(10**data[:,1]-10**data[:,2])*_h_convertor_y(0.7,hubble_h),(10**data[:,3]-10**data[:,1]])*_h_convertor_y(0.7,hubble_h),color='green')
+    #ax.errorbar(data[:,0],10**data[:,1],yerr=[(10**data[:,1]-10**data[:,2])*_h_convertor_y(0.7,hubble_h),(10**data[:,3]-10**data[:,1])*_h_convertor_y(0.7,hubble_h)],color='green')
     ax.fill_between(data[:,0],10**data[:,1]*_h_convertor_y(0.7,hubble_h),10**data[:,2]*_h_convertor_y(0.7,hubble_h),lw=0,color=color,alpha=0.5)#,hatch='\\\\\\',edgecolor='k')
     ax.fill_between(data[:,0],10**data[:,1]*_h_convertor_y(0.7,hubble_h),10**data[:,3]*_h_convertor_y(0.7,hubble_h),lw=0,color=color,alpha=0.5)#,hatch='\\\\\\',edgecolor='k')
     ax.fill_between(data[:,0],10**data[:,1]*_h_convertor_y(0.7,hubble_h),10**data[:,4]*_h_convertor_y(0.7,hubble_h),lw=0,color=color,alpha=0.5)#,hatch='\\\\\\',edgecolor='k')
@@ -92,12 +94,13 @@ def plot_obsBHMF_legend(ax,markersize=10,color='gray',alpha=1.0):
     hubble_h=0.678
 
     # Shankar et al. 2009
-    file = '/home/yqin/dragons/data/bhmf_Shankar2009.txt'
+    file = '/home/yqin/dragons/data/bhmf_Shankar2009_z0pt0.txt'
     data0 = np.recfromtxt(file)
-    data = data0[data0[:,0]==0.02][:,1:]
+    data = data0[:,0:]
+    #data = data0[data0[:,0]==0.02][:,1:]
     ax.plot(data[:,0],10**data[:,1]*_h_convertor_y(0.7,hubble_h),color='lightgray',lw=5,alpha=0.8,label='Shankar et al. 2009; $z\sim 0$')
 
-    file = '/home/yqin/dragons/data/bhmf_Shankar2009.txt'
+    file = '/home/yqin/dragons/data/bhmf_Shankar2009_z0pt5.txt'
     data0 = np.recfromtxt(file)
     data = data0[data0[:,0]==0.50][:,1:]
     ax.plot(data[:,0],10**data[:,1]*_h_convertor_y(0.7,hubble_h),lw=5,color=color,alpha=0.8,label='Shankar et al. 2009; z= 0.5')

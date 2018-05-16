@@ -84,6 +84,9 @@ def plot_disk_frac(gals,axes,label,split,bulge_frac):
   BulgeMinBin=np.zeros(nBins)
   IBulgeMinBin=np.zeros(nBins)
   MBulgeMinBin=np.zeros(nBins)
+  IFracInBin=np.zeros((nBins,3))
+  MFracInBin=np.zeros((nBins,3))
+  BFracInBin=np.zeros((nBins,3))
   BinStart=np.zeros(nBins)
   SM=gals['StellarMass']*1e10
   BSM=gals['BulgeStellarMass']*1e10
@@ -93,23 +96,16 @@ def plot_disk_frac(gals,axes,label,split,bulge_frac):
   for ii in range(0,nBins):
     BinStart[ii]=MinMass+ii*BinWidth
     BinEnd=MinMass+(ii+1)*BinWidth
-    TotMinBin[ii]=np.nansum(SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)])
-    TotNinBin[ii]=np.size(SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)])
-    BulgeMinBin[ii]=np.nansum(BSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)])
-    if split:
-      IBulgeMinBin[ii]=np.nansum(IBSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)])
-      MBulgeMinBin[ii]=np.nansum(MBSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)])
+    if (np.size(BSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)])>0):
+      BFracInBin[ii,:]=np.percentile(BSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)]/SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)],[16,50,84])
+      if split:
+        IFracInBin[ii,:]=np.percentile(IBSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)]/SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)],[16,50,84])
+        MFracInBin[ii,:]=np.percentile(MBSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)]/SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)],[16,50,84])
 
   if split:
-    IFracInBin=IBulgeMinBin/TotMinBin
-    MFracInBin=MBulgeMinBin/TotMinBin
-    FracInBin=BulgeMinBin/TotMinBin
-    Ierr=np.sqrt(IFracInBin*(1-IFracInBin)/TotNinBin)
-    Merr=np.sqrt(MFracInBin*(1-MFracInBin)/TotNinBin)
-    err=np.sqrt(FracInBin*(1-FracInBin)/TotNinBin)
-    axes.errorbar(BinStart+0.5*BinWidth,IFracInBin,Ierr,ls='None',label=label+' - Instability-driven Bulge',marker='*')
-    axes.errorbar(BinStart+0.5*BinWidth,MFracInBin,Merr,ls='None',label=label+' - Merger-driven Bulge',marker='s')
-    axes.errorbar(BinStart+0.5*BinWidth,FracInBin,err,ls='None',label=label+' - Total Bulge',marker='^')
+    axes.errorbar(BinStart+0.5*BinWidth,IFracInBin[:,1],[IFracInBin[:,1]-IFracInBin[:,0],IFracInBin[:,2]-IFracInBin[:,1]],label=label+' - Instability-driven Bulge')
+    axes.errorbar(BinStart+0.5*BinWidth,MFracInBin[:,1],[MFracInBin[:,1]-MFracInBin[:,0],MFracInBin[:,2]-MFracInBin[:,1]],label=label+' - Merger-driven Bulge')
+    axes.errorbar(BinStart+0.5*BinWidth,BFracInBin[:,1],[BFracInBin[:,1]-BFracInBin[:,0],BFracInBin[:,2]-BFracInBin[:,1]],label=label+' - Total Bulge')
     axes.set_ylabel('Stellar Mass Fraction of Components')
   else:
     FracInBin=BulgeMinBin/TotMinBin
@@ -150,12 +146,12 @@ if __name__=="__main__":
   'sigma_8' : 0.815
   }
   data_folder='/home/mmarshal/data_dragons/'
-  meraxes_loc='/output/run1/meraxes_001.hdf5'
+  meraxes_loc='/output/meraxes.hdf5'
   #meraxes_loc='/output/'+str(sys.argv[1])+'.hdf5'
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
   prop='StellarMass'
   
-  filename='tune_higherseed'#str(sys.argv[1])#'bulges_IDBHparam_tune'
+  filename='tuned_quasarfeedback'#str(sys.argv[1])#'bulges_IDBHparam_tune'
   split=1
   bulge_frac=True
   plot_SMFs=False
@@ -223,5 +219,5 @@ if __name__=="__main__":
   lgd=axes_frac.legend(fontsize='small',loc='upper center', bbox_to_anchor=(0.5, -0.2))
   
   #plt.savefig('DiskFraction.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
-  plt.savefig('BulgeFrac.pdf',format='pdf')
+  #plt.savefig('BulgeFrac.pdf',format='pdf')
   plt.show()

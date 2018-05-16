@@ -1,7 +1,8 @@
 import numpy as np
 from dragons import meraxes
 import os
-#import matplotlib
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
@@ -45,24 +46,40 @@ def load_data(filename,snapshot,split):
   gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
   gals=gals[gals['BlackHoleMass']*1e10>1e3]
   gals=gals[gals['StellarMass']*1e10>1e8]
+  gals=gals[gals['BulgeStellarMass']/gals['StellarMass']>0.8]
   return gals
 
 
 def plot_observations(axes,color):
   #Kormendy & Ho (2013):
   #MBH/10^9=(0.49\pm0.6)(Mbulge/10^11)^(1.17\pm0.08), intrinsic scatter 0.28 dex (p571)
-  logMBH=np.log10(0.49)+1.17*np.log10(np.array([10**8.17,10**12])/10**11)+9
-  axes.errorbar([8.17,12],logMBH,yerr=0.28,linestyle='--',label='Kormendy \& Ho (2013)',capsize=3,linewidth=2.5, zorder=101,color=color[213])
-
-  ##BLUETIDES
-  #logMBH=(8.43+1.16*(np.log10(np.array([1e7,1e12])/1e11)))
-  #HU=axes.plot([7,12],logMBH,':',linewidth=2.5,label="BlueTides: Huang et al. (2018)", zorder=102,color=color[0])
+  kh=pd.read_csv('KormendyHo_ellipticals_MBHMbulge.csv')
+  logMBH=np.log10(kh['log(M_BH) [Msun]'])
+  logMbulge=kh['log(M) [Msun]']
+  axes.plot(logMbulge,logMBH,'.',color='pink',label="Kormendy \& Ho (2013)\n- Ellipticals")
   
-  ##Sijaki+15 Illustris sims
-  logMBH=1.23*(np.log10(np.array([1e8,1e12])))-4.85
-  axes.plot([8,12],logMBH,':',linewidth=2.5,label="Illustris, $z=4$",zorder=102,color=color[116])
-  logMBH=1.28*(np.log10(np.array([1e8,1e12])))-5.04
-  axes.plot([8,12],logMBH,':',linewidth=2.5,zorder=102,color=color[158],label="Illustris, $z=2$")
+  kh=pd.read_csv('KormendyHo_classicalbulges_MBHMbulge.csv')
+  logMBH=np.log10(kh['log(M_BH) [Msun]'])
+  logMbulge=kh['log(M) [Msun]']
+  axes.plot(logMbulge,logMBH,'.',color='orange',label="Kormendy \& Ho (2013)\n- Classical Bulges")
+
+  logMBH=np.log10(0.49)+1.17*np.log10(np.array([10**8.17,10**12])/10**11)+9
+  axes.errorbar([8.17,12],logMBH,yerr=0.28,linestyle='--',label='Kormendy \& Ho (2013)\n- Fit',capsize=3,linewidth=2.5, color='pink')
+
+  scott=pd.read_csv('Scott2013_MBHMbulge.csv')
+  logMBH=np.log10(scott['M_BH [$10^8$ M$_\odot$]']*1e8)
+  logMbulge=np.log10(scott['M_sph [$10^{10}$ M$_\odot$]']*1e10)
+  axes.plot(logMbulge,logMBH,'b.',label="Scott et al. (2013)")
+
+  jiang=pd.read_csv('Jiang2011_MBHMbulge.csv')
+  logMBH=jiang['logMbh [Msun]']
+  logMbulge=np.log10(jiang['Msph [Msun]'])
+  axes.plot(logMbulge,logMBH,'.',color='purple',label="Jiang et al. (2011)")
+
+  grah=pd.read_csv('GrahamScott2015_MBHMbulge.csv')
+  logMBH=np.log10(grah['Mbh [10+5Msun]']*1e5)
+  logMbulge=np.log10(grah['Msph [GMsun]']*1e9)
+  axes.plot(logMbulge,logMBH,'.',color='lightgreen',label="Graham and Scott (2015)")
 
 
 def func(x,a,b):
@@ -158,9 +175,6 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
     med_bh=med_bh[np.logical_not(np.isnan(med_bh))]
     axes.plot(middle_sm,med_bh,label='$z={}$'.format(redshift[snap]),color=color[snap])
 
-    if (snap==158):
-      print('Plotting Contour')
-      cp.contour_plot(logMstel,logMBH,xlab=None,ylab=None,xlims=[8.15,11.6],ylims=[4,9.5],axes=axes,colors='pink',levels=np.logspace(-2,1,7),linewidth=0.9)
     ii+=1
   axes.set_xlim([8.15,11.6])
   axes.set_ylim([4,9.5])
@@ -171,20 +185,14 @@ if __name__=='__main__':
   ##SETUP
   data_folder='/home/mmarshal/data_dragons/'
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2,213:0.55}
-  snapshots=[63,78,100,116,134,158]
-  #snapshots=[116,134,158]
   prop='StellarMass'
   color={52:'C0',63:'C1',78:'C2',100:'C3',116:'C4',134:'aqua',158:'pink',213:'k'}
-  filename='tuned'
-  #meraxes_loc='/output/run1/meraxes_001.hdf5'
-  #filename='tuned_best_t125'
-  meraxes_loc='/output/meraxes.hdf5'
+  meraxes_loc='/output/'+str(sys.argv[1])+'.hdf5'
 
   ##OPTIONS	
   plot_type=1 #Plot MBH vs Mstellar and Mbulge (1) or vs Mbulge for different bulge types (2)
   z0=1 #Plot z=0.55 relation?
-  #filename_125='tuned_best_t125'
-  filename_125='tuned_t125'
+  filename_125='tune_higherseed'
   mass_bulge=0 #Plot the total stellar mass (0) or bulge stellar mass (1)?
   split=True #Is bulge split into MDBH and IDBH?
   bulge_type=0 #If wanting only one bulge component, which type? 1:IDBH, 2:MDBH
@@ -195,8 +203,6 @@ if __name__=='__main__':
   #fig,axes=plt.subplots(1,1)
   plot_type
   if plot_type==1: 
-    plot_MBHMstellar(filename,snapshots,True,split,bulge_type,contour,color,ax[0])
-    plot_MBHMstellar(filename,snapshots,False,split,bulge_type,contour,color,ax[1])
     if z0:
       plot_MBHMstellar(filename_125,[213],True,split,bulge_type,contour,color,ax[0])
       plot_MBHMstellar(filename_125,[213],False,split,bulge_type,contour,color,ax[1])
@@ -205,8 +211,6 @@ if __name__=='__main__':
     ax[1].set_xlabel(r'$\log(\textrm{M}_\ast)$')
     ax[0].set_xlabel(r'$\log(\textrm{M}_{\textrm{bulge}})$')
   elif plot_type==2: 
-    plot_MBHMstellar(filename,snapshots,True,split,1,contour,color,ax[0])
-    plot_MBHMstellar(filename,snapshots,True,split,2,contour,color,ax[1])
     if z0:
       plot_MBHMstellar(filename_125,[213],True,split,1,contour,color,ax[0])
       plot_MBHMstellar(filename_125,[213],True,split,2,contour,color,ax[1])
@@ -216,14 +220,13 @@ if __name__=='__main__':
     ax[0].set_xlabel(r'$\log(\textrm{M}_{\textrm{instability-driven bulge}})$')
 
 
-  plt.legend()
-  lgd=plt.legend(fontsize='small',loc='upper center', bbox_to_anchor=(1.3, 0.82))  
+  lgd=plt.legend(fontsize='small',loc='upper center', bbox_to_anchor=(1.32, 0.825))  
   ax[0].set_ylabel(r'$\log(\textrm{M}_{\textrm{BH}})$') 
   if plot_type==1:
-    plt.savefig('MBHMStellarRelation.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/PhD/plots/tune_higherseed/MBHMStellarRelation_'+str(sys.argv[2])+'.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   else:
     plt.savefig('MBHMStellarRelation_BulgeType.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
-  plt.show()
+  #plt.show()
 
   ##PERFORM STATISTICS
   #find_fit()
