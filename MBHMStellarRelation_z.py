@@ -1,19 +1,18 @@
 import numpy as np
 from dragons import meraxes
 import os
-#import matplotlib
+import matplotlib
+#matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
-sys.path.append('Yuxiang/')
-from _plot_obsGSMF import plot_obsGSMF
 from scipy.optimize import curve_fit
 import ContourPlot as cp
 
 
 #Sets plot defaults
 import matplotlib
-matplotlib.rcParams['font.size'] = (11)
+matplotlib.rcParams['font.size'] = (9)
 matplotlib.rcParams['figure.figsize'] = (8,4)
 #matplotlib.rcParams['figure.figsize'] = (7.2,4)
 matplotlib.rcParams['lines.linewidth'] = 2.5
@@ -52,7 +51,7 @@ def plot_observations(axes,color):
   #Kormendy & Ho (2013):
   #MBH/10^9=(0.49\pm0.6)(Mbulge/10^11)^(1.17\pm0.08), intrinsic scatter 0.28 dex (p571)
   logMBH=np.log10(0.49)+1.17*np.log10(np.array([10**8.17,10**12])/10**11)+9
-  axes.errorbar([8.17,12],logMBH,yerr=0.28,linestyle='--',label='Kormendy \& Ho (2013)',capsize=3,linewidth=2.5, zorder=101,color=color[213])
+  axes.errorbar([8.17,12],logMBH-[8.17,12],yerr=0.28,linestyle='--',label='Kormendy \& Ho (2013)',capsize=3,linewidth=2.5, zorder=101,color=color[213])
 
   ##BLUETIDES
   #logMBH=(8.43+1.16*(np.log10(np.array([1e7,1e12])/1e11)))
@@ -60,9 +59,9 @@ def plot_observations(axes,color):
   
   ##Sijaki+15 Illustris sims
   logMBH=1.23*(np.log10(np.array([1e8,1e12])))-4.85
-  axes.plot([8,12],logMBH,':',linewidth=2.5,label="Illustris, $z=4$",zorder=102,color=color[116])
+  axes.plot([8,12],logMBH-[8,12],':',linewidth=2.5,label="Illustris, $z=4$",zorder=102,color=color[116])
   logMBH=1.28*(np.log10(np.array([1e8,1e12])))-5.04
-  axes.plot([8,12],logMBH,':',linewidth=2.5,zorder=102,color=color[158],label="Illustris, $z=2$")
+  axes.plot([8,12],logMBH-[8,12],':',linewidth=2.5,zorder=102,color=color[158],label="Illustris, $z=2$")
 
 
 def func(x,a,b):
@@ -156,14 +155,14 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
         med_bh[nn]=np.nan 
     middle_sm=middle_sm[np.logical_not(np.isnan(med_bh))]
     med_bh=med_bh[np.logical_not(np.isnan(med_bh))]
-    axes.plot(middle_sm,med_bh,label='$z={}$'.format(redshift[snap]),color=color[snap])
+    axes.plot(middle_sm,med_bh-middle_sm,label='$z={}$'.format(redshift[snap]),color=color[snap])
 
     if (snap==158):
       print('Plotting Contour')
-      cp.contour_plot(logMstel,logMBH,xlab=None,ylab=None,xlims=[8.15,11.6],ylims=[4,9.5],axes=axes,colors='pink',levels=np.logspace(-2,1,7),linewidth=0.9)
+      cp.contour_plot(logMstel,logMBH-logMstel,xlab=None,ylab=None,xlims=[8.15,11.6],ylims=[-4,-2],axes=axes,colors=color[snap],levels=np.logspace(-2,1,7),linewidth=0.9)
     ii+=1
   axes.set_xlim([8.15,11.6])
-  axes.set_ylim([4,9.5])
+  axes.set_ylim([-4,-2])
 
 
 
@@ -175,7 +174,9 @@ if __name__=='__main__':
   #snapshots=[116,134,158]
   prop='StellarMass'
   color={52:'C0',63:'C1',78:'C2',100:'C3',116:'C4',134:'aqua',158:'pink',213:'k'}
-  filename='tuned'
+  color={52:'#a65628',63:'#e41a1c',78:'#377eb8',100:'#4daf4a',116:'#984ea3',\
+                  134:'#ff7f00',158:'#f781bf',194:'#a65628',213:'black'}
+  filename='tuned_reion_T125'
   #meraxes_loc='/output/run1/meraxes_001.hdf5'
   #filename='tuned_best_t125'
   meraxes_loc='/output/meraxes.hdf5'
@@ -184,7 +185,7 @@ if __name__=='__main__':
   plot_type=1 #Plot MBH vs Mstellar and Mbulge (1) or vs Mbulge for different bulge types (2)
   z0=1 #Plot z=0.55 relation?
   #filename_125='tuned_best_t125'
-  filename_125='tuned_t125'
+  filename_125='tuned_reion_T125'
   mass_bulge=0 #Plot the total stellar mass (0) or bulge stellar mass (1)?
   split=True #Is bulge split into MDBH and IDBH?
   bulge_type=0 #If wanting only one bulge component, which type? 1:IDBH, 2:MDBH
@@ -220,9 +221,9 @@ if __name__=='__main__':
   lgd=plt.legend(fontsize='small',loc='upper center', bbox_to_anchor=(1.3, 0.82))  
   ax[0].set_ylabel(r'$\log(\textrm{M}_{\textrm{BH}})$') 
   if plot_type==1:
-    plt.savefig('MBHMStellarRelation.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/MBHMStellarRelation_T125.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   else:
-    plt.savefig('MBHMStellarRelation_BulgeType.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/MBHMStellarRelation_BulgeType.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
 
   ##PERFORM STATISTICS

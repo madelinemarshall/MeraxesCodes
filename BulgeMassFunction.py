@@ -6,6 +6,8 @@
 import numpy as np
 from dragons import meraxes
 import os
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 
@@ -58,4 +60,5 @@ plt.ylabel(r'$\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3}$')
 plt.yscale('log')
 plt.legend()
 
+plt.savefig('/home/mmarshal/results/plots/BulgeFunction.pdf',format='pdf')
 plt.show()

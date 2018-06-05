@@ -3,21 +3,22 @@ from dragons import meraxes
 import os
 #import matplotlib
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
-sys.path.append('/home/mmarshal/PhD/simulation_codes/Yuxiang/')
-from _plot_obsGSMF import plot_obsGSMF
 import magcalc as mc
 
 #Sets plot defaults
-matplotlib.rcParams['font.size'] = (11)
-matplotlib.rcParams['figure.figsize'] = (3.5,3)
+matplotlib.rcParams['font.size'] = (9)
+matplotlib.rcParams['figure.figsize'] = (3.2,3.2)
 #matplotlib.rcParams['font.size'] = (12)
 #matplotlib.rcParams['figure.figsize'] = (8.27,6)
-#plt.rc('text', usetex=True)
+plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
+color=['#ff7f00','#4daf4a','#984ea3']#,\'#377eb8'
+                  #134:,158:'#f781bf',194:'#a65628',213:'black'}
+
 
 def load_data(filename,snapshot,prop,cosmo,split):
   if split:
@@ -35,15 +36,16 @@ def load_data(filename,snapshot,prop,cosmo,split):
 
 
 def load_mags(filename,snapshot):
-  redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
+  redshift={63:7,78:6,100:5,115:4,134:3,158:2,194:0.95,212:0.55,213:0.55}
   #MUV=pd.read_hdf('/home/mmarshal/PhD/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'.hdf5')['M1600-100']
   #AUV=mc.reddening(1600,MUV,redshift[snapshot])
   #MUV_dust=MUV+AUV
-  MUV=pd.read_hdf('/home/mmarshal/PhD/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'.hdf5')['Y098']
+  MUV=pd.read_hdf('/home/mmarshal/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'.hdf5')['Y098']
   AUV=mc.reddening(6300,MUV,redshift[snapshot])
   MUV_dust=MUV+AUV
   return MUV_dust
   #return MUV
+
 
 def plot_SMF(gals,prop,boxwidth,axes,**kwargs):
   if prop=='DiskStellarMass':
@@ -60,7 +62,7 @@ def plot_SMF(gals,prop,boxwidth,axes,**kwargs):
   bin_edges=np.array(bin_edges, dtype=np.float128)
   Max=bin_edges[0:-1] + (bin_edges[1]-bin_edges[0])/2.
   axes.set_xlabel(r'$\log(M_\ast (M_\odot)$)')
-  axes.set_xlim([8.9,13])
+  axes.set_xlim([8.9,12])
   axes.set_ylim([-6,-1.2])
   axes.plot(Max,np.log10(hist/(bin_edges[1]-bin_edges[0])/boxwidth**3),**kwargs)
   return axes
@@ -73,9 +75,9 @@ def plot_schechter(phi_star,alpha,logM,M_star,axes,label,color):
 
 
 
-def plot_disk_frac(gals,axes,label,split,bulge_frac):
+def plot_disk_frac(gals,axes,label,split,bulge_frac,mags):
   #Figure 9
-  MaxMass=13
+  MaxMass=12
   MinMass=9.0
   BinWidth=0.2
   nBins=int(np.ceil((MaxMass-MinMass)/BinWidth))
@@ -98,14 +100,30 @@ def plot_disk_frac(gals,axes,label,split,bulge_frac):
     BinEnd=MinMass+(ii+1)*BinWidth
     if (np.size(BSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)])>0):
       BFracInBin[ii,:]=np.percentile(BSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)]/SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)],[16,50,84])
+      #print("Num in bin: {}, bin start: {}, bin end: {}".format(np.size(BSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)]),BinStart[ii],BinEnd))
       if split:
         IFracInBin[ii,:]=np.percentile(IBSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)]/SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)],[16,50,84])
         MFracInBin[ii,:]=np.percentile(MBSM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)]/SM[(np.log10(SM)>=BinStart[ii])&(np.log10(SM)<BinEnd)],[16,50,84])
 
   if split:
-    axes.errorbar(BinStart+0.5*BinWidth,IFracInBin[:,1],[IFracInBin[:,1]-IFracInBin[:,0],IFracInBin[:,2]-IFracInBin[:,1]],label=label+' - Instability-driven Bulge')
-    axes.errorbar(BinStart+0.5*BinWidth,MFracInBin[:,1],[MFracInBin[:,1]-MFracInBin[:,0],MFracInBin[:,2]-MFracInBin[:,1]],label=label+' - Merger-driven Bulge')
-    axes.errorbar(BinStart+0.5*BinWidth,BFracInBin[:,1],[BFracInBin[:,1]-BFracInBin[:,0],BFracInBin[:,2]-BFracInBin[:,1]],label=label+' - Total Bulge')
+    if  not mags:
+      axes.plot(BinStart+0.5*BinWidth,IFracInBin[:,1],label=label+' - Instability-driven Bulge',lw=2,color=color[0])
+      axes.fill_between(BinStart+0.5*BinWidth,IFracInBin[:,0],IFracInBin[:,2],alpha=0.2,color=color[0])
+      axes.plot(BinStart+0.5*BinWidth,MFracInBin[:,1],label=label+' - Merger-driven Bulge',lw=2,color=color[1])
+      axes.fill_between(BinStart+0.5*BinWidth,MFracInBin[:,0],MFracInBin[:,2],alpha=0.2,color=color[1])
+      axes.plot(BinStart+0.5*BinWidth,BFracInBin[:,1],label=label+' - Total Bulge',lw=2,color=color[2])
+      axes.fill_between(BinStart+0.5*BinWidth,BFracInBin[:,0],BFracInBin[:,2],alpha=0.2,color=color[2])
+    else:
+      #axes.plot(BinStart+0.5*BinWidth,IFracInBin[:,1],label=label+' - Instability-driven Bulge',lw=2.5,color='firebrick',linestyle='--')
+      #axes.fill_between(BinStart+0.5*BinWidth,IFracInBin[:,0],IFracInBin[:,2],alpha=0.2,color='firebrick')
+      #axes.plot(BinStart+0.5*BinWidth,MFracInBin[:,1],label=label+' - Merger-driven Bulge',lw=2.5,color='gold',linestyle='--')
+      #axes.fill_between(BinStart+0.5*BinWidth,MFracInBin[:,0],MFracInBin[:,2],alpha=0.2,color='gold')
+      axes.plot(BinStart+0.5*BinWidth,BFracInBin[:,1],label=label+' - Total Bulge',lw=2,color=color[2],linestyle='--')
+      #axes.fill_between(BinStart+0.5*BinWidth,BFracInBin[:,0],BFracInBin[:,2],alpha=0.2,color='royalblue')
+      #axes.errorbar(BinStart+0.5*BinWidth,IFracInBin[:,1],[IFracInBin[:,1]-IFracInBin[:,0],IFracInBin[:,2]-IFracInBin[:,1]],label=label+' - Instability-driven Bulge',color='firebrick',linestyle='--')
+      #axes.errorbar(BinStart+0.5*BinWidth,MFracInBin[:,1],[MFracInBin[:,1]-MFracInBin[:,0],MFracInBin[:,2]-MFracInBin[:,1]],label=label+' - Merger-driven Bulge',color='gold',linestyle='--')
+      #axes.errorbar(BinStart+0.5*BinWidth,BFracInBin[:,1],[BFracInBin[:,1]-BFracInBin[:,0],BFracInBin[:,2]-BFracInBin[:,1]],label=label+' - Total Bulge',color='royalblue',linestyle='--')
+
     axes.set_ylabel('Stellar Mass Fraction of Components')
   else:
     FracInBin=BulgeMinBin/TotMinBin
@@ -118,20 +136,21 @@ def plot_disk_frac(gals,axes,label,split,bulge_frac):
       axes.set_ylabel('Disk Stellar Mass Fraction')
   #print(err)
   #print(1-FracInBin)
-  axes.plot([9,14],[0.5,0.5],'k--',label='_nolegend_')
+  axes.plot([9,12],[0.5,0.5],'k:',label='_nolegend_')
   #axes.plot(BinStart+0.5*BinWidth,1-FracInBin,label=label)
   axes.set_xlabel(r'$\log(M_\ast)$')
   axes.set_ylim(0,1)
-  axes.set_xlim(MinMass,MaxMass)
+  axes.set_xlim(MinMass+0.5*BinWidth,MaxMass-0.5*BinWidth)
 
 
 def plot_disk_frac_SDSS(axes,bulge_frac):
   M=[8.90326,9.102003,9.300743,9.501402,9.703978,9.902666,10.101332,10.301882,10.502413,10.699095,10.901584,11.100241,11.300841,11.499548,11.702157,11.898974]
   F=[0.8897018,0.88715476,0.88215226,0.8673269,0.8414509,0.7910218,0.7209487,0.6103591,0.48380876,0.3658544,0.26385814,0.18519081,0.120027825,0.085559405,0.08914936,0.09028649]
   if bulge_frac:
-    axes.plot(M,1-np.array(F),'--',label='Thanjavur et al. (2016)')
+    axes.plot(M,1-np.array(F),'--',label='Thanjavur et al. (2016)',color='k',lw=2)
   else:
-    axes.plot(M,F,'--',label='Thanjavur et al. (2016)')
+    axes.plot(M,F,'--',label='Thanjavur et al. (2016)',color='k',lw=2)
+
 
 
 if __name__=="__main__":
@@ -148,19 +167,19 @@ if __name__=="__main__":
   data_folder='/home/mmarshal/data_dragons/'
   meraxes_loc='/output/meraxes.hdf5'
   #meraxes_loc='/output/'+str(sys.argv[1])+'.hdf5'
-  redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
+  redshift={63:7,78:6,100:5,115:4,134:3,158:2,194:0.95,212:0.55,213:0.55}
   prop='StellarMass'
   
-  filename='tuned_quasarfeedback'#str(sys.argv[1])#'bulges_IDBHparam_tune'
+  filename='tuned_reion_T125'#str(sys.argv[1])#'bulges_IDBHparam_tune'
   split=1
   bulge_frac=True
   plot_SMFs=False
-  plot_mags=False
+  plot_mags=True
 
   if plot_SMFs:
     fig, axes = plt.subplots(1, 3,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
-  for snapshot in [213]:
+  for snapshot in [115]:
     ii+=1
     #  gals_default=load_data('default',snapshot,prop,cosmo)
     gals_bulges=load_data(filename,snapshot,prop,cosmo,split)
@@ -171,7 +190,7 @@ if __name__=="__main__":
       #if snapshot!=116:
      # plot_obsGSMF(axes[j,ii],redshift[snapshot],hubble_h=cosmo['h'],markersize=3,legend=False,silent=False,color=[0.5,0.5,0.5],alpha=1.0)
       #axes[j,ii].legend()
-      logM=np.linspace(8,13)
+      logM=np.linspace(8,12)
       plot_schechter(0.332*1e-3,-1.524,logM,10.740,axes[ii],label=r'$B/T<0.2$',color='C0')
       plot_schechter(0.489*1e-3,-1.270,logM,10.988,axes[ii],label=r'$0.2<B/T<0.5$',color='C1')
       plot_schechter(1.016*1e-3,-0.764,logM,10.926,axes[1],label=r'$0.5<B/T<0.8$',color='C2')
@@ -203,10 +222,10 @@ if __name__=="__main__":
       axes[2].set_xlabel(r'$\log(M_{component} (M_\odot)$)')
     
     fig_frac,axes_frac=plt.subplots(1,1)
-    plot_disk_frac(gals_bulges,axes_frac,'$z=0.55$ Model Galaxies',split,bulge_frac)
+    plot_disk_frac(gals_bulges,axes_frac,'$z=0.55$ Model Galaxies',split,bulge_frac,0)
     if plot_mags:
       mag_def=load_mags(filename,snapshot)#['i775']
-      plot_disk_frac(gals_bulges[(mag_def<21.9)],axes_frac,'$z=0.55$ Model Galaxies, $m_{Y}<-21.9$',split,bulge_frac)
+      plot_disk_frac(gals_bulges[(mag_def<21.9)],axes_frac,'$z=0.55$ Model Galaxies, $m_{Y}<-21.9$',split,bulge_frac,1)
 
     ##TIAMAT 125, boxwidth=125/cosmo['h']
   #plt.tight_layout()
@@ -218,6 +237,6 @@ if __name__=="__main__":
   plt.tight_layout()
   lgd=axes_frac.legend(fontsize='small',loc='upper center', bbox_to_anchor=(0.5, -0.2))
   
-  #plt.savefig('DiskFraction.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
-  #plt.savefig('BulgeFrac.pdf',format='pdf')
+  plt.savefig('/home/mmarshal/results/plots/BulgeFrac_z={}_T125.pdf'.format(redshift[snapshot]), format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  #plt.savefig('/home/mmarshal/results/plots/BulgeFrac.pdf',format='pdf')
   plt.show()

@@ -8,7 +8,8 @@ import sys
 import ContourPlot as cp
 #Sets plot defaults
 import matplotlib
-matplotlib.rcParams['font.size'] = (11)
+from mpl_toolkits.mplot3d import Axes3D
+matplotlib.rcParams['font.size'] = (9)
 matplotlib.rcParams['figure.figsize'] = (3.8,2.8)
 #matplotlib.rcParams['font.size'] = (12)
 #matplotlib.rcParams['figure.figsize'] = (8.27,6)
@@ -43,7 +44,7 @@ def load_data(filename):
 def plot_hist2d(gals,axes,cbar=True,move_cbar=False):
   xlims=[6,11]
   ylims=[-8,3]
-  H, xedges, yedges, img=axes.hist2d(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']), bins=20, range=[xlims,ylims], weights=None, cmin=1, cmax=5e4, data=None,cmap='BuPu',norm=matplotlib.colors.LogNorm(),vmax=5e4)
+  H, xedges, yedges, img=axes.hist2d(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']), bins=20, range=[xlims,ylims], weights=None, cmin=1, cmax=5e5, data=None,cmap='BuPu',norm=matplotlib.colors.LogNorm(),vmax=5e5)
   extent = [yedges[0], yedges[-1], xedges[0], xedges[-1]]
   im=axes.imshow(H,extent=extent,cmap='BuPu',norm=matplotlib.colors.LogNorm())
   if move_cbar:
@@ -57,6 +58,33 @@ def plot_hist2d(gals,axes,cbar=True,move_cbar=False):
   axes.set_aspect('auto')
   axes.set_ylim(ylims)
   axes.set_xlim(xlims)
+  #cp.contour_plot(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']),xlab=None,ylab=None,xlims=xlims,ylims=ylims,axes=axes,colors=None,levels=None,linewidth=2.5)
+
+def plot_hist3d(gals):
+  fig = plt.figure()
+  ax = fig.add_subplot(111, projection='3d')
+
+  xlims=[6,11]
+  ylims=[-7,3]
+  hist, xedges, yedges = np.histogram2d(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']), bins=100, range=[xlims,ylims])
+  
+  xpos, ypos = np.meshgrid(xedges[:-1] + (11-6)/41, yedges[:-1] + (3+8)/40)
+  xpos = xpos.flatten('F')
+  ypos = ypos.flatten('F')
+  zpos = np.zeros_like(xpos)
+
+  # Construct arrays with the dimensions for the 16 bars.
+  dx = 0.5 * np.ones_like(zpos)
+  dy = dx.copy()
+  dz = hist.flatten()
+
+  ax.bar3d(xpos, ypos, zpos, dx, dy, np.log10(dz), color='purple', zsort='average')
+  for angle in range(0, 360):
+    ax.view_init(30, angle)
+    plt.draw()
+    plt.pause(.0001)
+  plt.show()
+
 
 
 def plot_obs(axes):
@@ -77,13 +105,12 @@ def plot_obs(axes):
 
 
 if __name__=="__main__":
-  filename='bulges_fullreion'
-  #filename2='bulges_crotonSF'
+  filename='tuned_minmergerlimit'
 
-  default=load_data('default_fullreion')
+  default=load_data('default_reion')
   gals1=load_data(filename)
-  #gals2=load_data('bulges_crotonSF')
 
+  
   ##Fig 1
   fig, axes = plt.subplots(1, 2,gridspec_kw = {'wspace':0, 'hspace':0})
   plot_hist2d(default,axes[0],False)
@@ -105,9 +132,9 @@ if __name__=="__main__":
   handles, labels = axes[1].get_legend_handles_labels()
   order = [3,4,2,1,0]
   lgd=axes[1].legend([handles[idx] for idx in order],[labels[idx] for idx in order],loc=[1.55,0],fontsize='small')
-  plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+  plt.tight_layout(rect=[0, 0.03, 0.98, 0.95])
   
-  plt.savefig('MassSFR.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/MassSFR.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
   
   ###Fig 2

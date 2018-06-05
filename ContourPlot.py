@@ -21,10 +21,10 @@ def density_estimation(m1, m2):
 def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=None,levels=None,linewidth=2.5):
     X,Y,Z=density_estimation(x,y)
     if axes==None:
-      if levels==None:
-        plt.contour(X, Y, Z,colors=colors,linewidths=linewidth)
-      else:
-        plt.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth)
+      #if levels==None:
+      #  plt.contour(X, Y, Z,colors=colors,linewidths=linewidth)
+      #else:
+      plt.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth)
       if xlab is not None:
         plt.xlabel('{}'.format(xlab))
       if ylab is not None:
@@ -38,11 +38,11 @@ def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=
       else:
         plt.ylim(ylims);
     else:
-      if levels==None:
-        CS=axes.contour(X, Y, Z,colors=colors,linewidths=linewidth)
+      #if levels==None:
+      #  CS=axes.contour(X, Y, Z,colors=colors,linewidths=linewidth)
         #axes.clabel(CS,inline=1,fontsize=10)
-      else:
-        CS=axes.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth)
+      #else:
+      CS=axes.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth)
 
       if xlab is not None:
         axes.set_xlabel('{}'.format(xlab))

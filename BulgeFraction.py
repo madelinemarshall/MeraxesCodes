@@ -3,12 +3,10 @@ from dragons import meraxes
 import os
 #import matplotlib
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
-sys.path.append('/home/mmarshal/PhD/simulation_codes/Yuxiang/')
-from _plot_obsGSMF import plot_obsGSMF
 import magcalc as mc
 
 #Sets plot defaults
@@ -150,12 +148,12 @@ if __name__=="__main__":
   'sigma_8' : 0.815
   }
   data_folder='/home/mmarshal/data_dragons/'
-  meraxes_loc='/output/run1/meraxes_001.hdf5'
+  meraxes_loc='/output/meraxes.hdf5'
   #meraxes_loc='/output/'+str(sys.argv[1])+'.hdf5'
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
   prop='StellarMass'
   
-  filename='tune_higherseed'#str(sys.argv[1])#'bulges_IDBHparam_tune'
+  filename='tuned_reion'#_T125'
   split=1
   bulge_frac=True
   plot_SMFs=False
@@ -164,7 +162,7 @@ if __name__=="__main__":
   if plot_SMFs:
     fig, axes = plt.subplots(1, 3,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
-  for snapshot in [213]:
+  for snapshot in [158]:
     ii+=1
     #  gals_default=load_data('default',snapshot,prop,cosmo)
     gals_bulges=load_data(filename,snapshot,prop,cosmo,split)
@@ -223,5 +221,5 @@ if __name__=="__main__":
   lgd=axes_frac.legend(fontsize='small',loc='upper center', bbox_to_anchor=(0.5, -0.2))
   
   #plt.savefig('DiskFraction.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
-  plt.savefig('BulgeFrac.pdf',format='pdf')
+  plt.savefig('/home/mmarshal/results/plots/BulgeFrac_z={}.pdf'.format(redshift[snapshot]),format='pdf')
   plt.show()

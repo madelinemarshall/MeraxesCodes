@@ -7,7 +7,6 @@ import sys
 import pandas as pd
 sys.path.append('Yuxiang/')
 from _calculateQLF import calculateQLF
-from _plot_obsQLF import plot_obsQLF
 
 #Sets plot defaults
 import matplotlib
@@ -18,6 +17,13 @@ matplotlib.rcParams['figure.figsize'] = (7.2,5)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
+from astrodatapy.number_density import number_density
+
+colors         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
+                  '#ff7f00','#a65628','#f781bf','#98ff98']*4
+color_maps     = ['Reds', 'Blues', 'Greens'] *4
+markers        = ['o','s','v','^','<','>','p','*','D','.','8']*4
+linestyles     = ['-','--','-.',':']*4
 
 def load_data(filename,snapshot,prop,cosmo):
   gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
@@ -25,6 +31,36 @@ def load_data(filename,snapshot,prop,cosmo):
       h=cosmo['h'],quiet=True)
   gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
   return gals
+
+
+def plot_obsQLF(ax,z):
+    feature = 'QLF_UV'
+    xlim    = (-15, -29)
+    ylim    = (-10, -3.5)
+
+    obs    = number_density(feature=feature,z_target=z,quiet=1,h=cosmo['h'])
+    j_data = 0
+    k_func = 0
+    for ii in range(obs.n_target_observation):
+        data       = obs.target_observation['Data'][ii]
+        label      = obs.target_observation.index[ii]
+        datatype   = obs.target_observation['DataType'][ii]
+        color      = colors[ii]
+        marker     = markers[j_data]
+        linestyle  = linestyles[k_func]
+        data[:,1:] = np.log10(data[:,1:])
+        if datatype == 'data':
+            ax.errorbar(data[:,0],  data[:,1], yerr = [data[:,1]-data[:,3],data[:,2]- data[:,1]],\
+                        label=label,color=color,fmt=marker)
+            j_data +=1
+        elif datatype == 'dataULimit':
+            ax.errorbar(data[:,0],  data[:,1], yerr = -0.2*data[:,1], uplims=True,\
+                        label=label,color=color,fmt=marker)
+            j_data +=1
+        else:
+            ax.plot(data[:,0],data[:,1],label=label,color=color,linestyle=linestyle,lw=3)
+            ax.fill_between(data[:,0], data[:,2],data[:,3],color=color,alpha=0.5)
+            k_func +=1
 
 
 if __name__=="__main__":
@@ -43,8 +79,8 @@ if __name__=="__main__":
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
   prop='BlackHoleMass'
   
-  filename='bulges_split'#'bulges_correctBHMF'
-  filename125='bulges_correctBHMF_tiamat125'
+  filename='tuned_reion'#'bulges_correctBHMF'
+  filename125='tuned_reion_T125'
   fname_d=data_folder+'default'+meraxes_loc
   fname_1=data_folder+filename+meraxes_loc
   fname_2=data_folder+filename125+meraxes_loc
@@ -65,7 +101,8 @@ if __name__=="__main__":
       #calculateQLF(gals_125,fname_2,'UV',axes[ii],**{'linestyle':'-','label':'Bulge Model\n (Tiamat-125-HR)','linewidth':0.8,'color':'Purple','zorder':101})
     #else:
       #calculateQLF(gals_125,fname_2,'UV',axes[ii],**{'linestyle':'-','label':'Bulge Model\n (Tiamat-125-HR)','linewidth':0.8,'color':'Purple','zorder':100})
-    plot_obsQLF(axes[ii],redshift[snapshot],markersize=10,legend=True,hubble_h=0.678,silent=False,color='gray',alpha=1.0)
+    #plot_obsQLF(axes[ii],redshift[snapshot],markersize=10,legend=True,hubble_h=0.678,silent=False,color='gray',alpha=1.0)
+    plot_obsQLF(axes[ii],redshift[snapshot])
 
 
     axes[ii].set_xlabel(r'$\log(M_\ast (M_\odot)$)')
