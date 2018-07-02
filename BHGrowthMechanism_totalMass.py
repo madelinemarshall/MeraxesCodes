@@ -8,8 +8,8 @@ import sys
 import pandas as pd
 
 #Sets plot defaults
-matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (7.2,5.6)
+matplotlib.rcParams['font.size'] = (11)
+matplotlib.rcParams['figure.figsize'] = (8,7)
 #matplotlib.rcParams['font.size'] = (12)
 #matplotlib.rcParams['figure.figsize'] = (8.27,6)
 #plt.rc('text', usetex=True)
@@ -31,7 +31,7 @@ def load_data(filename,snapshot,cosmo):
 
 def plot_BH_frac(gals,axes,linestyle='-',lw=2.5):
   #Figure 9
-  MaxMass=10.5
+  MaxMass=10.75
   MinMass=6
   BinWidth=0.25
   nBins=int(np.ceil((MaxMass-MinMass)/BinWidth))
@@ -60,11 +60,11 @@ def plot_BH_frac(gals,axes,linestyle='-',lw=2.5):
     Coalescence_MinBin[ii]=np.nansum(Coalescence_BH[(np.log10(BH)>=BinStart[ii])&(np.log10(BH)<BinEnd)])
     Radio_MinBin[ii]=np.nansum(Radio_BH[(np.log10(BH)>=BinStart[ii])&(np.log10(BH)<BinEnd)])
 
-  ID_frac=ID_MinBin/TotMinBin
-  MD_frac=MD_MinBin/TotMinBin
-  Coalescence_frac=Coalescence_MinBin/TotMinBin
-  Radio_frac=Radio_MinBin/TotMinBin
-  Rest=1-(ID_MinBin+MD_MinBin+Coalescence_MinBin+Radio_MinBin)/TotMinBin
+  ID_frac=ID_MinBin
+  MD_frac=MD_MinBin
+  Coalescence_frac=Coalescence_MinBin
+  Radio_frac=Radio_MinBin
+  Rest=1-(ID_MinBin+MD_MinBin+Coalescence_MinBin+Radio_MinBin)
   Rest_MinBin=TotMinBin-(ID_MinBin+MD_MinBin+Coalescence_MinBin+Radio_MinBin)
 
   axes.plot(BinStart[TotNinBin>5]+0.5*BinWidth,np.log10(Rest[TotNinBin>5]),label='Seed Condition',linewidth=lw,linestyle=linestyle,color=colors[0])
@@ -74,8 +74,7 @@ def plot_BH_frac(gals,axes,linestyle='-',lw=2.5):
   axes.plot(BinStart[TotNinBin>5]+0.5*BinWidth,np.log10(ID_frac[TotNinBin>5]),label='Instability-Driven Quasar-Mode',linewidth=lw,linestyle=linestyle,color=colors[4])
   axes.set_xlabel(r'$\log(M_{\mathrm{BH}})$')
   axes.set_xlim(MinMass-0.15,MaxMass-0.05)
-  axes.set_ylim(-5.3,0.1)
-
+  axes.set_ylim(6,12)
 
 if __name__=="__main__":
   #Setup
@@ -94,7 +93,7 @@ if __name__=="__main__":
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55,250:0}
   
   filename='tuned_reion'
-  filename_125='tune'#'tuned_reion_T125'
+  filename_125='tuned_reion_T125'
 
   fig,axes=plt.subplots(3,5,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
@@ -107,19 +106,18 @@ if __name__=="__main__":
       plot_BH_frac(gals,axes[0,ii])
       plot_BH_frac(gals_b,axes[1,ii])
       plot_BH_frac(gals_d,axes[2,ii])
-    else:
-      gals=load_data(filename_125,snapshot,cosmo)
-      gals_d=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
-      gals_b=gals[gals['BulgeStellarMass']/gals['StellarMass']>0.7]
-      plot_BH_frac(gals,axes[0,ii],'--',1.5)
-      plot_BH_frac(gals_b,axes[1,ii],'--',1.5)
-      plot_BH_frac(gals_d,axes[2,ii],'--',1.5)
     
     if ii==0:      
       axes[2,ii].plot([1,1.1],[1,1.1],linewidth=2.5,linestyle='-',color=colors[3],label='Tiamat')
       axes[2,ii].plot([1,1.1],[1,1.1],linewidth=1.5,linestyle='--',color=colors[3],label='Tiamat-125-HR')
       lgd=axes[2,ii].legend(fontsize='small',loc='lower left')#, bbox_to_anchor=(1.75, 0.73))
 
+    gals=load_data(filename_125,snapshot,cosmo)
+    gals_d=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
+    gals_b=gals[gals['BulgeStellarMass']/gals['StellarMass']>0.7]
+    plot_BH_frac(gals,axes[0,ii],'--',1.5)
+    plot_BH_frac(gals_b,axes[1,ii],'--',1.5)
+    plot_BH_frac(gals_d,axes[2,ii],'--',1.5)
 
     axes[0,ii].set_xticks([])
     if ii>1:
@@ -129,7 +127,7 @@ if __name__=="__main__":
       axes[1,ii].set_yticks([])
       axes[2,ii].set_yticks([])
     else:
-      axes[1,ii].set_ylabel(r'Fraction of BH Mass from Growth Modes')
+      axes[1,ii].set_ylabel(r'Total BH Mass from Growth Modes')
     axes[0,ii].set_title(r'$z={}$'.format(redshift[snapshot]))
   axes[0,-1].set_ylabel(r'All Galaxies') 
   axes[1,-1].set_ylabel(r'B/T$>0/7$') 
@@ -142,5 +140,5 @@ if __name__=="__main__":
   
   plt.tight_layout()
   
-  plt.savefig('/home/mmarshal/results/plots/BHGrowthModes.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/BHGrowthModes_totalMass.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()

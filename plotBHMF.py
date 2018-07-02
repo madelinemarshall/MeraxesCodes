@@ -2,7 +2,7 @@ import numpy as np
 from dragons import meraxes
 import os
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
@@ -36,7 +36,7 @@ def load_data(filename,meraxes_loc,snapshot,prop,cosmo):
 
 def plot_obs(ax,z):
     obs    = number_density(feature='BHMF',z_target=z,quiet=1,h=cosmo['h'])
-    xlim    = (4.5, 10)
+    xlim    = (6, 10)
     ylim    = (-6, -0.5)
     xlabel  = r"$\log_{10}[M_{\rm BH}/{\rm M_{\odot}}]$"
     ylabel  = r"$\log_{10}[\rm \phi/Mpc^{-3} dex^{-1}]$"
@@ -101,25 +101,24 @@ if __name__=="__main__":
   data_folder='/home/mmarshal/data_dragons/'
   #meraxes_loc='/output/meraxes.hdf5'
   meraxes_loc='/output/'+'meraxes'+'.hdf5'
-  redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
-  color={63:'C0',78:'C1',100:'C2',116:'C3',134:'C4',158:'pink',194:'purple',213:'black'}
+  redshift={63:7,78:6,100:5,116:4,134:3,158:2,192:1,250:0}
+  color={63:'C0',78:'C1',100:'C2',116:'C3',134:'C4',158:'pink',192:'purple',250:'black'}
   obs_color={0.5:[0.2,0.2,0.2],0:'gray'}
   color={63:'#e41a1c',78:'#377eb8',100:'#4daf4a',116:'#984ea3',\
-                  134:'#ff7f00',158:'#f781bf',194:'#a65628',213:'black'}
+                  134:'#ff7f00',158:'#f781bf',192:'#a65628',250:'black'}
   prop='BlackHoleMass'
   
   
-  filename_default='test_simon'
-  filename_default125='tuned'
-  filename='less_seed'
+  filename_default='dragons10'
+  filename_default125='dragons10_T125'
+  filename='tuned_reion'
   meraxes_loc2='/output/'+'meraxes'+'.hdf5'
-  boxwidth=100#25/cosmo['h']
-  #filename='bulges_correctBHMF'#_split'#correctBHMF'
-  filename125='tuned_minmergerlimit'
+  boxwidth=100
+  filename125='tuned_reion_T125'
   plot_z0=1
 
   if plot_z0:
-    snapshots=[63,78,100,116,134,158,213]
+    snapshots=[63,78,100,116,134,158,192,250]
   else:
     snapshots=[63,78,100,116,134,158]
 
@@ -129,8 +128,8 @@ if __name__=="__main__":
       #gals_default=load_data(filename_default,meraxes_loc,snapshot,prop,cosmo)
       gals_bulges=load_data(filename,meraxes_loc2,snapshot,prop,cosmo)
       plot_BHMF(gals_bulges,prop,boxwidth,axes,**{'linestyle':'-','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-      gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
-      plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
+      #gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
+      #plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
       #plot_BHMF(gals_125,prop,125/cosmo['h'],axes[1],**{'linestyle':'-','label':'Bulge Model\n (Tiamat-125-HR)','linewidth':0.8,'color':'Purple','zorder':101})
       #plot_BHMF(gals_default,prop,100,axes,**{'linestyle':'-','label':'Default Meraxes','linewidth':2.5,'color':'C9','zorder':102})
     else:
@@ -139,11 +138,11 @@ if __name__=="__main__":
       #gals_def=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
       #plot_BHMF(gals_def,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'$z={}$ (Tiamat-125-HR) \n- Default Meraxes'.format(redshift[snapshot]),'linewidth':2.5,'color':'k','zorder':101})
   plot_obs(axes,0)
-  plot_obs(axes,0.5)
+  #plot_obs(axes,0.5)
   axes.set_xlabel(r'$\log (\mathrm{M}_{\mathrm{BH}}/M_\odot)$')
   axes.set_ylabel(r'$\log (\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3})$')
   axes.set_xlim([6,10])
-  axes.set_ylim([-6,-2])
+  axes.set_ylim([-5,-2])
   
   #plot_obsBHMF(axes[1],0.5,hubble_h=cosmo['h'],markersize=3,legend=False,silent=False,color='gray',alpha=1.0)
   #plot_obsBHMF(axes[1],0,hubble_h=cosmo['h'],markersize=3,legend=False,silent=False,color='lightgreen',alpha=1.0)

@@ -7,10 +7,14 @@ import matplotlib.pyplot as plt
 import sys
 import ContourPlot as cp
 import pandas as pd
-matplotlib.rcParams['font.size'] = (11)
+matplotlib.rcParams['font.size'] = (9)
 matplotlib.rcParams['figure.figsize'] = (3.5,3.5)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
+color         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
+                  '#ff7f00','#a65628','#f781bf','#98ff98']*4
+# red,blue,green,purple,orange,brown,pink,mint
+
 
 def plot_hist(x,y,axes):
   xlims=[7,12]
@@ -61,7 +65,7 @@ def plot_gadotti(axes):
   rad=np.log10(dat[0])
   half_mass_rad=rad*1.67835
   diskmass=np.log10(dat[4])
-  axes.plot(diskmass[dat[2]<0.3],half_mass_rad[dat[2]<0.3],'.',color='mediumseagreen',label='Gadotti et al. (2009)',markersize=2)
+  axes.plot(diskmass[dat[2]<0.3],half_mass_rad[dat[2]<0.3],'o',color=color[6],label='Gadotti et al. (2009)',markersize=2)
 
 
 def plot_obs(axes):
@@ -74,9 +78,9 @@ def plot_obs(axes):
   MonM0=10**(logM-10.44)
   R=10**0.72*MonM0**0.18*(0.5+0.5*MonM0**1.8)**((0.52-0.18)/1.8)
   scat=0.27+(0.47-0.27)/(1+MonM0**2.2) 
-  axes.plot(logM,np.log10(R),color='darkblue',label='Dutton et al. (2010)',linewidth=2.5)
-  axes.plot(logM,np.log10(R)+scat,':',color='darkblue',label='__nolabel__',linewidth=2.5)
-  axes.plot(logM,np.log10(R)-scat,':',color='darkblue',label='__nolabel',linewidth=2.5)
+  axes.plot(logM,np.log10(R),color=color[0],label='Dutton et al. (2010)',linewidth=2.5)
+  axes.plot(logM,np.log10(R)+scat,':',color=color[0],label='__nolabel__',linewidth=2.5)
+  axes.plot(logM,np.log10(R)-scat,':',color=color[0],label='__nolabel',linewidth=2.5)
 
   ##Lange+16. R=a(M/10^10)^b
   #For disks, a=5.141 kpc, b=0.274
@@ -84,14 +88,14 @@ def plot_obs(axes):
   M=10**np.array([9.15,9.45,9.75,10.05,10.35,10.65,10.95])
   R=5.141*(M/1e10)**0.274
   scatter=np.array([0.185,0.176,0.17,0.151,0.133,0.15,0.202])
-  axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835),color='gold',linewidth=2.5,label="Lange et al. (2016)",zorder=100)
-  axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835)+scatter,':',color='gold',linewidth=2.5,label="__nolabel__",zorder=101)
-  axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835)-scatter,':',color='gold',linewidth=2.5,label="__nolabel__",zorder=102)
+  axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835),color=color[4],linewidth=2.5,label="Lange et al. (2016)",zorder=100)
+  axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835)+scatter,':',color=color[4],linewidth=2.5,label="__nolabel__",zorder=101)
+  axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835)-scatter,':',color=color[4],linewidth=2.5,label="__nolabel__",zorder=102)
 
   #Wu+17
-  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343,color='darkorange',label='Wu (2017)',linewidth=2.5)
-  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343+0.36,':',color='darkorange',label='__nolabel__',linewidth=2.5)
-  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343-0.36,':',color='darkorange',label='__nolabel__',linewidth=2.5)
+  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343,color=color[2],label='Wu (2017)',linewidth=2.5)
+  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343+0.36,':',color=color[2],label='__nolabel__',linewidth=2.5)
+  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343-0.36,':',color=color[2],label='__nolabel__',linewidth=2.5)
   #axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343+0.36,':k',label='Wu (2017) 2$\sigma$ scatter')
   #axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343-0.36,':k',label='__nolegend__')
 
@@ -99,8 +103,8 @@ def plot_obs(axes):
  
 
 if __name__=='__main__':
-  filename='bulges_IDBH_tiamat125'
-  snapshot=213
+  filename='tuned_reion_T125'
+  snapshot=250
   gals=load_data(filename,snapshot)
 
   disks=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
@@ -130,7 +134,7 @@ if __name__=='__main__':
   plt.xlim([7.1,11.7])
   plt.ylim([-1.55,1.8])
   lgd=axes.legend(fontsize='small',loc='upper center', bbox_to_anchor=(0.5, -0.2))
-  plt.savefig('DiskSize.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/DiskSize.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
   
 

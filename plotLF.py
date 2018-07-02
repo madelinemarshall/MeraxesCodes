@@ -110,8 +110,8 @@ def plot_obsGLF(ax,z,make_legend,labels_dict):
 
 
 def make_legend(ax):
-    plot_LF(mags_bulges,ax,**{'linestyle':'-','label':'Modified Meraxes','linewidth':1,'color':'k'})
-    plot_LF(mags_default,ax,**{'linestyle':'-','label':'Default Meraxes','linewidth':1,'color':[0.35,0.35,0.35]})
+    plot_LF(mags_bulges,ax,**{'linestyle':'-','label':'M18 Meraxes','linewidth':1,'color':'k'})
+    plot_LF(mags_default,ax,**{'linestyle':'-','label':'Q17 Meraxes','linewidth':1,'color':[0.35,0.35,0.35]})
     labels_dict={}
     for snapshot in [52,63,78,100,115]:
       plot_obsGLF(ax,redshift[snapshot],1,labels_dict)
@@ -149,14 +149,14 @@ if __name__=="__main__":
   #  if ii==3:
   #    j+=1
   #    ii=0
-    mags_default=load_mags('default_reion',snapshot)
+    mags_default=load_mags('dragons10',snapshot)
     mags_bulges=load_mags(filename,snapshot)
     #mags_2=load_mags(filename2,snapshot)
 
     plot_obsGLF(axes[j,ii],redshift[snapshot],0,labels_dict)
     #plot_LF(mags_2,axes[ii],'Bulge Model - Croton SF',':')
-    plot_LF(mags_bulges,axes[j,ii],**{'linestyle':'-','label':'Modified Meraxes','linewidth':1,'color':'k','zorder':100})
-    plot_LF(mags_default,axes[j,ii],**{'linestyle':'-','label':'Default Meraxes','linewidth':1,'color':[0.35,0.35,0.35],'zorder':101})
+    plot_LF(mags_bulges,axes[j,ii],**{'linestyle':'-','label':'M18 Meraxes','linewidth':1,'color':'k','zorder':100})
+    plot_LF(mags_default,axes[j,ii],**{'linestyle':'--','label':'Q17 Meraxes','linewidth':1,'color':[0.35,0.35,0.35],'zorder':101})
 
     #plot_obsGLF(axes[ii],redshift[snapshot],hubble_h=cosmo['h'],markersize=3,legend=True,silent=True,color=[0.5,0.5,0.5],alpha=1.0)
 

@@ -5,7 +5,7 @@ import sys
 import magcalc as mc
 
 # Set up parameters.
-direct="tuned_reion"
+direct="tuned_reion_T125"
 fname = "/home/mmarshal/data_dragons/"+direct+"/output/meraxes.hdf5"
 
 snapList = []
@@ -21,6 +21,9 @@ filt7=np.loadtxt('F090W.txt',skiprows=1)
 filt8=np.loadtxt('F070W.txt',skiprows=1)
 filt9=np.loadtxt('F277W.txt',skiprows=1)
 filt10=np.loadtxt('MIRI_F560W.dat')
+filt11=np.loadtxt('SLOAN_SDSS_g.dat')
+filt12=np.loadtxt('SLOAN_SDSS_i.dat')
+filt13=np.loadtxt('SLOAN_SDSS_r.dat')
 filt2[:,0]*=1e4
 filt3[:,0]*=1e4
 filt4[:,0]*=1e4
@@ -30,8 +33,7 @@ filt7[:,0]*=1e4
 filt8[:,0]*=1e4
 filt9[:,0]*=1e4
 
-for z in [5,6]:
-    snap = meraxes.io.check_for_redshift(fname, z)[0]
+for snap in range(213,251):
     snapList.append(snap)
     gals = meraxes.io.read_gals(fname, snap, 
                                 props = ["GhostFlag", "StellarMass"], 
@@ -51,6 +53,9 @@ bands.append(["JWST_F090W",filt7.T])
 bands.append(["JWST_F070W",filt8.T])
 bands.append(["JWST_F277W",filt9.T])
 bands.append(["JWST_F560W",filt10.T])
+bands.append(['SDSSg',filt11.T])
+bands.append(['SDSSi',filt12.T])
+bands.append(['SDSSr',filt13.T])
 
 mc.composite_spectra(fname, snapList, idxList, h = 0.678, Om0 = .308, outType = "ph", 
                      sedPath = '/fred/oz013/yqiu/projects/spectra/S99-Salpeter-0.001',

@@ -10,7 +10,7 @@ import ContourPlot as cp
 import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (3.8,2.8)
+matplotlib.rcParams['figure.figsize'] = (7.2,2.8)
 #matplotlib.rcParams['font.size'] = (12)
 #matplotlib.rcParams['figure.figsize'] = (8.27,6)
 plt.rc('text', usetex=True)
@@ -31,8 +31,7 @@ def load_data(filename):
   data_folder='/home/mmarshal/data_dragons/'
   meraxes_loc='/output/meraxes.hdf5'
 
-  snapshot=158
-  #snapshot=213
+  snapshot=173
 
   gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
                                           snapshot=snapshot,\
@@ -42,14 +41,14 @@ def load_data(filename):
 
 
 def plot_hist2d(gals,axes,cbar=True,move_cbar=False):
-  xlims=[6,11]
-  ylims=[-8,3]
+  xlims=[7,11]
+  ylims=[-6,3]
   H, xedges, yedges, img=axes.hist2d(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']), bins=20, range=[xlims,ylims], weights=None, cmin=1, cmax=5e5, data=None,cmap='BuPu',norm=matplotlib.colors.LogNorm(),vmax=5e5)
   extent = [yedges[0], yedges[-1], xedges[0], xedges[-1]]
   im=axes.imshow(H,extent=extent,cmap='BuPu',norm=matplotlib.colors.LogNorm())
   if move_cbar:
     fig.subplots_adjust(right=0.8)
-    cbar_ax = fig.add_axes([0.945, 0.245, 0.05, 0.632])
+    cbar_ax = fig.add_axes([0.511, 0.225, 0.025, 0.693])
     cb=fig.colorbar(im, cax=cbar_ax,use_gridspec=True)
     cb.set_label('Number of Galaxies')#; Total N = {:.0e}'.format(np.size(gals)))
   elif cbar:
@@ -59,6 +58,7 @@ def plot_hist2d(gals,axes,cbar=True,move_cbar=False):
   axes.set_ylim(ylims)
   axes.set_xlim(xlims)
   #cp.contour_plot(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']),xlab=None,ylab=None,xlims=xlims,ylims=ylims,axes=axes,colors=None,levels=None,linewidth=2.5)
+
 
 def plot_hist3d(gals):
   fig = plt.figure()
@@ -105,9 +105,9 @@ def plot_obs(axes):
 
 
 if __name__=="__main__":
-  filename='tuned_minmergerlimit'
+  filename='tuned_reion_T125'
 
-  default=load_data('default_reion')
+  default=load_data('dragons10_T125')
   gals1=load_data(filename)
 
   
@@ -121,8 +121,8 @@ if __name__=="__main__":
   #plot_obs(axes[2])
   #axes[0].set_title('Default Meraxes')
   #axes[1].set_title('Modified Meraxes')
-  axes[0].text(8.4, -7.5, 'Default \n Meraxes',weight='bold',size='large')
-  axes[1].text(8.4, -7.5, 'Modified \n Meraxes',weight='bold',size='large')
+  axes[0].text(8, -5.5, r'$  z=1.5$'+'\n '+r'Q17 Meraxes',weight='bold',size='large')
+  axes[1].text(8, -5.5,  r'$  z=1.5$'+'\n '+r'M18 Meraxes',weight='bold',size='large')
   axes[0].set_xlabel(r'$\log(M_\ast/M_\odot)$')
   axes[0].set_ylabel(r'$\log(\textrm{SFR})$')
   axes[1].set_xlabel(r'$\log(M_\ast/M_\odot)$')
@@ -132,7 +132,7 @@ if __name__=="__main__":
   handles, labels = axes[1].get_legend_handles_labels()
   order = [3,4,2,1,0]
   lgd=axes[1].legend([handles[idx] for idx in order],[labels[idx] for idx in order],loc=[1.55,0],fontsize='small')
-  plt.tight_layout(rect=[0, 0.03, 0.98, 0.95])
+  plt.tight_layout(rect=[0, 0.03, 0.98, 0.98])
   
   plt.savefig('/home/mmarshal/results/plots/MassSFR.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
