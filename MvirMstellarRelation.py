@@ -48,7 +48,7 @@ if __name__=='__main__':
   color={63:'C0',78:'C1',100:'C2',116:'C3',134:'C4',158:'pink',213:'black'}
  
   #filename='bulges_correctBHMF'
-  filename2='bulges_fullreion'  
+  filename2='tuned_reion_T125'  
   filename=filename2
   #filename='meraxes_on_tiamat_newtrees/Q_100_000_S_006_050'
   #filename2='meraxes_on_tiamat_newtrees/Q_100_000_S_006_050_Re'
@@ -102,4 +102,5 @@ if __name__=='__main__':
   plt.legend()
   plt.xlabel(r'$\log(M_{vir})$')
   plt.ylabel(r'$M_\ast/M_{vir}$')
+  plt.yscale('log')
   plt.show()

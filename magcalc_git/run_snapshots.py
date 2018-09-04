@@ -5,7 +5,7 @@ import sys
 import magcalc as mc
 
 # Set up parameters.
-direct="tuned_reion_T125"
+direct='default_reion_T125'#"tuned_reion_T125"
 fname = "/home/mmarshal/data_dragons/"+direct+"/output/meraxes.hdf5"
 
 snapList = []

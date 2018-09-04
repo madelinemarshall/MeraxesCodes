@@ -39,7 +39,7 @@ def load_data(filename,snapshot):
       h=cosmo['h'],quiet=True)
   gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
   gals=gals[gals['BlackHoleMass']*1e10>1e3]
-  gals=gals[gals['StellarMass']*1e10>1e8]
+  gals=gals[gals['StellarMass']*1e10>1e7]
   return gals
 
 
@@ -60,7 +60,7 @@ if __name__=='__main__':
   data_folder='/home/mmarshal/data_dragons/'
   meraxes_loc='/output/meraxes.hdf5'
   snap=78
-  filename='tune_tiamat'
+  filename='tuned_reion'
   ##PLOT
   fig,ax = plt.subplots(1,3,gridspec_kw = {'wspace':0, 'hspace':0},sharey=True)
   #fig,axes=plt.subplots(1,1)
@@ -70,22 +70,36 @@ if __name__=='__main__':
   ##StellarMass 
   x=np.log10(gals['StellarMass']*1e10)
   y=np.log10(gals['BlackHoleMass']*1e10)
-  plot_hist2d(x,y,ax[1],[8,np.nanmax(x)],[4,9.5])
-  
+  #plot_hist2d(x,y,ax[1],[7,np.nanmax(x)],[4,8])
+  ax[1].plot(x,y,'k.')
+
   x=np.log10(gals['Mvir']*1e10)
-  plot_hist2d(x,y,ax[2],[10,np.nanmax(x)],[4,9.5])
+  #plot_hist2d(x,y,ax[2],[10,np.nanmax(x)],[4,8])
+  ax[2].plot(x,y,'k.')
     
   gals=gals[gals['BulgeStellarMass']>0]
   x=np.log10(gals['BulgeStellarMass']*1e10)
   y=np.log10(gals['BlackHoleMass']*1e10)
-  plot_hist2d(x,y,ax[0],[4,np.nanmax(x)],[4,9.5])
+  #plot_hist2d(x,y,ax[0],[7,np.nanmax(x)],[4,8.5])
+  ax[0].plot(x,y,'k.')
+
+  #Tracks
+  track_loc='/home/mmarshal/data_dragons/histories/tuned_reion/history_byBlackHoleMass/078/BlackHoleMass07-09/'
+  BH=np.log10(np.fromfile(track_loc+'BlackHoleMass.bin').reshape(-1,(63+1)))+10
+  bulge=np.log10(np.fromfile(track_loc+'BulgeStellarMass.bin').reshape(-1,(63+1)))+10
+  stellar=np.log10(np.fromfile(track_loc+'StellarMass.bin').reshape(-1,(63+1)))+10
+  mvir=np.log10(np.fromfile(track_loc+'Mvir.bin').reshape(-1,(63+1)))+10
+  for i in range(0,2):
+    ax[0].plot(bulge[i],BH[i])
+    ax[1].plot(stellar[i],BH[i])
+    ax[2].plot(mvir[i],BH[i])
 
   ax[2].set_xlabel(r'$\log(\textrm{M}_{\textrm{vir}})$')
   ax[1].set_xlabel(r'$\log(\textrm{M}_\ast)$')
   ax[0].set_xlabel(r'$\log(\textrm{M}_{\textrm{bulge}})$')
 
-  plt.legend()
-  lgd=plt.legend(fontsize='small',loc='upper center', bbox_to_anchor=(1.25, 0.8))  
+  #plt.legend()
+  #lgd=plt.legend(fontsize='small',loc='upper center', bbox_to_anchor=(1.25, 0.8))  
   ax[0].set_ylabel(r'$\log(\textrm{M}_{\textrm{BH}})$') 
   #plt.savefig('MBHBulge_z.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()

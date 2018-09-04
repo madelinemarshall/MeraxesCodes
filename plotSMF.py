@@ -133,7 +133,7 @@ if __name__=="__main__":
   filename125='tuned_reion_T125'
   default='dragons10'
   vol_def=100
-  default_125='dragons10_T125'
+  default_125='old_SF'#'dragons10_T125'
   labels_dict={}
   fig, axes = plt.subplots(3, 4,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
@@ -188,5 +188,5 @@ if __name__=="__main__":
   axes[2,3].axis('off')
   #fig.subplots_adjust(hspace=0, wspace=0)
   #plt.tight_layout()
-  plt.savefig('/home/mmarshal/results/plots/SMF.pdf',format='pdf')
+  #plt.savefig('/home/mmarshal/results/plots/SMF.pdf',format='pdf')
   plt.show()

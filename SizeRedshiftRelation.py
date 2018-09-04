@@ -7,6 +7,7 @@ import matplotlib
 import sys
 import ContourPlot as cp
 import pandas as pd
+import magcalc as mc
 
 import matplotlib
 matplotlib.rcParams['font.size'] = (11)
@@ -37,11 +38,12 @@ def load_gals(filename,snapshot):
 
 
 def load_mags(filename,snapshot):
-    dust=pd.read_csv('/home/mmarshal/PhD/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'_dust.txt',sep=' ',comment='#',header=None)
-    m1600=np.array(dust)[:,-1]
-    return m1600
-    lumins=pd.read_hdf('/home/mmarshal/PhD/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'.hdf5')
-    return np.array(lumins['M1600'])
+  redshift={37:10,43:9,52:8,63:7,78:6,100:5,115:4,134:3,158:2}
+  MUV=pd.read_hdf('/home/mmarshal/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'.hdf5')['M1600-100']
+  AUV=mc.reddening(1600,MUV,redshift[snapshot])
+  MUV_dust=MUV+AUV
+  return MUV_dust
+
 
 def plot_obs(axes):
   #Lower L bin:
@@ -120,7 +122,7 @@ def plot_original_model(axes):
 
 
 if __name__=="__main__":
-  filename='bulges_correctBHMF'
+  filename='tuned_reion_T125'
   redshift={37:10,43:9,52:8,63:7,78:6,100:5}
   snapshots=np.flip([37,43,52,63,78,100],0)
   mean_r_upper=np.zeros(6)

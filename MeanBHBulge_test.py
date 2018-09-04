@@ -93,7 +93,7 @@ if __name__=="__main__":
   #redshift2={158:2,173:1.5,192:1,213:0.55}
   redshift2={158:2,192:1,250:0}
   snapshots2=[158,192,250]
-  bulge_split=0
+  bulge_split=1
 
   med={}
   pctile84={}
@@ -138,9 +138,9 @@ if __name__=="__main__":
     #gals_125=load_data(filename2,snapshot)
     #gals_125_b=gals_125[gals_125['BulgeStellarMass']*1e10>1e7]
     if bulge_split:
-      gals_1e5bulges=gals[(gals['BlackHoleMass']*1e10>1e6)&(gals['BlackHoleMass']*1e10<1e7)]
-      gals_1e7bulges=gals[(gals['BlackHoleMass']*1e10>1e7)&(gals['BlackHoleMass']*1e10<1e8)]
-      gals_1e9bulges=gals[(gals['BlackHoleMass']*1e10>1e8)]
+      gals_1e5bulges=gals[(gals['BlackHoleMass']*1e10>1e6)&(gals['BlackHoleMass']*1e10<10**6.2)]
+      gals_1e7bulges=gals[(gals['BlackHoleMass']*1e10>1e7)&(gals['BlackHoleMass']*1e10<10**7.2)]
+      gals_1e9bulges=gals[(gals['BlackHoleMass']*1e10>1e8)&(gals['BlackHoleMass']*1e10<10**8.2)]
     gals_onlybulges=gals[gals['BulgeStellarMass']/gals['StellarMass']>0.7]
     gals_onlydisks=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
 
@@ -160,9 +160,9 @@ if __name__=="__main__":
     med_125[snapshot],pctile84_125[snapshot],pctile16_125[snapshot]=find_med(gals_125,'StellarMass')
     med_125_b[snapshot],pctile84_125_b[snapshot],pctile16_125_b[snapshot]=find_med(gals_125,'BulgeStellarMass')
     if bulge_split:
-      gals_1e5bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e6)&(gals_125['BlackHoleMass']*1e10<1e7)]
-      gals_1e7bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e7)&(gals_125['BlackHoleMass']*1e10<1e8)]
-      gals_1e9bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e8)]
+      gals_1e5bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e6)&(gals_125['BlackHoleMass']*1e10<10**6.2)]
+      gals_1e7bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e7)&(gals_125['BlackHoleMass']*1e10<10**7.2)]
+      gals_1e9bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e8)&(gals_125['BlackHoleMass']*1e10<10**8.2)]
       med_1e5bulges_125[snapshot],pctile84_1e5bulges_125[snapshot],pctile16_1e5bulges_125[snapshot]=find_med(gals_1e5bulges,'BulgeStellarMass')
       med_1e7bulges_125[snapshot],pctile84_1e7bulges_125[snapshot],pctile16_1e7bulges_125[snapshot]=find_med(gals_1e7bulges,'BulgeStellarMass')
       med_1e9bulges_125[snapshot],pctile84_1e9bulges_125[snapshot],pctile16_1e9bulges_125[snapshot]=find_med(gals_1e9bulges,'BulgeStellarMass')
@@ -171,12 +171,12 @@ if __name__=="__main__":
   redshift_tot.update(redshift2)
 
 
-  fig,axes=plt.subplots(2,1,gridspec_kw = {'hspace':0})
+  fig,axes=plt.subplots(2,1,gridspec_kw = {'hspace':0},sharex=True)
   ##Bulge masses
   if bulge_split:
-    plot_median_ratio(redshift,med_1e5bulges,pctile84_1e5bulges,pctile16_1e5bulges,axes[1],color='turquoise',**{'label':r'$10^6M_\odot<M_{\mathrm{BH}}<10^7M_\odot$'})
-    plot_median_ratio(redshift,med_1e7bulges,pctile84_1e7bulges,pctile16_1e7bulges,axes[1],color='purple',**{'label':r'$10^7M_\odot<M_{\mathrm{BH}}<10^8M_\odot$'})
-    plot_median_ratio(redshift,med_1e9bulges,pctile84_1e9bulges,pctile16_1e9bulges,axes[1],color='r',**{'label':r'$M_{\mathrm{BH}}>10^8M_\odot$'})
+    plot_median_ratio(redshift,med_1e5bulges,pctile84_1e5bulges,pctile16_1e5bulges,axes[1],color='turquoise',**{'label':r'$10^6M_\odot<M_{\mathrm{BH}}<10^{6.2}M_\odot$'})
+    plot_median_ratio(redshift,med_1e7bulges,pctile84_1e7bulges,pctile16_1e7bulges,axes[1],color='purple',**{'label':r'$10^7M_\odot<M_{\mathrm{BH}}<10^{7.2}M_\odot$'})
+    plot_median_ratio(redshift,med_1e9bulges,pctile84_1e9bulges,pctile16_1e9bulges,axes[1],color='r',**{'label':r'$10^8M_\odot<M_{\mathrm{BH}}<10^{8.2}M_\odot$'})
     plot_median_ratio(redshift2,med_1e5bulges_125,pctile84_1e5bulges_125,pctile16_1e5bulges_125,axes[1],color='turquoise',**{'label':'__nolabel__','linestyle':'--'})
     plot_median_ratio(redshift2,med_1e7bulges_125,pctile84_1e7bulges_125,pctile16_1e7bulges_125,axes[1],color='purple',**{'label':'__nolabel__','linestyle':'--'})
     plot_median_ratio(redshift2,med_1e9bulges_125,pctile84_1e9bulges_125,pctile16_1e9bulges_125,axes[1],color='r',**{'label':'__nolabel__','linestyle':'--'})
@@ -249,5 +249,5 @@ if __name__=="__main__":
 
 
   plt.tight_layout()
-  fig.savefig('/home/mmarshal/results/plots/MeanBHBulge.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  #fig.savefig('/home/mmarshal/results/plots/MeanBHBulge.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()

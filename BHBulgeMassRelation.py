@@ -245,7 +245,7 @@ def plot_median_ratio(redshift,median_BH_bulge,eightyfourth_pctile_BH_bulge,sixt
 
   
 if __name__=="__main__":
-  filename='bulges_correctBHMF'
+  filename='tuned_reion'
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2}
   #redshift={63:7,63:7,78:6,100:5,116:4,134:3,158:2}
   median_BH_bulge={52:0,63:0,78:0,100:0,116:0,134:0,158:0}

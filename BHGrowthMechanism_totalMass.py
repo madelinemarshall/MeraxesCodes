@@ -92,8 +92,8 @@ if __name__=="__main__":
   #meraxes_loc='/output/'+str(sys.argv[1])+'.hdf5'
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55,250:0}
   
-  filename='tuned_reion'
-  filename_125='tuned_reion_T125'
+  filename='tuned_T125_NR'
+  filename_125='tuned_T125_NR'
 
   fig,axes=plt.subplots(3,5,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1

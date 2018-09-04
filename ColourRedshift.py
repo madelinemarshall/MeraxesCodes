@@ -2,7 +2,7 @@ import numpy as np
 from dragons import meraxes
 import os
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
@@ -12,7 +12,7 @@ from _function import _function
 
 #Sets plot defaults
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (7,3.2)
+matplotlib.rcParams['figure.figsize'] = (8,3.2)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 color=['#377eb8','#ff7f00','#4daf4a','#984ea3']#,\'#377eb8'
@@ -37,33 +37,50 @@ def load_UVmags(filename,snapshot):
   return MUV_dust
 
 
-def load_JWSTmags(filename,snapshot):
-  MUV=pd.read_hdf('/home/mmarshal/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'.hdf5')['M1600-100']
-  mags= pd.read_hdf('/home/mmarshal/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'_JWSTfilters.hdf5')
+def load_mags(filename,snapshot,zlist):
+  redshift=meraxes.io.grab_redshift('/home/mmarshal/data_dragons/'+filename+'/output/meraxes.hdf5', snapshot)
+  #if np.mod(redshift,0.05)>0.015:
+  #  return 0
+  print(snapshot)
+  mags=pd.read_hdf('/home/mmarshal/results/mags_output/'+filename+'/mags_6_'+format(snapshot,'03d')+'.hdf5')
   #print(list(mags.columns.values))
+  zlist.append(redshift)
   mags_dust={}
   filters=['SDSSg','SDSSi','SDSSr']
-  central_wavelength[4700,7500,6200]
+  central_wavelength=[4700,7500,6200]
   i=-1
   for filt in filters:
     i+=1
-    mags_dust[filt] = np.array(mags[filt]) + mc.reddening(central_wavelength[i]/(1.+redshift[snapshot]), MUV, z = redshift[snapshot])
+    mags_dust[filt] = np.array(mags[filt]) + mc.reddening(central_wavelength[i]/(1.+redshift), mags['M1600-100'], z = redshift)
   return mags_dust
 
 
 if __name__=="__main__":
   #Setup
   filename='tuned_reion_T125'
-  for snapshot in range(213,250):
-
-    JWST_mags=load_JWSTmags(filename,snapshot)
-    filters=['JWST_F277W','JWST_F444W'] 
-    central_wavelength=[27700,44400]
-    mag=np.zeros((np.size(gals['ID']),len(filters)))
-    for ii in range(0,np.size(gals['ID'])):
-      if AGN_condition[ii]:
-        i=-1
-        for ff in filters:
-          i+=1
-          mag[ii,i]=JWST_mags[ff][ii]
-  
+  g_minus_i={}
+  i=0
+  zlist=[]
+  d={}
+  snaps=[249,245,241,237,234,231,228,225,222,219,216]
+  snaps=range(213,250)
+  for snapshot in snaps:
+    mags=load_mags(filename,snapshot,zlist)
+    if mags!=0:
+      g_minus_i=mags['SDSSg']-mags['SDSSi']
+      r=mags['SDSSr']
+      g_minus_i=g_minus_i[r<19.8]
+      d[zlist[i]]=g_minus_i
+      #plt.plot(1,1)
+      #plt.plot(np.ones(len(g_minus_i))*zlist[i],g_minus_i,'b.',markersize=2)
+      plt.violinplot(np.array(g_minus_i),[zlist[i]],widths=0.05)
+      i+=1
+  plt.xlim(-0.02,0.52)
+  plt.ylim(-0.1,3.1)
+  plt.xlabel('Redshift')
+  plt.ylabel('g-i colour')
+  plt.tight_layout()
+  #plt.show()
+  #plt.savefig('ColourRedshift_violin.png',format='png')
+  df = pd.DataFrame.from_dict(d, orient='index').transpose().fillna('') 
+  df.to_csv('ColourRedshift.csv', index=False)
