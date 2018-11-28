@@ -5,7 +5,7 @@ import sys
 import magcalc as mc
 
 # Set up parameters.
-direct="tuned_reion"
+direct="M18_reion"
 fname = "/home/mmarshal/data_dragons/"+direct+"/output/meraxes.hdf5"
 
 snapList = []
@@ -30,13 +30,14 @@ filt7[:,0]*=1e4
 filt8[:,0]*=1e4
 filt9[:,0]*=1e4
 
-for z in [5,6]:
+for z in [2,3,4,5,6,7,8]:
+#for z in [0.1,1,2,3,4,5,6,7,8]:
     snap = meraxes.io.check_for_redshift(fname, z)[0]
     snapList.append(snap)
     gals = meraxes.io.read_gals(fname, snap, 
                                 props = ["GhostFlag", "StellarMass"], 
                                 h = .678)
-    idxList.append(np.where((gals["GhostFlag"] == 0) & (gals["StellarMass"] > 1e-4))[0])
+    idxList.append(np.where((gals["GhostFlag"] == 0) & (gals["StellarMass"]*1e10 > 1e7))[0])
     #idxList.append([0, 1, 2, 11, 12, 13, 101, 102, 103])
 
 bands = mc.HST_filters(["B435", "V606", "i775", "I814", "z850",

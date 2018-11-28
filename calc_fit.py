@@ -143,5 +143,5 @@ if __name__=="__main__":
   errs=np.array((err_SMF,err_BHMF,err_BF))
 
 
-  with open("run_errs_2.txt", "a+") as myfile:
+  with open("run_errs.txt", "a+") as myfile:
     myfile.write("\n{} {} {} {} {}".format(err_SMF,err_BHMF,err_BF,np.mean(errs),str(sys.argv[1])))

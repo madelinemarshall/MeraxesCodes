@@ -66,7 +66,7 @@ def plot_BH_frac(gals,axes,linestyle='-',lw=2.5):
   axes.plot(BinStart[TotNinBin>5]+0.5*BinWidth,(MD_frac[TotNinBin>5]),label='Merger-Driven Quasar-Mode',linewidth=lw,linestyle=linestyle,color=colors[3])
   axes.plot(BinStart[TotNinBin>5]+0.5*BinWidth,(ID_frac[TotNinBin>5]),label='Instability-Driven Quasar-Mode',linewidth=lw,linestyle=linestyle,color=colors[4])
   axes.plot(BinStart[TotNinBin>5]+0.5*BinWidth,(Rest[TotNinBin>5]),label='Other Modes',linewidth=lw,linestyle=linestyle,color=[0.5,0.5,0.5])
-  axes.set_xlabel(r'$\log(M_{\mathrm{BH}})$')
+  axes.set_xlabel(r'$\log(M_{\mathrm{BH}}/M_\odot)$')
   axes.set_xlim(MinMass-0.15,MaxMass-0.05)
   axes.set_ylim(0,1)
   #axes.set_yscale('log')

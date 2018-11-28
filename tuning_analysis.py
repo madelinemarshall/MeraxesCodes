@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 if __name__=='__main__':
-  errs=pd.read_csv('run_errs_2.txt',sep=' ',header=None)
+  errs=pd.read_csv('run_errs.txt',sep=' ',header=None)
   model_params=pd.read_csv('/home/mmarshal/data_dragons/tune/param_grid.txt',sep=' ',header=None)
   params=np.array(model_params)
   errs_np=errs.as_matrix([0,1,2,3])

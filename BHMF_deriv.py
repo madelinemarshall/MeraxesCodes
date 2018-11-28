@@ -10,6 +10,7 @@ import pandas as pd
 from astrodatapy.number_density import number_density
 from scipy.integrate import quad#rature
 
+plt.rc('text', usetex=True)
 cosmo = {'omega_M_0' : 0.308,
   'omega_lambda_0' : 0.692, 'omega_b_0' : 0.04839912,
   'omega_b_0' : 0.04839912,
@@ -156,9 +157,10 @@ def SMF(M):
   p2=0.79*10**-3
   a1=-0.35
   a2=-1.47
-  Ms=11#10.66 #give M,MBH in log
-  h=0.678
+  Ms=10.66 #give M,MBH in log
+  #h=0.678
   return (p1*(10**M/10**Ms)**a1+p2*(10**M/10**Ms)**a2) * np.exp(-10**M/10**Ms) / 10**Ms * np.log(10)*10**M
+ 
 
 
 def func(M,MBH):
@@ -177,9 +179,11 @@ if __name__=='__main__':
   fig,ax=plt.subplots(1,1)
   M=np.linspace(8,12)
   plot_obsSMF(ax,0,0,{})
-  ax.plot(M,np.log10(SMF(M)),'k')
+  ax.plot(M+0.2833,np.log10(SMF(M)*0.9086),'k') ##Chabrier + h=0.7 to 0.678 conversion (x), to h=0.678 from 0.7 (y)
   ax.set_xlim([8,12])
   ax.set_ylim([-5,0])
+  ax.set_xlabel(r'$\log(M_\ast / M_\odot)$')
+  ax.set_ylabel(r'$\log(\Phi~\rm{ dex}^{-1}~\rm{ Mpc}^{-3})$')
   plt.show()
 
   MBH=np.linspace(5,10,100)
@@ -187,8 +191,12 @@ if __name__=='__main__':
   fig,ax=plt.subplots(1,1)
   for ii in range(0,100):
     phi_BH[ii],val=quad(func,6,16,args=MBH[ii])
-  ax.plot(MBH,np.log10(phi_BH),'k')
+  ax.plot(MBH,np.log10(phi_BH*0.9086),'k')#to h=0.678 from 0.7 (y)
   plot_BHMF(ax,0)
   #plt.yscale('log')
+  ax.set_xlabel(r'$\log(M_{BH} / M_\odot)$')
+  ax.set_ylabel(r'$\log(\Phi~\rm{ dex}^{-1}~\rm{ Mpc}^{-3})$')
+  ax.set_xlim(6,10)
+  ax.set_ylim(-5,-2)
   plt.show()
 

@@ -40,7 +40,7 @@ def load_data(filename,snapshot):
       snapshot=snapshot,props=['GhostFlag','Mvir','StellarMass','BlackHoleMass','CentralGal','BulgeStellarMass'],\
       h=cosmo['h'],quiet=True)
   gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
-  gals=gals[gals['BlackHoleMass']*1e10>1e3]
+  gals=gals[gals['BlackHoleMass']*1e10>1e6]
   gals=gals[gals['StellarMass']*1e10>1e7]
   return gals
 
@@ -73,7 +73,7 @@ if __name__=='__main__':
   ##SETUP
   data_folder='/home/mmarshal/data_dragons/'
   meraxes_loc='/output/meraxes.hdf5'
-  snap=78
+  snap=158
   filename='tuned_reion'
   ##PLOT
   fig,ax = plt.subplots(1,3,gridspec_kw = {'wspace':0, 'hspace':0},sharey=True)
@@ -85,13 +85,14 @@ if __name__=='__main__':
   a_list = np.loadtxt(EXPANSION_FACTOR_PATH, dtype=float)
   z_list = np.array(1.0/a_list - 1.0)
   z_list = z_list[snapshots][78-37:]
- 
-
 
   ##StellarMass 
   x=np.log10(gals['StellarMass']*1e10)
   y=np.log10(gals['BlackHoleMass']*1e10)
-  plot_hist2d(x,y,ax[1],[7,np.nanmax(x)],[4,8])
+  #plot_hist2d(x,y,ax[1],[7,np.nanmax(x)],[4,8])
+  #ax[1].plot(x[(x>10)&(x<10.1)],y[(x>10)&(x<10.1)],'k.')
+  #ax[1].plot(x[(x>9)&(x<9.1)],y[(x>9)&(x<9.1)],'k.')
+  ax[1].scatter(x,y,s=1,c=np.log10(gals['BulgeStellarMass']*1e10)-x)
 
   x=np.log10(gals['Mvir']*1e10)
   plot_hist2d(x,y,ax[2],[10,np.nanmax(x)],[4,8])
@@ -100,23 +101,6 @@ if __name__=='__main__':
   x=np.log10(gals['BulgeStellarMass']*1e10)
   y=np.log10(gals['BlackHoleMass']*1e10)
   plot_hist2d(x,y,ax[0],[7,np.nanmax(x)],[4,8.5])
-
-  #Tracks
-  #track_loc='/home/mmarshal/data_dragons/histories/tuned_reion/history_byBlackHoleMass/158/BlackHoleMass08-10/'
-  track_loc='/home/mmarshal/data_dragons/histories/tuned_reion/history_byBlackHoleMass/100/BlackHoleMass07-09/'
-  #track_loc='/home/mmarshal/data_dragons/histories/tuned_reion/history_byBlackHoleMass/078/BlackHoleMass07-09/'
-  BH=np.log10(np.fromfile(track_loc+'BlackHoleMass.bin').reshape(-1,(121+1)))+10
-  bulge=np.log10(np.fromfile(track_loc+'BulgeStellarMass.bin').reshape(-1,(121+1)))+10
-  stellar=np.log10(np.fromfile(track_loc+'StellarMass.bin').reshape(-1,(121+1)))+10
-  mvir=np.log10(np.fromfile(track_loc+'Mvir.bin').reshape(-1,(121+1)))+10
-  for i in range(0,len(BH)):
-    plot_colorline(bulge[i][78-37:],BH[i][78-37:],z_list,ax[0],0,i)
-    plot_colorline(stellar[i][78-37:],BH[i][78-37:],z_list,ax[1],0,i)
-    plot_colorline(mvir[i][78-37:],BH[i][78-37:],z_list,ax[2],1,i)
-
-    #ax[0].plot(bulge[i][78-37:],BH[i][78-37:])
-    #ax[1].plot(stellar[i][78-37:],BH[i][78-37:])
-    #ax[2].plot(mvir[i][78-37:],BH[i][78-37:])
 
   ax[2].set_xlabel(r'$\log(\textrm{M}_{\textrm{vir}})$')
   ax[1].set_xlabel(r'$\log(\textrm{M}_\ast)$')

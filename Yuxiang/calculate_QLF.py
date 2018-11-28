@@ -36,7 +36,7 @@ quasar_open_angle = sim_props['quasar_open_angle']
 observed = 1-np.cos(np.deg2rad(quasar_open_angle)/2.)
 props = ("GhostFlag","BlackHoleMass","BlackHoleAccretedColdMass",'dt')
 bins = np.linspace(-30,-15,16)
-Nboot = 10000
+Nboot = 100000
 fy = np.zeros([Nboot,len(bins)-1])
 
 gals =meraxes.io.read_gals(fmeraxes,props=props,snapshot=snap,h=cosmo['h'],quiet=True)

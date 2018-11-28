@@ -165,6 +165,51 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
   axes.set_ylim([-4,-2])
 
 
+def plot_MBHMstellar_hist(filename,snapshots,mass_bulge,split,bulge_type,contours,color,axes):
+  snapshots=[158]
+  for snap in snapshots:
+    gals=load_data(filename,snap,split)
+    Mstellar=gals['StellarMass']*1e10
+    if mass_bulge==0:
+      Mstel=Mstellar
+    else: ##Bulge Mass
+      if split:
+        #Total bulge mass
+        if bulge_type==0:
+          gals=gals[gals['BulgeStellarMass']>0]
+          Mbulge=gals['BulgeStellarMass']*1e10
+        #Merger bulge mass
+        if bulge_type==2:
+          gals=gals[gals['MergerBulgeStellarMass']>0]
+          Mbulge=gals['MergerBulgeStellarMass']*1e10
+        #ID bulge mass
+        if bulge_type==1:
+          gals=gals[gals['BulgeStellarMass']-gals['MergerBulgeStellarMass']>0]
+          Mbulge=gals['BulgeStellarMass']*1e10-gals['MergerBulgeStellarMass']*1e10
+      else:
+        gals=gals[gals['BulgeStellarMass']>0]
+        Mbulge=gals['BulgeStellarMass']*1e10
+      Mstel=Mbulge
+      
+
+    MBH=gals['BlackHoleMass']*1e10
+    logMstel=np.log10(Mstel)
+    logMBH=np.log10(MBH) 
+   
+    plot_hist2d(logMstel,logMBH,axes,[8,max(logMstel)],[6,max(logMBH)])
+
+def plot_hist2d(xdata,ydata,axes,xlims,ylims):
+  H, xedges, yedges, img=axes.hist2d(xdata, ydata, bins=20, range=[xlims,ylims], weights=None, cmin=1, cmax=None, data=None,cmap='BuPu',norm=matplotlib.colors.LogNorm())
+  extent = [yedges[0], yedges[-1], xedges[0], xedges[-1]]
+  im=axes.imshow(H,extent=extent,cmap='BuPu')
+  #cb=plt.colorbar(im,ax=axes,use_gridspec=True)
+  #cb.set_label('N, tot N = {}'.format(np.size(xdata)))
+  axes.set_aspect('auto')
+  axes.set_ylim(ylims)
+  axes.set_xlim(xlims)
+
+
+
 
 if __name__=='__main__':
   ##SETUP
@@ -182,7 +227,7 @@ if __name__=='__main__':
   meraxes_loc='/output/meraxes.hdf5'
 
   ##OPTIONS	
-  plot_type=1 #Plot MBH vs Mstellar and Mbulge (1) or vs Mbulge for different bulge types (2)
+  plot_type=2 #Plot MBH vs Mstellar and Mbulge (1) or vs Mbulge for different bulge types (2)
   z0=1 #Plot z=0.55 relation?
   #filename_125='tuned_best_t125'
   filename_125='tuned_reion_T125'
@@ -206,11 +251,11 @@ if __name__=='__main__':
     ax[1].set_xlabel(r'$\log(\textrm{M}_\ast)$')
     ax[0].set_xlabel(r'$\log(\textrm{M}_{\textrm{bulge}})$')
   elif plot_type==2: 
-    plot_MBHMstellar(filename,snapshots,True,split,1,contour,color,ax[0])
-    plot_MBHMstellar(filename,snapshots,True,split,2,contour,color,ax[1])
-    if z0:
-      plot_MBHMstellar(filename_125,[213],True,split,1,contour,color,ax[0])
-      plot_MBHMstellar(filename_125,[213],True,split,2,contour,color,ax[1])
+    plot_MBHMstellar_hist(filename,snapshots,True,split,1,contour,color,ax[0])
+    plot_MBHMstellar_hist(filename,snapshots,True,split,2,contour,color,ax[1])
+    #if z0:
+    #  plot_MBHMstellar(filename_125,[213],True,split,1,contour,color,ax[0])
+    #  plot_MBHMstellar(filename_125,[213],True,split,2,contour,color,ax[1])
     plot_observations(ax[0],color)
     plot_observations(ax[1],color)
     ax[1].set_xlabel(r'$\log(\textrm{M}_{\textrm{merger-driven bulge}})$')

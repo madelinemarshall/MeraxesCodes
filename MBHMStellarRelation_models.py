@@ -36,7 +36,7 @@ def load_data(filename,snapshot):
       snapshot=snapshot,props=['GhostFlag','Mvir','StellarMass','BlackHoleMass','CentralGal','BulgeStellarMass'],\
       h=cosmo['h'],quiet=True)
   gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
-  gals=gals[gals['BlackHoleMass']>0]
+  gals=gals[gals['BlackHoleMass']*1e10>1e6]
   gals=gals[gals['StellarMass']*1e10>1e6]
   return gals
 
@@ -56,8 +56,8 @@ def plot_observations(snapshot,axes):
   axes.plot([8,12],logMBH,'--',color='gold',linewidth=2.5,zorder=102)
 
 
-def func(x,a,b,c):
-  return a*x**b+c
+def func(x,a,c):
+  return a*x+c
 
 
 if __name__=='__main__':
@@ -70,7 +70,8 @@ if __name__=='__main__':
   #color={63:'C0',78:'C1',100:'C2',116:'C3',134:'C4',158:'black',213:'pink'}
   color={0:'C0',1:'C1',2:'C2',3:'C3',4:'C4',5:'black',6:'pink'}
  
-  filenames={0:'bulges_correctBHMF',1:'bulges_noreion',2:'bulges_2edd',3:'bulges_0p5edd',4:'bulges_lowseed',5:'bulges_highseed',6:'bulges_nodiskinstability'} 
+  #filenames={0:'bulges_correctBHMF',1:'bulges_noreion',2:'bulges_2edd',3:'bulges_0p5edd',4:'bulges_lowseed',5:'bulges_highseed',6:'bulges_nodiskinstability'} 
+  filenames={0:'tuned_reion'}
   models={0:'New model',1:'No reionization',2:'Twice Eddington',3:'Half Eddington',4:'Lighter BH seed',5:'Heavier BH seed',6:'No disk instabilities'} 
   #fig,axes = plt.subplots(len(filenames),2,gridspec_kw = {'wspace':0, 'hspace':0},sharex=True,sharey=True)
   fig,axes = plt.subplots(1,2,gridspec_kw = {'wspace':0, 'hspace':0},sharex=True,sharey=True)
@@ -124,7 +125,6 @@ if __name__=='__main__':
       logMBH=np.log10(MBH) 
       #Bulge stellar mass
       bin_width=0.3
-      min_mass=np.min(logMbulge)
       max_mass=np.max(logMbulge)
       n_bins=np.int((max_mass-min_mass)/bin_width)
       med_bh=np.zeros(n_bins)
@@ -135,15 +135,19 @@ if __name__=='__main__':
           middle_sm[nn]=min_mass+(nn+0.5)*bin_width
         else:
           med_bh[nn]=np.nan
+      axes[1].plot(logMbulge,logMBH,'.k')
       axes[1].plot(middle_sm,np.log10(med_bh),label='$z={}$'.format(redshift[snap]),color=color[ii])
       middle_sm=middle_sm[np.logical_not(np.isnan(med_bh))]
       med_bh=med_bh[np.logical_not(np.isnan(med_bh))]
-      #popt,pcov = curve_fit(func,middle_sm,np.log10(med_bh))
+      popt,pcov = curve_fit(func,middle_sm,np.log10(med_bh))
       #print("snap {}, popt {}, perr {}".format(snap,popt,np.sqrt(np.diag(pcov))))
-      #plt.plot(middle_sm,func(middle_sm,*popt),'--')
-      axes[0].set_xlim([6,12])
+      plt.plot(middle_sm,func(middle_sm,*popt),'--')
+      popt,pcov = curve_fit(func,logMbulge,logMBH)
+      #print("snap {}, popt {}, perr {}".format(snap,popt,np.sqrt(np.diag(pcov))))
+      plt.plot(np.array([9,12]),func(np.array([9,12]),*popt),'--')
+      #axes[0].set_xlim([6,12])
       axes[0].set_ylabel(r'$\log(M_{BH})$')
-      axes[1].set_xlim([6,12])
+      #axes[1].set_xlim([6,12])
       #axes[0].text(6, 7, ' {}'.format(str(models[ii])),usetex=False)
 
   axes[0].legend()

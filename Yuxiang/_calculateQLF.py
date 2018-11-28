@@ -3,7 +3,7 @@ import numpy as np
 from dragons import meraxes
 from _function import _function
 from _meraxes_util import _quasar_luminosity_boot,\
-_Lbol2MB, _Lbol2M1450
+_Lbol2MB, _Lbol2M1450, _ksoftX, _khardX
 import matplotlib.pyplot as plt
 
 cosmo = {'omega_M_0' : 0.308, 
@@ -36,7 +36,7 @@ def calculateQLF(gals,fmeraxes,band,axes,**kwargs):
   observed = 1-np.cos(np.deg2rad(quasar_open_angle)/2.)
   props = ("GhostFlag","BlackHoleMass","BlackHoleAccretedColdMass",'dt')
   bins = np.linspace(-30,-15,16)
-  Nboot = 10000
+  Nboot = 1000
   fy = np.zeros([Nboot,len(bins)-1,2])
 
   bh = gals["BlackHoleMass"]*1e10
@@ -47,26 +47,32 @@ def calculateQLF(gals,fmeraxes,band,axes,**kwargs):
                                 Nboot=Nboot,eta=eta,EddingtonRatio=EddingtonRatio)
   if band == 'B':
       Magn = _Lbol2MB(Lbol)
+      axes.invert_xaxis()
   elif band == 'UV':
       Magn = _Lbol2M1450(Lbol)
+      axes.invert_xaxis()
+  elif band == 'softX': #0.5-2keV
+      Magn = np.log10(Lbol/_ksoftX(Lbol)) ##logL, not mag
+      bins = np.linspace(8,14,16)
+      observed=1
+  elif band == 'hardX': #2-10keV
+      Magn =  np.log10(Lbol/_khardX(Lbol)) ##logL, not mag
+      bins = np.linspace(8,14,16)
+      observed=1
 
   for ii in range(Nboot):
-      f,ed = _function(Magn[ii],volume,bins=bins,weights=np.zeros(len(Magn[ii]))+observed,return_edges=True)
+      f,ed = _function(Magn[ii],volume,bins=bins,return_edges=True,weights=np.zeros(len(Magn[ii]))+observed)
       fy[ii] = f
 
   fx = ed[:-1]
   fy = np.sort(fy,axis=0)
   alpha=0.95
-  y_mean = np.log10(fy[int((1/2.0)*len(fy))])
-  y_err =  fy[int((1-alpha)/2.0*len(fy))] 
-  y_err2 = fy[int((1+alpha)/2.0*len(fy))]     
-  #axes.plot(fx,y_mean,**kwargs)
-  axes.fill_between(fx, np.log10(y_err[:,1]), np.log10(y_err2[:,1]),**kwargs)
+  y_mean = np.log10(np.array(fy[int((1/2.0)*len(fy))])[:,1])
+  y_err =  np.array(fy[int((1-alpha)/2.0*len(fy))])[:,1] 
+  y_err2 =  np.array(fy[int((1+alpha)/2.0*len(fy))])[:,1] 
+  axes.plot(fx,y_mean,**kwargs)
+  axes.fill_between(fx, np.log10(y_err), np.log10(y_err2),color=kwargs['color'],alpha=0.3,label='__nolabel__')
   #axes.set_yscale('log')
-  axes.set_xlim([-28.4,-15.3])
-  #axes.set_ylim([10**-10,2*10**-4])
-  axes.set_ylim([-10,-3.7])
-  axes.invert_xaxis()
 
 
 

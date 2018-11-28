@@ -58,9 +58,8 @@ def find_med(gals,stellarmass):
 
 
 if __name__=="__main__":
-  filename='bulges_correctBHMF'
-  filename2='bulges_correctBHMF_tiamat125'
-  #filename='bulges_nodiskinstability'
+  filename='tuned_reion'
+  filename2='tuned_reion_T125'
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2}
   snapshots=[52,63,78,100,116,134,158]
   redshift2={173:1.5,192:1,213:0.55}

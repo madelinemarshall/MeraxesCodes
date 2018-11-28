@@ -19,21 +19,22 @@ name      = 'tuned_reion'
 redshift_criteria  = float(sys.argv[1])
 redshift_start  = float(sys.argv[2])
 redshift_end  = float(sys.argv[3])
-cut_property = 'BlackHoleMass'
+cut_property = 'StellarMass'
 prop_low     = float(sys.argv[4])
 prop_high    = float(sys.argv[5])
 
 fmeraxes = '/home/mmarshal/data_dragons/'+name+'/output/meraxes.hdf5'
-props    = ("ID", "Mvir", "GhostFlag", "Type", "StellarMass", "Sfr","BlackHoleMass","BulgeStellarMass")
+props    = ("ID", "Mvir", "GhostFlag", "Type", "StellarMass", "Sfr","BlackHoleMass","BulgeStellarMass","BlackHoleMass_MD","BlackHoleMass_ID")
 snapshot = meraxes.io.check_for_redshift(fmeraxes,redshift_criteria)[0]
 snapshot_start = meraxes.io.check_for_redshift(fmeraxes,redshift_start)[0]
 snapshot_end = meraxes.io.check_for_redshift(fmeraxes,redshift_end)[0]
-save_dir = '/home/mmarshal/data_dragons/histories/'+name+'/history_by%s/%03d/%s%02d-%02d/'%(cut_property,snapshot,cut_property,prop_low, prop_high)
+save_dir = '/home/mmarshal/data_dragons/histories/'+name+'/history_by%s/%03d/%s%02d-%02d_disks/'%(cut_property,snapshot,cut_property,prop_low, prop_high)
 if not os.path.exists(save_dir): os.makedirs(save_dir)
 
 gals    = meraxes.io.read_gals(fmeraxes,snapshot=snapshot,quiet=True, props=props)
 cut_prop_log    = np.log10(gals[cut_property]*1e10)
-indices = np.where((cut_prop_log > prop_low) & (cut_prop_log <= prop_high))[0]
+bulge_frac = gals['BulgeStellarMass']/gals['StellarMass']
+indices = np.where((cut_prop_log > prop_low) & (cut_prop_log <= prop_high) & (bulge_frac<0.3))[0]
 
 print("Tracked Galaxy IDs: {}".format(gals["ID"][indices]))
 dtypes  = gals.dtype
@@ -43,6 +44,8 @@ print("[Snap%03d] total number galaxy in %s %02d-%02d is %d"%(snapshot,cut_prope
 mvir_history  = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
 star_history  = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
 bh_history  = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
+bh_id_history  = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
+bh_md_history  = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
 bulge_history  = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
 bhbulge_history  = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
 sfr_history   = np.zeros([totalN, snapshot_end-snapshot_start+1]) + np.nan
@@ -63,6 +66,8 @@ for snap in range(snapshot, snapshot_start-1, -1):
     mvir_history[flag_hasprogenitor,snap-snapshot_start]  = gals["Mvir"]# *1e10
     star_history[flag_hasprogenitor,snap-snapshot_start]  = gals["StellarMass"]# *1e10
     bh_history[flag_hasprogenitor,snap-snapshot_start]  = gals["BlackHoleMass"]# *1e10
+    bh_id_history[flag_hasprogenitor,snap-snapshot_start]  = gals["BlackHoleMass_ID"]# *1e10
+    bh_md_history[flag_hasprogenitor,snap-snapshot_start]  = gals["BlackHoleMass_MD"]# *1e10
     bulge_history[flag_hasprogenitor,snap-snapshot_start]  = gals["BulgeStellarMass"]# *1e10
     bhbulge_history[flag_hasprogenitor,snap-snapshot_start]  = gals["BlackHoleMass"]/gals["BulgeStellarMass"]
     sfr_history[flag_hasprogenitor,snap-snapshot_start]   = gals["Sfr"]
@@ -89,6 +94,8 @@ for snap in range(snapshot, snapshot_end, 1):
     mvir_history[flag_hasprogenitor,snap+1-snapshot_start]  = gals["Mvir"]# *1e10
     star_history[flag_hasprogenitor,snap+1-snapshot_start]  = gals["StellarMass"]# *1e10
     bh_history[flag_hasprogenitor,snap+1-snapshot_start]  = gals["BlackHoleMass"]# *1e10
+    bh_id_history[flag_hasprogenitor,snap+1-snapshot_start]  = gals["BlackHoleMass_ID"]# *1e10
+    bh_md_history[flag_hasprogenitor,snap+1-snapshot_start]  = gals["BlackHoleMass_MD"]# *1e10
     bulge_history[flag_hasprogenitor,snap+1-snapshot_start]  = gals["BulgeStellarMass"]# *1e10
     bhbulge_history[flag_hasprogenitor,snap+1-snapshot_start]  = gals["BlackHoleMass"]/gals["BulgeStellarMass"]
     sfr_history[flag_hasprogenitor,snap+1-snapshot_start]   = gals["Sfr"]
@@ -99,6 +106,8 @@ for snap in range(snapshot, snapshot_end, 1):
 mvir_history.tofile(save_dir+'Mvir.bin')
 star_history.tofile(save_dir+'StellarMass.bin')
 bh_history.tofile(save_dir+'BlackHoleMass.bin')
+bh_id_history.tofile(save_dir+'BlackHoleMass_ID.bin')
+bh_md_history.tofile(save_dir+'BlackHoleMass_MD.bin')
 bulge_history.tofile(save_dir+'BulgeStellarMass.bin')
 bhbulge_history.tofile(save_dir+'BHBulge.bin')
 sfr_history.tofile(save_dir+'Sfr.bin')

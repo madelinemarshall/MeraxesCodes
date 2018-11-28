@@ -1,6 +1,7 @@
 from scipy import stats
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import interpolate
 
 def density_estimation(m1, m2):
     index=np.isfinite(m1)&np.invert(np.isnan(m1))&np.isfinite(m2)&np.invert(np.isnan(m2))
@@ -10,7 +11,7 @@ def density_estimation(m1, m2):
     xmax = m1.max()
     ymin = m2.min()
     ymax = m2.max()
-    X, Y = np.mgrid[xmin:xmax:50j, ymin:ymax:50j]                                                     
+    X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]  
     positions = np.vstack([X.ravel(), Y.ravel()])                                                        
     values = np.vstack([m1, m2])                                                                        
     
@@ -21,6 +22,17 @@ def density_estimation(m1, m2):
 
 def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=None,levels=None,linewidth=2.5):
     X,Y,Z=density_estimation(x,y)
+    Z=Z/np.sum(Z)
+    n = 1000
+    t = np.linspace(0, np.amax(Z), n)
+    integral = ((Z >= t[:, None, None]) * Z).sum(axis=(1,2))
+    f = interpolate.interp1d(integral, t)
+    if levels==None:
+      levels = f(np.array([0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]))
+    else:
+      levels = f(np.array(np.flip(levels,0)))
+
+
     if axes==None:
       #if levels==None:
       #  plt.contour(X, Y, Z,colors=colors,linewidths=linewidth)
@@ -46,6 +58,8 @@ def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=
       #plt.scatter(X,Y,c=Z)
       #plt.colorbar()
       #levels=[10,20,30,40,50,60,70,80,90]/max(Z)
+      
+
       CS=axes.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth)
       #axes.clabel(CS, inline=1, fontsize=10)
       if xlab is not None:

@@ -35,7 +35,7 @@ def load_data(filename,meraxes_loc,snapshot,prop,cosmo):
 
 
 def plot_obs(ax,z):
-    obs    = number_density(feature='BHMF',z_target=z,quiet=1,h=cosmo['h'])
+    obs    = number_density(feature='BHMF',z_target=z,quiet=0,h=cosmo['h'])
     xlim    = (6, 10)
     ylim    = (-6, -0.5)
     xlabel  = r"$\log_{10}[M_{\rm BH}/{\rm M_{\odot}}]$"
@@ -48,6 +48,7 @@ def plot_obs(ax,z):
             continue
         data       = obs.target_observation['Data'][ii]
         label      = obs.target_observation.index[ii]
+        label      = label[:label.rfind('20')]+' et al. ('+label[label.rfind('20'):]+')'
         datatype   = obs.target_observation['DataType'][ii]
         color      = obs_color[z]
         marker     = markers[j_data]
@@ -150,7 +151,7 @@ if __name__=="__main__":
   lgd=plt.legend(loc=(1.02,0.1),fontsize='small')
   #fig.subplots_adjust(hspace=0, wspace=0)
   #plt.tight_layout()
-  #plt.savefig('/home/mmarshal/PhD/plots/BHMF.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  ##plt.savefig('/home/mmarshal/PhD/plots/BHMF.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.savefig('/home/mmarshal/results/plots/BHMF.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
 

@@ -31,7 +31,7 @@ def load_data(filename,snapshot):
   'sigma_8' : 0.815
   }
   gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
-      snapshot=snapshot,props=['GhostFlag','Mvir','StellarMass','BlackHoleMass','CentralGal'],\
+      snapshot=snapshot,props=['GhostFlag','Mvir','StellarMass','BlackHoleMass','CentralGal','Vvir'],\
       h=cosmo['h'],quiet=True)
   gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
   return gals
@@ -63,7 +63,7 @@ if __name__=='__main__':
     FOFStellar=np.array(grouped_sum['StellarMass']*1e10)
     logFOFMvir=np.log10(FOFMvir)
     logFOFStellar=np.log10(FOFStellar) 
-    FOFFrac=FOFStellar/FOFMvir
+    FOFFrac=FOFStellar###/FOFMvir
    
     bin_width=0.2
     min_mass=np.min(logFOFMvir)
@@ -85,7 +85,7 @@ if __name__=='__main__':
     FOFStellar=np.array(grouped_sum['StellarMass']*1e10)
     logFOFMvir=np.log10(FOFMvir)
     logFOFStellar=np.log10(FOFStellar) 
-    FOFFrac=FOFStellar/FOFMvir
+    FOFFrac=FOFStellar##/FOFMvir
 
     bin_width=0.2
     min_mass=np.min(logFOFMvir)
@@ -101,6 +101,7 @@ if __name__=='__main__':
   plt.grid(which='major')
   plt.legend()
   plt.xlabel(r'$\log(M_{vir})$')
-  plt.ylabel(r'$M_\ast/M_{vir}$')
+  plt.ylabel(r'$M_\ast$')
+  ##plt.ylabel(r'$M_\ast/M_{vir}$')
   plt.yscale('log')
   plt.show()

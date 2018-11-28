@@ -68,13 +68,13 @@ if __name__=="__main__":
       j+=1
       ii=0
     if snapshot==213:
-      dat=np.loadtxt('hmf_z0p5.txt')
+      dat=np.loadtxt('data/hmf_z0p5.txt')
     elif snapshot == 158:
-      dat=np.loadtxt('hmf_z2.txt')
+      dat=np.loadtxt('data/hmf_z2.txt')
     elif snapshot == 116:
-      dat=np.loadtxt('hmf_z4.txt')
+      dat=np.loadtxt('data/hmf_z4.txt')
     else:
-      dat=np.loadtxt('hmf_z6.txt')
+      dat=np.loadtxt('data/hmf_z6.txt')
     axes[j,ii].plot(np.log10(dat[:,0]/0.678),np.log10(dat[:,7]*(0.678)**4))
     axes[j,ii].set_xlim([12,15])
     axes[j,ii].set_ylim([-6,0])
