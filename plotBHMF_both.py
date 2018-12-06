@@ -111,10 +111,10 @@ if __name__=="__main__":
   
   filename_default='dragons10'
   filename_default125='dragons10_T125'
-  filename='tuned_reion'
+  filename='dragons10'
   meraxes_loc2='/output/'+'meraxes'+'.hdf5'
   boxwidth=100
-  filename125='tuned_reion_T125'
+  filename125='dragons10_T125'#'tuned_reion_T125'
   plot_z0=1
 
   if plot_z0:

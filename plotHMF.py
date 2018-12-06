@@ -7,7 +7,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
-sys.path.append('/home/mmarshal/PhD/simulation_codes/Yuxiang/')
+sys.path.append('/home/mmarshal/simulation_codes/Yuxiang/')
 from _plot_obsGSMF import plot_obsGSMF
 
 #Sets plot defaults
@@ -24,7 +24,7 @@ def load_data(filename,meraxes_loc,snapshot,prop,cosmo):
       snapshot=snapshot,props=[prop,'GhostFlag'],\
       h=cosmo['h'],quiet=True)
   gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
-  gals=gals[gals['Mvir']*1e10>1e12]
+  gals=gals[gals['Mvir']*1e10>1e10]
   return gals
 
 
@@ -54,15 +54,15 @@ if __name__=="__main__":
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
   prop='Mvir'
   
-  filename='default'
+  filename='tuned_reion'
   meraxes_loc2='/output/meraxes.hdf5'
   vol=100
-  filename125='default_t125'
-  default='default_fullreion'
+  filename125='tuned_reion_T125'
+  default='default_reion'
   fig, axes = plt.subplots(2, 2 ,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
   j=0
-  for snapshot in [78,116,158,213]:#[63,78,100,116,134,158,213]:
+  for snapshot in [63,78,100,116]:#,134,158,213]:
     ii+=1
     if ii==2:
       j+=1
@@ -76,7 +76,7 @@ if __name__=="__main__":
     else:
       dat=np.loadtxt('data/hmf_z6.txt')
     axes[j,ii].plot(np.log10(dat[:,0]/0.678),np.log10(dat[:,7]*(0.678)**4))
-    axes[j,ii].set_xlim([12,15])
+    axes[j,ii].set_xlim([10,13])
     axes[j,ii].set_ylim([-6,0])
     
     if (snapshot!=194)&(snapshot!=213):
@@ -91,11 +91,17 @@ if __name__=="__main__":
       plot_SMF(gals_125,prop,125/cosmo['h'],axes[j,ii],**{'linestyle':'-','label':'Modified Meraxes\n (Tiamat-125-HR)','linewidth':0.8,'color':'Purple','zorder':100})
 
     ##TIAMAT 125, boxwidth=125/cosmo['h']
-    axes[j,ii].set_xlabel(r'$\log(M_{\mathrm{halo}}/M_\odot$)')
-    axes[j,ii].set_ylabel(r'$\log\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3}$')
+    if j==1:
+      axes[j,ii].set_xlabel(r'$\log(M_{\mathrm{halo}}/M_\odot$)')
+    else:
+      axes[j,ii].set_xticklabels([])
+    if ii==0:
+      axes[j,ii].set_ylabel(r'$\log\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3}$')
+    else:
+      axes[j,ii].set_yticklabels([])
     #axes[j,ii].set_xlim([7.5,12.3])
     #axes[j,ii].set_ylim([-5.8,-1.2])
-    #axes[j,ii].text(8.1, -5.6, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
+    axes[j,ii].text(11, -1, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
     axes[j,ii].grid(color=[0.8,0.8,0.8],linestyle='--') 
   
   #fig.subplots_adjust(hspace=0, wspace=0)

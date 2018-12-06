@@ -39,7 +39,7 @@ def load_data(filename,snapshot):
 
 def plot_simulations(gals,axes):
   xlims=[7,12]
-  ylims=[4,10.5]
+  ylims=[6,10.5]
 
   #2D Histogram
   #axes.plot(np.log10(gals['BulgeStellarMass']*1e10),np.log10(gals['BlackHoleMass']*1e10),'.')
@@ -54,7 +54,7 @@ def plot_simulations(gals,axes):
 
 def plot_LOBF(gals,axes):
   xlims=[7,12]
-  ylims=[4,10.5]
+  ylims=[6,10.5]
 
   #2D Histogram
   #axes.plot(np.log10(gals['BulgeStellarMass']*1e10),np.log10(gals['BlackHoleMass']*1e10),'.')
@@ -96,7 +96,7 @@ def plot_LOBF(gals,axes):
 
 def plot_LOBF_totalmass(gals,axes):
   xlims=[7,12]
-  ylims=[4,10.5]
+  ylims=[6,10.5]
   cp_gals=gals[(gals['StellarMass']*1e10>1e7)&(gals['BlackHoleMass']*1e10>1e4)]
   
   binwidth=0.1
@@ -119,7 +119,7 @@ def plot_LOBF_totalmass(gals,axes):
 
 def plot_LOBF_bulges(gals,axes):
   xlims=[7,12]
-  ylims=[4,10.5]
+  ylims=[6,10.5]
   cp_gals=gals[(gals['BulgeStellarMass']*1e10>1e7)&(gals['BlackHoleMass']*1e10>1e4)&(gals['BulgeStellarMass']/gals['StellarMass']>0.7)]
   
   binwidth=0.1
