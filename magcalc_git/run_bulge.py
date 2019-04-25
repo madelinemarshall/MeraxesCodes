@@ -5,7 +5,7 @@ import sys
 import magcalc as mc
 
 # Set up parameters.
-direct="M18_reion"
+direct="paper1_T125"
 fname = "/home/mmarshal/data_dragons/"+direct+"/output/meraxes.hdf5"
 
 snapList = []
@@ -30,8 +30,8 @@ filt7[:,0]*=1e4
 filt8[:,0]*=1e4
 filt9[:,0]*=1e4
 
-for z in [2,3,4,5,6,7,8]:
-#for z in [0.1,1,2,3,4,5,6,7,8]:
+#for z in [2,3,4,5,6,7,8,9,10]:
+for z in [0.1,1,2,3,4,5,6,7,8]:
     snap = meraxes.io.check_for_redshift(fname, z)[0]
     snapList.append(snap)
     gals = meraxes.io.read_gals(fname, snap, 

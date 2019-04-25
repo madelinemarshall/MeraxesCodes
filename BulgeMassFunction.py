@@ -24,13 +24,15 @@ cosmo = {'omega_M_0' : 0.308,
 data_folder='/home/mmarshal/data_dragons/'
 meraxes_loc='/output/meraxes.hdf5'
 
-filename=[]
-nfiles=len(sys.argv)-2
-snapshot=int(sys.argv[-1])
+nfiles=1
+filename=['draft2_reion']
+snapshot=158
+#nfiles=len(sys.argv)-2
+#snapshot=int(sys.argv[-1])
 #redshift=bool(sys.argv[-1])
 gals={}
-for ii in range(1,nfiles+1):
-  filename.append(str(sys.argv[ii]))
+#for ii in range(1,nfiles+1):
+#  filename.append(str(sys.argv[ii]))
 
 for ii in range(0,nfiles):
   gals["{}".format(filename[ii])]=meraxes.io.read_gals(data_folder+filename[ii]+meraxes_loc,\

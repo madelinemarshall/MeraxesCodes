@@ -52,8 +52,8 @@ def find_med(gals,BH=True):
 
 
 if __name__=="__main__":
-  filename='bulges_correctBHMF'
-  filename2='bulges_noreion'
+  filename='paper1'
+  filename2='dragons10'
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2}
   snapshots=[52,63,78,100,116,134,158]
   color={8:'C4',8.5:'pink',9:'C0',9.5:'C1',10:'C2',10.5:'C3',11:'C4',11.5:'pink',12:'black'}

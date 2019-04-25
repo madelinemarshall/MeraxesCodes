@@ -19,7 +19,7 @@ cosmo = {'omega_M_0' : 0.308,
 data_folder='/home/mmarshal/data_dragons/'
 meraxes_loc='/output/meraxes.hdf5'
 scalefactor=1
-filename1='bulges_update1102_full'
+filename1='draft2_reion'
 
 fig, axes = plt.subplots(2, 2)
 ii=-1

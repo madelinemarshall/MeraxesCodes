@@ -21,26 +21,23 @@ color         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
 # red,blue,green,purple,orange,brown,pink,mint
 
 
-
-
-
-def plot_hist2d(gals,axes,cbar=True,move_cbar=False):
+def plot_hist2d(gals,ax,cbar=True,move_cbar=False):
   xlims=[7,10.9]
   ylims=[-6,3]
-  H, xedges, yedges, img=axes.hist2d(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']), bins=20, range=[xlims,ylims], weights=None, cmin=1, cmax=5e5, data=None,cmap='Blues',norm=matplotlib.colors.LogNorm(),vmax=5e5)
-  extent = [yedges[0], yedges[-1], xedges[0], xedges[-1]]
-  im=axes.imshow(H,extent=extent,cmap='Blues',norm=matplotlib.colors.LogNorm())
+  H, xedges, yedges, im=ax.hist2d(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']), bins=20, range=[xlims,ylims], weights=None, cmin=1, cmax=1e5, data=None,cmap='Blues',norm=matplotlib.colors.LogNorm(),vmax=1e5)
+  #extent = [yedges[0], yedges[-1], xedges[0], xedges[-1]]
+  #im=axes.imshow(H,extent=extent,cmap='Blues',norm=matplotlib.colors.LogNorm())
   if move_cbar:
-    fig.subplots_adjust(right=0.8)
-    cbar_ax = fig.add_axes([0.511, 0.225, 0.025, 0.693])
+    #fig.subplots_adjust(right=0.8)
+    cbar_ax = axes[2]#fig.add_axes([0.811, 0.18, 0.025, 0.693])
     cb=fig.colorbar(im, cax=cbar_ax,use_gridspec=True)
     cb.set_label('Number of Galaxies')#; Total N = {:.0e}'.format(np.size(gals)))
   elif cbar:
-    cb=plt.colorbar(im,ax=axes,use_gridspec=True)
+    cb=plt.colorbar(im,ax=ax,use_gridspec=True)
     cb.set_label('Number of Galaxies')#; Total N = {:.0e}'.format(np.size(gals)))
-  axes.set_aspect('auto')
-  axes.set_ylim(ylims)
-  axes.set_xlim(xlims)
+  ax.set_aspect('auto')
+  ax.set_ylim(ylims)
+  ax.set_xlim(xlims)
 
 
 def plot_hist3d(gals):
@@ -88,30 +85,29 @@ def plot_obs(axes):
 
 
 if __name__=="__main__":
-  filename='no_burst_lim'#'tuned_reion_T125'
+  filename='paper1_T125'
 
-  default=load_data('dragons10_T125',173,['StellarMass','Sfr','ColdGas','Type'])
-  gals1=load_data(filename,173,['StellarMass','Sfr','BulgeStellarMass','ColdGas','Type'])
+  default=load_data('dragons10_T125',173,['StellarMass','Sfr','ColdGas','Type'],centrals=True)
+  gals1=load_data(filename,173,['StellarMass','Sfr','BulgeStellarMass','ColdGas','Type'],centrals=True)
 
-  
   ##Fig 1
-  fig, axes = plt.subplots(1, 2,gridspec_kw = {'wspace':0, 'hspace':0})
+  fig, axes = plt.subplots(1, 4,gridspec_kw = {'wspace':0, 'hspace':0, 'width_ratios':[4,4,0.4,4.5]})
   plot_hist2d(default,axes[0],False)
   plot_hist2d(gals1,axes[1],True,True)
   plot_obs(axes[0])
   plot_obs(axes[1])
   axes[0].text(8, -5.5, r'$  z=1.5$'+'\n '+r'Q17 Meraxes',weight='bold',size='large')
-  axes[1].text(8, -5.5,  r'$  z=1.5$'+'\n '+r'M18 Meraxes',weight='bold',size='large')
+  axes[1].text(8, -5.5,  r'$  z=1.5$'+'\n '+r'M19 Meraxes',weight='bold',size='large')
   axes[0].set_xlabel(r'$\log(M_\ast/M_\odot)$')
   axes[0].set_ylabel(r'$\log(\textrm{SFR} M_\odot^{-1} \rm{yr})$')
   axes[1].set_xlabel(r'$\log(M_\ast/M_\odot)$')
   axes[1].set_yticklabels([])
   handles, labels = axes[1].get_legend_handles_labels()
   order = [3,4,2,1,0]
-  lgd=axes[1].legend([handles[idx] for idx in order],[labels[idx] for idx in order],loc=[1.55,0.1],fontsize='small')
-  plt.tight_layout(rect=[0, 0.03, 0.98, 0.98])
-  
-  plt.savefig('/home/mmarshal/results/plots/MassSFR.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  lgd=axes[1].legend([handles[idx] for idx in order],[labels[idx] for idx in order],loc=[1.35,0.15],fontsize='small')
+  plt.tight_layout()#rect=[0, 0.03, 0.98, 0.98])
+  axes[3].axis('off')
+  plt.savefig('/home/mmarshal/results/plots/Paper1/MassSFR.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
   
   ###Fig 2

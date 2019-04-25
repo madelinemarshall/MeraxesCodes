@@ -25,15 +25,21 @@ def load_gals(filename,redshift):
 
 
 
-def calculateQLF(gals,fmeraxes,band,axes,**kwargs):
-  eta = 0.06
+def calculateQLF(gals,fmeraxes,band,axes,eta=None,**kwargs):
   alpha_q = 1.57 
   alpha_q_op = 0.44
   sim_props = meraxes.io.read_input_params(fmeraxes,h=cosmo['h'],quiet=True)
   volume = sim_props['Volume']
   EddingtonRatio = sim_props['EddingtonRatio']
+  
   quasar_open_angle = sim_props['quasar_open_angle']
   observed = 1-np.cos(np.deg2rad(quasar_open_angle)/2.)
+  if eta==None:
+    if 'RadioAccretionEff' in sim_props.keys():
+      eta=sim_props['RadioAccretionEff']
+    else:
+      eta = 0.06
+
   props = ("GhostFlag","BlackHoleMass","BlackHoleAccretedColdMass",'dt')
   bins = np.linspace(-30,-15,16)
   Nboot = 1000
@@ -57,6 +63,10 @@ def calculateQLF(gals,fmeraxes,band,axes,**kwargs):
       observed=1
   elif band == 'hardX': #2-10keV
       Magn =  np.log10(Lbol/_khardX(Lbol)) ##logL, not mag
+      bins = np.linspace(8,14,16)
+      observed=1
+  elif band == 'bol': #Bolometric
+      Magn =  np.log10(Lbol) ##logL, not mag
       bins = np.linspace(8,14,16)
       observed=1
 

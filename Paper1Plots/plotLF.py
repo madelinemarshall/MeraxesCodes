@@ -106,7 +106,7 @@ def plot_obsGLF(ax,z,make_legend,labels_dict):
 
 
 def make_legend(ax):
-    plot_LF(mags_bulges,ax,**{'linestyle':'-','label':'M18 Meraxes','linewidth':1,'color':'k'})
+    plot_LF(mags_bulges,ax,**{'linestyle':'-','label':'M19 Meraxes','linewidth':1,'color':'k'})
     plot_LF(mags_default,ax,**{'linestyle':'-','label':'Q17 Meraxes','linewidth':1,'color':[0.35,0.35,0.35]})
     labels_dict={}
     for snapshot in [52,63,78,100,115]:
@@ -115,13 +115,19 @@ def make_legend(ax):
     ax.axis('off')
     ax.set_xlim(8,8.1)
     ax.set_ylim(-6,-5.8)
+    axes[1,0].axis('off')
+    axes[1,1].axis('off')
+    axes[1,2].axis('off')
+    axes[1,3].axis('off')
+    axes[1,4].axis('off')
+
     #ax.set_visible(False)
 
 
 if __name__=="__main__":
   redshift={52:8,63:7,78:6,100:5,115:4,134:3,158:2}
   col={63:'turquoise',78:'r',100:'b',115:'g',134:'purple',158:'orange'} 
-  filename='tuned_reion'
+  filename='paper1'
 
   fig,axes=plt.subplots(2,5,gridspec_kw = {'wspace':0,'height_ratios':[4,1]})
 
@@ -134,7 +140,7 @@ if __name__=="__main__":
     mags_bulges=load_mags(filename,snapshot)
 
     plot_obsGLF(axes[j,ii],redshift[snapshot],0,labels_dict)
-    plot_LF(mags_bulges,axes[j,ii],**{'linestyle':'-','label':'M18 Meraxes','linewidth':1,'color':'k','zorder':100})
+    plot_LF(mags_bulges,axes[j,ii],**{'linestyle':'-','label':'M19 Meraxes','linewidth':1,'color':'k','zorder':100})
     plot_LF(mags_default,axes[j,ii],**{'linestyle':'--','label':'Q17 Meraxes','linewidth':1,'color':[0.35,0.35,0.35],'zorder':101})
 
 
@@ -149,12 +155,6 @@ if __name__=="__main__":
     axes[j,ii].grid(color=[0.8,0.8,0.8],linestyle='--') 
   plt.tight_layout()
   make_legend(axes[1,1])
-  axes[1,0].axis('off')
-  axes[1,1].axis('off')
-  axes[1,2].axis('off')
-  axes[1,3].axis('off')
-  axes[1,4].axis('off')
-
-  plt.savefig('/home/mmarshal/results/plots/GLF.pdf', format='pdf')#,bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/Paper1/GLF.pdf', format='pdf')#,bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
 

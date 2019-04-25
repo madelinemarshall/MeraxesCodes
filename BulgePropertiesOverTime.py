@@ -21,7 +21,7 @@ cosmo = {'omega_M_0' : 0.308,
 'sigma_8' : 0.815
 }
 
-sim = 'bulges_update1102_full' #str(sys.argv[1])
+sim = 'draft2_reion' #str(sys.argv[1])
 fmeraxes = '/home/mmarshal/data_dragons/'+sim+'/output/meraxes.hdf5'
 snapshots=[43,52,63,78,100,115,134,158]
 redshifts=[9,8,7,6,5,4,3,2]

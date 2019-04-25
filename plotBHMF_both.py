@@ -86,6 +86,24 @@ def plot_BHMF(gals,prop,boxwidth,axes,**kwargs):
 
     return axes
 
+def plot_derived(axes):
+    MBH=np.load('data/BestFitBHMF_M.npy')
+    log_phi=np.load('data/BestFitBHMF_phi.npy')
+    axes.plot(MBH,log_phi,'k--')
+
+def plot_Davis(axes):
+    davis=pd.read_csv('/home/mmarshal/simulation_codes/data/DavisVika_BHMF.csv',header=None)
+    axes.plot(davis[0],davis[1],'-.',color=[0.3,0.3,0.3],label="Davis et al. (2014)",markersize=3)
+    axes.fill_between(davis[0],davis[2],davis[3],color=[0.3,0.3,0.3],alpha=0.2)
+
+
+def plot_Shankar(axes):
+    shan=pd.read_csv('/home/mmarshal/simulation_codes/data/Shankar_BHMF.csv',header=None)
+    axes.plot(shan[0],shan[1],'--',color=[0.5,0.5,0.5],label="Shankar et al. (2009)",markersize=3)
+    axes.fill_between(shan[0],shan[3],shan[2],color=[0.5,0.5,0.5],alpha=0.2)
+
+
+
 
 if __name__=="__main__":
   #Setup
@@ -109,29 +127,38 @@ if __name__=="__main__":
   prop='BlackHoleMass'
   
   
-  filename_default='dragons10'
-  filename_default125='dragons10_T125'
-  filename='dragons10'
+  filename_default='paper1_matching_eta_0p06'
+  filename_default125='paper1_T125_matching_eta_0p06'
+  filename='paper1'
   meraxes_loc2='/output/'+'meraxes'+'.hdf5'
   boxwidth=100
-  filename125='dragons10_T125'#'tuned_reion_T125'
+  filename125='paper1_T125'#'tuned_reion_T125'
   plot_z0=1
 
   if plot_z0:
     snapshots=[63,78,100,116,134,158,192,250]
+    #snapshots=[250]
+    #color[250]='pink'
   else:
     snapshots=[63,78,100,116,134,158]
 
   fig, axes = plt.subplots(1,1)
   for snapshot in snapshots:
     if (snapshot<164):
-      #gals_default=load_data(filename_default,meraxes_loc,snapshot,prop,cosmo)
+      gals_default=load_data(filename_default,meraxes_loc,snapshot,prop,cosmo)
+      plot_BHMF(gals_default,prop,boxwidth,axes,**{'linestyle':'--','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
       gals_bulges=load_data(filename,meraxes_loc2,snapshot,prop,cosmo)
       plot_BHMF(gals_bulges,prop,boxwidth,axes,**{'linestyle':'-','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-    gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
-    plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-  plot_obs(axes,0)
+    else:
+      gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
+      gals_default=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
+      plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'-','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
+      plot_BHMF(gals_default,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
+  #plot_obs(axes,0)
   #plot_obs(axes,0.5)
+  plot_Shankar(axes)
+  plot_Davis(axes)
+  plot_derived(axes)
   axes.set_xlabel(r'$\log (\mathrm{M}_{\mathrm{BH}}/M_\odot)$')
   axes.set_ylabel(r'$\log (\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3})$')
   axes.set_xlim([5.5,10])

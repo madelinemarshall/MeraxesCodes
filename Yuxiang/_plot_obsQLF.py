@@ -7,7 +7,6 @@ __author__ = ('Yuxiang Qin')
 __email__ = ("Yuxiang.L.Qin@Gmail.com")
 __all__  = ('plot_obsQLF', 'plot_obsQLF_legend',)
 
-eta = 0.06
 alpha_q = 1.57 
 alpha_q_op = 0.44
 Cha2Sal = 1.65

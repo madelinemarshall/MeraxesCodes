@@ -18,14 +18,15 @@ color         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
                   '#ff7f00','#a65628','#f781bf','#98ff98']*4
 # red,blue,green,purple,orange,brown,pink,mint
 
-
-def plot_hist(x,y,axes):
+def plot_hist2d(xdata,ydata,axes,cmax=None,cbar=False):
   xlims=[7,12]
   ylims=[-2.1,1.9]#[np.nanmin(y),np.nanmax(y)]
-  H, xedges, yedges, img=axes.hist2d(x, y, bins=20, range=[xlims,ylims], cmin=1, cmap='Blues',norm=matplotlib.colors.LogNorm())
-  extent = [yedges[0], yedges[-1], xedges[0], xedges[-1]]
-  im=axes.imshow(H,extent=extent,cmap='Blues')
-  axes.set_aspect('auto')
+  H, xedges, yedges, img=axes.hist2d(xdata, ydata, bins=40, range=[xlims,ylims], weights=None, cmin=1, vmin=1, vmax=cmax, data=None,cmap='Blues',norm=matplotlib.colors.LogNorm())
+  axes.set_ylim(ylims)
+  axes.set_xlim(xlims)
+  if cbar:
+    cb=plt.colorbar(img, cax=cbar,use_gridspec=True)
+    cb.set_label('Number of Galaxies')#; Total N = {:.0e}'.format(np.size(gals)))
  
 
 def load_mags(filename,snapshot): 
@@ -34,58 +35,67 @@ def load_mags(filename,snapshot):
 
 def plot_gadotti(axes):
   dat=pd.read_csv('/home/mmarshal/simulation_codes/data/gadotti_data.csv',header=None)
-  rad=np.log10(dat[0])
-  half_mass_rad=rad*1.67835
+  rad=np.log10(dat[0]) #scalelength
+  #half_mass_rad=rad*1.67835
   diskmass=np.log10(dat[4])
-  axes.plot(diskmass[dat[2]<0.3],half_mass_rad[dat[2]<0.3],'o',color=color[4],label='Gadotti et al. (2009)',markersize=2)
+  axes.plot(diskmass[dat[2]<0.3],rad[dat[2]<0.3],'o',color=color[4],label='Gadotti et al. (2009)',markersize=2)
 
 
 def plot_obs(axes):
-  #Dutton+10
+  #Dutton+10 - half-light radius
   logM=np.linspace(9,12)
   MonM0=10**(logM-10.44)
   R=10**0.72*MonM0**0.18*(0.5+0.5*MonM0**1.8)**((0.52-0.18)/1.8)
   scat=0.27+(0.47-0.27)/(1+MonM0**2.2) 
   axes.plot(logM,np.log10(R),color=color[0],label='Dutton et al. (2010)',linewidth=2.5)
   axes.fill_between(logM,np.log10(R)-scat,np.log10(R)+scat,color=color[0],label='__nolabel__',alpha=0.3)
+  #axes.plot(logM,np.log10(R)-np.log10(1.67835),color=color[0],label='Dutton et al. (2010)',linewidth=2.5)
+  #axes.fill_between(logM,np.log10(R)-np.log10(1.67835)-scat,np.log10(R)-np.log10(1.67835)+scat,color=color[0],label='__nolabel__',alpha=0.3)
 
-  ##Lange+16. R=a(M/10^10)^b
+  ##Lange+16. R=a(M/10^10)^b - half-light radius
   #For disks, a=5.141 kpc, b=0.274
   M=10**np.array([9.15,9.45,9.75,10.05,10.35,10.65,10.95])
   R=5.141*(M/1e10)**0.274
   scatter=np.array([0.185,0.176,0.17,0.151,0.133,0.15,0.202])
-  axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835),color='k',linewidth=2.5,label="Lange et al. (2016)",zorder=100)
-  axes.fill_between(np.log10(M),np.log10(R)-np.log10(1.67835)-scatter,np.log10(R)-np.log10(1.67835)+scatter,alpha=0.3,color='k',label="__nolabel__",zorder=101)
+  #axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835),color='k',linewidth=2.5,label="Lange et al. (2016)",zorder=100)
+  #axes.fill_between(np.log10(M),np.log10(R)-np.log10(1.67835)-scatter,np.log10(R)-np.log10(1.67835)+scatter,alpha=0.3,color='k',label="__nolabel__",zorder=101)
+  axes.plot(np.log10(M),np.log10(R),color='k',linewidth=2.5,label="Lange et al. (2016)",zorder=100)
+  axes.fill_between(np.log10(M),np.log10(R)-scatter,np.log10(R)+scatter,alpha=0.3,color='k',label="__nolabel__",zorder=101)
   
-  #Wu+17
-  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343,color=color[2],label='Wu (2017)',linewidth=2.5)
-  axes.fill_between([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343-0.36,0.321*(np.array([7.25,11.25])-10)+0.343+0.36,color=color[2],label='__nolabel__',alpha=0.4)
+  #Wu+17 - scalelength
+  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343+np.log10(1.67835),color=color[2],label='Wu (2017)',linewidth=2.5)
+  axes.fill_between([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343-0.36+np.log10(1.67835),0.321*(np.array([7.25,11.25])-10)+0.343+0.36+np.log10(1.67835),color=color[2],label='__nolabel__',alpha=0.4)
 
-  
+  #Lapi+18 - half-mass
+  logM=np.linspace(9,11.5)
+  logRe=0.7519 + 0.2333*(logM-10.5) +0.0494*(logM-10.5)**2+0.0267*(logM-10.5)**3
+  #axes.plot(logM,logRe-np.log10(1.67835),color=color[3],label='Lapi et al. (2018)',linewidth=2.5)
+  axes.plot(logM,logRe,color=color[3],label='Lapi et al. (2018)',linewidth=2.5)
  
 
 if __name__=='__main__':
-  filename='tuned_reion_T125'
+  filename='paper1_T125'
   snapshot=250
   gals=load_data(filename,snapshot,['StellarMass',\
-    'BulgeStellarMass','StellarDiskScaleLength','GhostFlag','Type'])
+    'BulgeStellarMass','StellarDiskScaleLength','GhostFlag','Type'],centrals=True)
 
   disks=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
   disk_mass=np.log10((disks['StellarMass']-disks['BulgeStellarMass'])*1e10)
-  scale_rad=np.log10(disks['StellarDiskScaleLength']*1000)
+  scale_rad=np.log10(disks['StellarDiskScaleLength']*1000*1.67835)
   ### scale radius = half_mass_rad/1.67835 -> log(Rscale)=log(halfmass)-log(1.67835)
-  fig,axes=plt.subplots(1,1)
-  plot_hist(np.log10((disks['StellarMass'])*1e10),scale_rad,axes)
-  plot_gadotti(axes)
-  plot_obs(axes)
-  axes.set_xlabel(r'$\log (M_{\ast}/M_\odot)$')
-  axes.set_ylabel(r'$\log (R_{\mathrm{scale}}$ / kpc)')
+  fig,axes=plt.subplots(1,2,gridspec_kw ={'wspace':0,'width_ratios':[4,0.4]})
+  plot_hist2d(np.log10((disks['StellarMass'])*1e10),scale_rad,axes[0],cbar=axes[1])
+  plot_gadotti(axes[0])
+  plot_obs(axes[0])
+  axes[0].plot([8,8],[-3,2],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  axes[0].set_xlabel(r'$\log (M_{\ast}/M_\odot)$')
+  axes[0].set_ylabel(r'$\log(R_e/\mathrm{kpc})$')
 
-  plt.xlim([7.1,11.7])
-  plt.ylim([-1.55,1.8])
-  lgd=axes.legend(fontsize='small',loc='upper center', bbox_to_anchor=(0.45, -0.2),ncol=2)
+  #plt.xlim([7.1,11.7])
+  #plt.ylim([-1.55,1.8])
+  lgd=axes[0].legend(fontsize='small',loc='upper center', bbox_to_anchor=(0.52, -0.2),ncol=2)
   plt.tight_layout()
-  plt.savefig('/home/mmarshal/results/plots/DiskSize.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/Paper1/DiskSize.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
   
 

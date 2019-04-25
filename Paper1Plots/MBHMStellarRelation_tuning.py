@@ -116,7 +116,7 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
   inter_errs=np.zeros(len(snapshots))
   ii=0
   for snap in snapshots:
-    gals=load_data(filename,snap,['GhostFlag','Mvir','StellarMass','BlackHoleMass','CentralGal','BulgeStellarMass','MergerBulgeStellarMass'])
+    gals=load_data(filename,snap,['GhostFlag','Mvir','StellarMass','BlackHoleMass','CentralGal','BulgeStellarMass','MergerBulgeStellarMass'],centrals=True)
     Mstellar=gals['StellarMass']*1e10
     if mass_bulge==0:
       Mstel=Mstellar
@@ -173,7 +173,7 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
     axes.plot([9.5,11.6],inter+sl*np.array([9.5,11.6]),'k',lw=2.5,label='$z=0$ (Tiamat-125-HR)')
     print("corr. coeff. = {}, mass_bulge = {}".format(lsqfity(logMstel,logMBH),mass_bulge))
     ii+=1
-  axes.set_xlim([9.5,11.6])
+  axes.set_xlim([9.51,11.6])
   axes.set_ylim([6.5,9.5])
 
 
@@ -244,7 +244,7 @@ if __name__=='__main__':
   ##OPTIONS	
   plot_type=1 #Plot MBH vs Mstellar and Mbulge (1) or vs Mbulge for different bulge types (2)
   z0=1 #Plot z=0.55 relation?
-  filename_125='med_seed_T125'#'merger_threshold_0p1'#'tuned_reion_T125'
+  filename_125='paper1_T125'
   mass_bulge=0 #Plot the total stellar mass (0) or bulge stellar mass (1)?
   split=True #Is bulge split into MDBH and IDBH?
   bulge_type=0 #If wanting only one bulge component, which type? 1:IDBH, 2:MDBH
@@ -277,9 +277,9 @@ if __name__=='__main__':
   lgd=ax[0].legend(fontsize='small',loc='upper center', bbox_to_anchor=(2.35, 0.7))  
   ax[0].set_ylabel(r'$\log(M_{\rm{BH}}/M_\odot)$') 
   if plot_type==1:
-    plt.savefig('/home/mmarshal/results/plots/MBHMStellarRelation_z0.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/Paper1/MBHMStellarRelation_z0.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   else:
-    plt.savefig('/home/mmarshal/results/plots/MBHMStellarRelation_BulgeType_z0.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/Paper1/MBHMStellarRelation_BulgeType_z0.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
 
   ##PERFORM STATISTICS

@@ -40,8 +40,8 @@ def plot_SMF(gals,prop,boxwidth,axes,**kwargs):
 
     bin_edges=np.array(bin_edges, dtype=np.float128)
     Max=bin_edges[0:-1] + (bin_edges[1]-bin_edges[0])/2.
-    Max=Max[hist>5]
-    hist=hist[hist>5]
+    Max=Max[hist>10]
+    hist=hist[hist>10]
     hist_plus=hist+np.sqrt(hist)
     hist_minus=hist-np.sqrt(hist)
     phi=np.log10(hist/(bin_edges[1]-bin_edges[0])/boxwidth**3)
@@ -99,9 +99,9 @@ def plot_obs(ax,z,make_legend,labels_dict,jj):
 
 
 def make_legend(ax):
-    plot_SMF(gals_bulges,prop,vol,ax,**{'linestyle':'-','label':'M18 Meraxes\n(Tiamat)','linewidth':2,'color':'k','zorder':1000})
+    plot_SMF(gals_bulges,prop,vol,ax,**{'linestyle':'-','label':'M19 Meraxes\n(Tiamat)','linewidth':2,'color':'k','zorder':1000})
     plot_SMF(gals_default,prop,vol_def,ax,**{'linestyle':'-','label':'Q17 Meraxes\n(Tiamat)','linewidth':2,'color':[0.35,0.35,0.35],'zorder':999})
-    plot_SMF(gals_125,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'M18 Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':'k','zorder':1001})
+    plot_SMF(gals_125,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'M19 Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':'k','zorder':1001})
     plot_SMF(gals_default,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'Q17 Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':[0.35,0.35,0.35],'zorder':1001})
     labels_dict={}
     kk=0
@@ -118,9 +118,9 @@ if __name__=="__main__":
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,250:0}
   prop='StellarMass'
 
-  filename='tuned_reion'
+  filename='paper1_false_eta_0p4_2'
   vol=100
-  filename125='tuned_reion_T125'
+  filename125='paper1_T125_false_eta_0p4_2'
   default='dragons10'
   vol_def=100
   default_125='dragons10_T125'
@@ -143,10 +143,10 @@ if __name__=="__main__":
 
     if (snapshot!=194)&(snapshot!=250):
       plot_SMF(gals_default,prop,vol_def,axes[j,ii],**{'linestyle':'-','label':'Q17 Meraxes','linewidth':1,'color':[0.35,0.35,0.35],'zorder':999})
-      plot_SMF(gals_bulges,prop,vol,axes[j,ii],**{'linestyle':'-','label':'M18 Meraxes','linewidth':2,'color':'k','zorder':1000})
+      plot_SMF(gals_bulges,prop,vol,axes[j,ii],**{'linestyle':'-','label':'M19 Meraxes','linewidth':2,'color':'k','zorder':1000})
     else:
       plot_SMF(gals_default,prop,125/cosmo['h'],axes[j,ii],**{'linestyle':'--','label':'Q17 Meraxes\n (Tiamat-125-HR)','linewidth':1,'color':[0.35,0.35,0.35],'zorder':1001})
-      plot_SMF(gals_125,prop,125/cosmo['h'],axes[j,ii],**{'linestyle':'--','label':'M18 Meraxes\n (Tiamat-125-HR)','linewidth':2,'color':'k','zorder':1002})
+      plot_SMF(gals_125,prop,125/cosmo['h'],axes[j,ii],**{'linestyle':'--','label':'M19 Meraxes\n (Tiamat-125-HR)','linewidth':2,'color':'k','zorder':1002})
     kk=plot_obs(axes[j,ii],redshift[snapshot],0,labels_dict,kk)
 
 
@@ -169,5 +169,5 @@ if __name__=="__main__":
   axes[2,2].axis('off')
   axes[2,3].axis('off')
   #plt.tight_layout()
-  plt.savefig('/home/mmarshal/results/plots/SMF.pdf',format='pdf')
+  plt.savefig('/home/mmarshal/results/plots/Paper1/SMF.pdf',format='pdf')
   plt.show()

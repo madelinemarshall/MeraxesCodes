@@ -48,8 +48,8 @@ if __name__=='__main__':
   color={63:'C0',78:'C1',100:'C2',116:'C3',134:'C4',158:'pink',213:'black'}
  
   #filename='bulges_correctBHMF'
-  filename2='tuned_reion_T125'  
-  filename=filename2
+  filename2='dragons10'  
+  filename='draft2_reion'
   #filename='meraxes_on_tiamat_newtrees/Q_100_000_S_006_050'
   #filename2='meraxes_on_tiamat_newtrees/Q_100_000_S_006_050_Re'
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 
+
 def _function_fduty(data, quasarVoL, duty_cycle_acc, volume, bins, poisson_uncert=False):
 
     duty_cycle_obs  = 1.-np.cos(np.deg2rad(quasarVoL)/2.)
@@ -17,6 +18,7 @@ def _function_fduty(data, quasarVoL, duty_cycle_acc, volume, bins, poisson_uncer
     else:
         uncert = duty_cycle_obs * uncert/(volume * widths)
         return  np.dstack((centers, histogram, uncert)).squeeze()
+
 
 def _function(data, volume, bins, range=None, poisson_uncert=False,
                 return_edges=False, weights=None, density=None):
@@ -83,8 +85,10 @@ def _cutinf(x,y,z=None,silence=1):
             if silence == 0: print('Now, number is:', len(xx))
         return xx,yy
 
+
 def find_confidence_interval(x, pdf, confidence_level):
     return pdf[pdf > x].sum() - confidence_level
+
 
 def _density_contour(xdata, ydata, nbins_x=100, nbins_y=100, ax=None, vmin=None, vmax=None, nocontour=False,label=None, **contour_kwargs):
     import matplotlib.pyplot as plt
@@ -123,6 +127,7 @@ def _density_contour(xdata, ydata, nbins_x=100, nbins_y=100, ax=None, vmin=None,
         ax.clabel(contour, iline=1, fontsize=10)
     return contour
 
+
 def _sample_select(data, length=100, sample = None):
     import random
     if len(data) == 1:
@@ -135,6 +140,7 @@ def _sample_select(data, length=100, sample = None):
     x[1] = data[1][sample]
     return x
 
+
 def _sample_select_pandas(data, length=100, sample = None):
     import random
     x = np.zeros(length)
@@ -142,6 +148,7 @@ def _sample_select_pandas(data, length=100, sample = None):
         sample = sorted(random.sample(data.keys(), length))
     x[j] = data[sample]
     return x
+
 
 def _sample_select_2d(xdata, ydata, length):
     import random
@@ -154,6 +161,7 @@ def _sample_select_2d(xdata, ydata, length):
     x = xdata[sample]
     y = ydata[sample]
     return x, y
+
 
 def _run_hdf5totiamat(sim='REF_EFF_L010N0128', snap_start=0, snap_stop=103,dir='/home/yqin/hydro/tiamat/',move=1):
     from hdf5tobin import subfind
@@ -210,6 +218,7 @@ def _run_snapshottobinary(sim='DMONLY_L010N0512', snap_start=0, snap_stop=103,di
 
     return result
 
+
 def _sim_match(file1, file2, Nlim=1e10):
     import struct
     f = file(file1,"rb")
@@ -236,6 +245,7 @@ def _sim_match(file1, file2, Nlim=1e10):
             else: match[i] = -2
 
     return match
+
 
 def _diagonal(ax, fit = None, linestyle = '-', diag = False, zoom = False, color ='red', lw=3):
     if diag == True:
@@ -313,11 +323,14 @@ def _bootstrap(data, num_samples = 100000, statistic = np.mean, alpha=0.95, asym
     else:
         return (y_mean, (y_errl+y_erru)/2.0)
 
+
 def gauss(x, A, mu, sigma):
     return A*np.exp(-(x-mu)**2/(2.*sigma**2))
 
+
 def norm_distribution(x, mu, sigma):
     return gauss(x, 0.39894228/mu, mu, sigma)
+
 
 def _gaussian_distribution_fit_bootstrap(data, num_samples = 10000, statistic = np.mean, alpha=0.95, asymmetric=True):
     from scipy.optimize import curve_fit
@@ -346,6 +359,7 @@ def _gaussian_distribution_fit_bootstrap(data, num_samples = 10000, statistic = 
             return (np.nan, np.nan, np.nan)
         else:
             return (np.nan, np.nan)
+
 
 def _polyfit_bootstrap(x,y,order,sigma=[], num_samples = 100000, alpha=0.95, asymmetric=True):
     if len(x) != len(y):
@@ -425,6 +439,7 @@ def _polyfit_bootstrap(x,y,order,sigma=[], num_samples = 100000, alpha=0.95, asy
 #
 #    return 10**rate
 
+
 def _sigmoid(X,w):
     X_w = X**w
     return X_w/(1+X_w)
@@ -449,8 +464,6 @@ def _find_redshift(i, desc_indexs, file_offsets, ms, m0, snapshot, max_snapshot=
         return -3, -3, -3, -3 #cannot find it until last snapshot
     else:
         return m[0], m_p[0], snapshot, snapshot_p
-
-
 
 
 def _find_redshift_p_2(i, desc_indexs, file_offsets, m0, ms, snapshot):
@@ -503,6 +516,7 @@ def _find_redshift_p_fast(m0, ms, snapshot):
             snapshot-=1
         return m, m_b, snapshot, snapshot_b
 
+
 def _find_redshift_b_fast(m0, ms, snapshot0,maxsnapshot=103):
     m = ms[0]
     snapshot = 0
@@ -522,6 +536,7 @@ def _find_redshift_b_fast(m0, ms, snapshot0,maxsnapshot=103):
         if (snapshot+1==len(ms)-1) and (ms[snapshot+1] == m):
             snapshot+=1
         return m, m_p, snapshot+snapshot0, snapshot_p+snapshot0
+
 
 def _distribution_peak_value_bootstrap(data, num_samples = 100000, statistic = np.mean, alpha=0.95, asymmetric=True):
     data = data[~np.isnan(data)]
@@ -547,35 +562,43 @@ def _distribution_peak_value_bootstrap(data, num_samples = 100000, statistic = n
         else:
             return (np.nan, np.nan)
 
+
 def gauss_up(x, mu, sigma):
     from scipy.special import erfc
     return 0.5*erfc((mu - x)/(1.41421356* sigma))
+
 
 def gauss_mu_up(x, mu, sigma):  
     from scipy.special import erfc
     return -((np.exp(-((mu - x)**2./(2.*sigma**2.)))* sigma)*0.79788456) + mu
 
+
 def gauss_sigma2_up(x, mu, sigma):
     from scipy.special import erf, erfc
     return sigma**2. - 2.*sigma*np.exp(-((mu - x)**2./(2.* sigma**2.)))*(x-mu)/2.506628/erfc((mu - x)/(1.41421356*sigma)) - (0.79788456 *sigma*np.exp(-((mu - x)**2./(2.* sigma**2.)))/erfc((mu - x)/(1.41421356*sigma)))**2.
 
+
 def _malmquist_equations_up(p,x_up,mean,var):
     mu, sigma = p
     return (gauss_mu_up(x_up, mu, sigma) - mean, gauss_sigma2_up(x_up, mu, sigma) - var)
+
 
 #def gauss_mu(x, mu, sigma):  
 #    from scipy.integrate import quad
 #    norm = lambda x: np.exp(-0.5*x**2.)*0.39894228
 #    return quad(norm, -np.inf, (x-mu)/sigma) *mu - norm((x-mu)/sigma)*sigma
 
+
 #def gauss_sigma(x, mu, sigma):
 #    from scipy.integrate import quad
 #    norm = lambda x: np.exp(-0.5*x**2.)*0.39894228
 #    return quad(norm, -np.inf, (x-mu)/sigma) *(mu**2. + sigma**2.) - norm((x-mu)/sigma) *sigma*(x+mu)
 
+
 def gauss_low(x, mu, sigma):
     from scipy.special import erf
     return 0.5*(1+erf((mu - x)/(1.41421356* sigma)))
+
 
 def gauss_mu_low(x, mu, sigma):  
     from scipy.special import erf
@@ -585,9 +608,11 @@ def gauss_sigma2_low(x, mu, sigma):
     from scipy.special import erf
     return sigma**2. + 2.*sigma*np.exp(-((mu - x)**2./(2.* sigma**2.)))*(x-mu)/2.506628/(1+erf((mu - x)/(1.41421356*sigma))) - (0.79788456 *sigma*np.exp(-((mu - x)**2./(2.* sigma**2.)))/(1+erf((mu - x)/(1.41421356*sigma))))**2.
 
+
 def _malmquist_equations_low(p,x_low,mean,var):
     mu, sigma = p
     return (gauss_mu_low(x_low, mu, sigma) - mean, gauss_sigma2_low(x_low, mu, sigma)- var)
+
 
 def _malmquist_fit_bootstrap_low(data,x_low, num_samples = 100000, statistic = np.mean, alpha=0.95, asymmetric=True):
     from scipy.optimize import fsolve
