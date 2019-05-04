@@ -47,7 +47,7 @@ def plot_obs(axes):
   MonM0=10**(logM-10.44)
   R=10**0.72*MonM0**0.18*(0.5+0.5*MonM0**1.8)**((0.52-0.18)/1.8)
   scat=0.27+(0.47-0.27)/(1+MonM0**2.2) 
-  axes.plot(logM,np.log10(R),color=color[0],label='Dutton et al. (2010)',linewidth=2.5)
+  axes.plot(logM,np.log10(R),color=color[0],label='Dutton et al. (2011)',linewidth=2.5)
   axes.fill_between(logM,np.log10(R)-scat,np.log10(R)+scat,color=color[0],label='__nolabel__',alpha=0.3)
   #axes.plot(logM,np.log10(R)-np.log10(1.67835),color=color[0],label='Dutton et al. (2010)',linewidth=2.5)
   #axes.fill_between(logM,np.log10(R)-np.log10(1.67835)-scat,np.log10(R)-np.log10(1.67835)+scat,color=color[0],label='__nolabel__',alpha=0.3)
