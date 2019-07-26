@@ -230,7 +230,7 @@ if __name__=="__main__":
     axes[0].plot(0,0,linestyle='-',lw=2.5,color=colors[2],label=r'$M_{\mathrm{BH}}>10^8M_\odot$')
     handles, labels = axes[0].get_legend_handles_labels()
     lgd=axes[1].legend(flip(handles, 2), flip(labels, 2),fontsize='small',ncol=2,loc='upper center', bbox_to_anchor=(0.46, -0.2))
-    axes[1].axvspan(8,6, alpha=0.2, color='gray')
+    #axes[1].axvspan(8,6, alpha=0.2, color='gray')
 
   #axes[0].set_xlabel('Redshift')
   axes[0].set_ylabel(r'$\log(M_{\mathrm{BH}}/M_{\ast})$')
@@ -244,7 +244,7 @@ if __name__=="__main__":
   axes[0].set_yticks(np.arange(-4.0,-1.49, 0.5))
   axes[1].set_yticks(np.arange(-4.0,-1.49, 0.5))
 
-  axes[0].axvspan(8,6, alpha=0.2, color='gray')
+  #axes[0].axvspan(8,6, alpha=0.2, color='gray')
 
 
 

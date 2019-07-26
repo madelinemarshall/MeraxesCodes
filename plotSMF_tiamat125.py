@@ -48,7 +48,7 @@ if __name__=="__main__":
 #                     0.95: plot_obsGSMF_z0pt95,\
 #                     0.55:
   
-  filename='bulges_IDBH_tiamat125'
+  filename='paper1_T125'
   #filename2='bulges_tiamat125_halfSNefficiency'
 
   fig, axes = plt.subplots(2, 3,gridspec_kw = {'wspace':0, 'hspace':0})

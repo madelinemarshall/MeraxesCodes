@@ -94,7 +94,7 @@ def plot_LOBF(gals,axes):
 
   
 if __name__=="__main__":
-  filename='tuned_reion_T125'
+  filename='paper1'
   #filename='bulges_nodiskinstability'
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2}
   snapshots=[52,63,78,100,116,134,158]

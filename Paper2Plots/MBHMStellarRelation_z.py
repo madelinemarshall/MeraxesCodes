@@ -171,10 +171,10 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
 
 if __name__=='__main__':
   ##SETUP
-  redshift={78:6,100:5,116:4,134:3,158:2,194:1,250:0}
-  snapshots=[78,100,116,134,158]
+  redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:1,250:0}
+  snapshots=[63,78,100,116,134,158]
   prop='StellarMass'
-  color={78:'#ff7f00',100:'#a65628',116:'#e41a1c',134:'#377eb8',100:'#4daf4a',158:'#f781bf',194:'#a65628',250:'black'}
+  color={63:'pink',78:'#ff7f00',100:'#a65628',116:'#e41a1c',134:'#377eb8',100:'#4daf4a',158:'#f781bf',194:'#a65628',250:'black'}
   filename='paper2'
 
   ##OPTIONS	
@@ -185,7 +185,7 @@ if __name__=='__main__':
   bulge_type=0 #If wanting only one bulge component, which type? 1:IDBH, 2:MDBH
   contour=0 #Plot contours of z=2 distribution?
   
-  zz=[0,1,2,3,4,5,6]
+  zz=[0,1,2,3,4,5,6,7]
   fit_params=pd.DataFrame({'z':zz}, columns=['z','N','a','a_err','b','b_err','s','a_B','a_err_B','b_B','b_err_B','s_B']) 
   fit_params.set_index("z", inplace=True)
  

@@ -219,8 +219,9 @@ if __name__=="__main__":
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
   prop='BlackHoleMass'
   
-  filename='paper2_low_edd'
-  filename_def='paper2'
+  filename='paper1'
+  filename_def='dragons10'
+  eta={filename:0.2,filename_def:0.06}
   fname_d=data_folder+filename_def+meraxes_loc
   fname_1=data_folder+filename+meraxes_loc
   #fname_2=data_folder+filename125+meraxes_loc
@@ -239,8 +240,8 @@ if __name__=="__main__":
       gals_bulges=load_data(filename,snapshot,[prop,'BlackHoleAccretedColdMass','GhostFlag','dt'])
 
     if (snapshot<160):
-      calculateQLF(gals_bulges,fname_1,'UV',axes[ii],eta=0.06,**{'linestyle':'-','label':'M18 Meraxes','linewidth':1.5,'color':'k','zorder':100})
-      calculateQLF(gals_default,fname_d,'UV',axes[ii],eta=0.06,**{'linestyle':'--','label':'Q17 Meraxes','linewidth':1.5,'color':'gray','zorder':102})
+      calculateQLF(gals_bulges,fname_1,'UV',axes[ii],eta=eta[filename],**{'linestyle':'-','label':'M18 Meraxes','linewidth':1.5,'color':'k','zorder':100})
+      calculateQLF(gals_default,fname_d,'UV',axes[ii],eta=eta[filename_def],**{'linestyle':'--','label':'Q17 Meraxes','linewidth':1.5,'color':'gray','zorder':102})
     #if (snapshot==158)|(snapshot==213):
     #  kk=plot_obsQLF_B(axes[ii],redshift[snapshot],0,labels_dict,kk)
     #  axes[ii].set_xlabel(r'$M_{B}$)')

@@ -130,14 +130,14 @@ if __name__=="__main__":
   
   filename_default='dragons10'
   filename_default125='dragons10_T125'
-  filename='paper2'
+  filename='paper1'
   meraxes_loc2='/output/'+'meraxes'+'.hdf5'
   boxwidth=100
-  filename125='paper2_T125'
+  filename125='paper1_T125'
   plot_z0=1
 
   if plot_z0:
-    snapshots=[63,78,100,116,134,158,192,250]
+    snapshots=[192,250]#[63,78,100,116,134,158,192,250]
   else:
     snapshots=[63,78,100,116,134,158]
 
@@ -154,8 +154,8 @@ if __name__=="__main__":
     else:
       gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
       plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'-','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-      #gals_def=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
-      #plot_BHMF(gals_def,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'$z={}$ (Tiamat-125-HR) \n- Default Meraxes'.format(redshift[snapshot]),'linewidth':2.5,'color':'k','zorder':101})
+      gals_def=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
+      plot_BHMF(gals_def,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'$z={}$ (Tiamat-125-HR) \n- Default Meraxes'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
   
   #plot_obs(axes,0)
   plot_Davis(axes)

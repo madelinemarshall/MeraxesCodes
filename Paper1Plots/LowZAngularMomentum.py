@@ -7,6 +7,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from _load_data import load_data
 import sys
+from collections import OrderedDict
 sys.path.append('/home/mmarshal/simulation_codes')
 
 #Sets plot defaults
@@ -18,6 +19,18 @@ colors         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
                   '#ff7f00','#a65628','#f781bf','#98ff98']*4
 color_maps     = ['Reds', 'Blues', 'Greens'] *4
 markers        = ['o','s','v','^','<','>','p','*','D','8']*4
+ls = OrderedDict(
+    [('solid',               (0, ())),
+     ('dotted',              (0, (1, 1.5))),
+     ('densely dotted',      (0, (1, 1))),
+
+     ('dashed',              (0, (5, 3))),
+     ('densely dashed',      (0, (5, 1))),
+
+     ('dashdotted',          (0, (3, 3, 1, 3))),
+     ('densely dashdotted',  (0, (3, 1, 1, 1))),
+
+     ('dashdotdotted',         (0, (3, 2, 1, 2, 1, 2)))])
 
 #Setup
 cosmo = {'omega_M_0' : 0.308,
@@ -66,7 +79,7 @@ def plot_avg(xdata,ydata,axes,xlims,bin_width):
     bin_end+=bin_width
     bin_num+=1
   
-  axes.errorbar(bin_centre,avg_r,yerr=np.array([avg_r-pct_r_16,pct_r_84-avg_r]),color='k',marker='s',markersize=4,label='M19 - Median',zorder=1)
+  axes.errorbar(bin_centre,avg_r,yerr=np.array([avg_r-pct_r_16,pct_r_84-avg_r]),color='k',marker='s',markersize=4,label='M19 - Median',zorder=1000)
 
 
 def plot_jm_vs_m(AMratio,massRatio,samp):
@@ -125,7 +138,7 @@ def plot_y_vs_x_hist(y,x,axes,type='MassRatio',range=None,cbar=False):
     #Lapi+18 -  km s−1 kpc #Disk-dominated galaxies, seem to use total stellar mass
     logM=np.linspace(9,11.5)
     jRatio=0.7212 -0.1963*(logM-10.5) -0.0884*(logM-10.5)**2+0.0492*(logM-10.5)**3
-    axes.plot(logM,jRatio,color=colors[0],label='Lapi et al. (2018)',linewidth=2.5)
+    axes.plot(logM,jRatio,color=colors[0],label='Lapi et al. (2018)',linewidth=2,linestyle=ls['densely dotted'])
     lower_err=jRatio-np.ones_like(jRatio)*0.2
     upper_err=jRatio+np.ones_like(jRatio)*0.2
     axes.fill_between(logM,(lower_err),(upper_err),color=colors[0],alpha=0.4)
@@ -140,7 +153,7 @@ def plot_y_vs_x_hist(y,x,axes,type='MassRatio',range=None,cbar=False):
     jRatio=0.6865 -0.2666*(logM-12) -0.07258*(logM-12)**2+0.1277*(logM-12)**3
     lower_err=jRatio-np.ones_like(jRatio)*0.2
     upper_err=jRatio+np.ones_like(jRatio)*0.2
-    axes.plot(logM,jRatio,color=colors[0],label='Lapi et al. (2018)',linewidth=2.5)
+    axes.plot(logM,jRatio,color=colors[0],label='Lapi et al. (2018)',linewidth=2,linestyle=ls['densely dotted'])
     axes.fill_between(logM,lower_err,upper_err,color=colors[0],alpha=0.4)
 
     #Dutton & van den Bosch 2012
@@ -148,7 +161,7 @@ def plot_y_vs_x_hist(y,x,axes,type='MassRatio',range=None,cbar=False):
     jRatio=np.array([0.61,0.61])
     lower_err=jRatio-np.array([0.11,0.11])
     upper_err=jRatio+np.array([0.13,0.13])
-    axes.plot(logM,jRatio,color=colors[2],label='Dutton \& van den Bosch (2012)',linewidth=2.5)
+    axes.plot(logM,jRatio,color=colors[2],label='Dutton \& van den Bosch (2012)',linewidth=2,linestyle=ls['densely dashed'])
     axes.fill_between(logM,lower_err,upper_err,color=colors[2],alpha=0.4)
   
     ##Okamura+17
@@ -174,57 +187,69 @@ def plot_jstar_vs_mstar(AM,x,axes,range=None,cbar=False):
   #Romanowsky&Fall+13
   #for disks
   obs_mass=np.array([9,11.5])
-  axes.plot(obs_mass,-3.04+0.60*(obs_mass),label='Fall \& Romanowsky (2013)\n(discs)',color=colors[0],linewidth=2.5)
+  axes.plot(obs_mass,-3.04+0.60*(obs_mass),label='Fall \& Romanowsky (2013)\n(discs)',color=colors[0],linewidth=1.5,linestyle=ls['densely dashdotted'])
   
   #Harrison+2017
   logM=np.array([9,11])
   logj=2.59+0.6*(logM-10.10)
   lower_err=logj-0.2
   upper_err=logj+0.2
-  axes.plot(logM,logj,color=colors[7],label='Harrison et al. (2017)\n($z\simeq 0.9$)',linewidth=2.5)
+  axes.plot(logM,logj,color=colors[7],label='Harrison et al. (2017)\n($z\simeq 0.9$)',linewidth=2,linestyle=ls['dashdotdotted'])
   axes.fill_between(logM,lower_err,upper_err,color=colors[7],alpha=0.4)
  
   
   #Lapi+18 -  km s−1 kpc
   logM=np.linspace(9,11.5)
   logj=2.9834 + 0.4951*(logM-10.5) +0.0572*(logM-10.5)**2+0.0140*(logM-10.5)**3
-  axes.plot(logM,logj,color=colors[3],label='Lapi et al. (2018)',linewidth=2.5)
+  axes.plot(logM,logj,color=colors[3],label='Lapi et al. (2018)',linewidth=1.5,linestyle=ls['densely dotted'])
  
   #Sweet+18, same mass range as Lapi
   logj=0.56*logM-2.76
-  axes.plot(logM,logj,color=colors[4],label='Sweet et al. (2018)',linewidth=2.5)
+  axes.plot(logM,logj,color=colors[4],label='Sweet et al. (2018)',linewidth=2,linestyle=ls['dotted'])
 
   #Posti+18
+  ##Disks only (disk mass, j)
+  #logM=np.linspace(7,11.5)
+  #logj=0.58*(logM-11)+3.43
+  #err=np.ones_like(logM)*0.15
+  ##Spiral galaxies (total mass, j)
   logM=np.linspace(7,11.5)
-  logj=0.58*(logM-11)+3.43
-  err=np.ones_like(logM)*0.15
-  axes.plot(logM,logj,color=colors[2],label='Posti et al. (2018)',linewidth=2.5)
+  logj=0.55*(logM-11)+3.34
+  err=np.ones_like(logM)*0.17
+  axes.plot(logM,logj,color=colors[2],label='Posti et al. (2018)',linewidth=1.5,linestyle=ls['dashed'])
   axes.fill_between(logM,logj-err,logj+err,color=colors[2],alpha=0.4)
   #axes.errorbar(logM,logj,err,color=colors[5],label='Posti et al. (2018)',linewidth=2.5)
  
   #Burkert+16
   obs_mass=np.array([9.3,11.8])
-  axes.plot(obs_mass,3.33+(2/3)*(obs_mass-11),label='Burkert et al. (2016)\n($z\simeq 0.8$-2.6, deredshifted)',color=colors[6],linewidth=2.5)
+  axes.plot(obs_mass,3.33+(2/3)*(obs_mass-11),label='Burkert et al. (2016)\n($z\simeq 0.8$-2.6, deredshifted)',color=colors[6],linewidth=1.5,linestyle=ls['dashdotted'])
    
   #Fall&Romanowsky+18
   # log j*/j0 = a log M*/M0,  logM0=10.5 (j in kpc km/s, not Mpc!!)
   #		*  a =0.58 +- 0.10 and log j0 =3.07 +- 0.03 for pure disks
   #		*  a = 0.83+- 0.16 and log j0 = 2.20 +- 0.1 for pure bulges
   obs_mass=np.array([9.5,11.5])
-  axes.plot(obs_mass,3.07+0.58*(obs_mass-10.5),label='Fall \& Romanowsky (2018)\n(discs)',color=colors[5],linewidth=2.5)
+  axes.plot(obs_mass,3.07+0.58*(obs_mass-10.5),label='Fall \& Romanowsky (2018)\n(discs)',color=colors[5],linewidth=1.5,linestyle=ls['densely dashed'])
   #axes.plot(obs_mass,2.20+0.83*(obs_mass-10.5),'k--',label=r'Fall \& Romanowsky (2018) - bulges')
 
-  axes.set_xlabel(r'$\log(M_\ast/M_\odot)$')
-  axes.set_ylabel(r'$\log(j_\ast (\rm{km~kpc/s}))$')
 
 
 def plot_morphology_obs(axes):
   #Rom & Fall 2018
   obs_mass=np.array([9.5,11.5])
-  axes.plot(obs_mass,3.07+0.58*(obs_mass-10.5),'--',label='Fall \& Romanowsky (2018) (discs)',color='k',linewidth=2.5)
-  axes.plot(obs_mass,2.20+0.83*(obs_mass-10.5),':',label='Fall \& Romanowsky (2018) (bulges)',color='k',linewidth=2.5)
+  axes.plot(obs_mass,3.07+0.58*(obs_mass-10.5),'--',label='Fall \& Romanowsky (2018) (discs)',color='k',linewidth=2)
+  axes.plot(obs_mass,2.20+0.83*(obs_mass-10.5),':',label='Fall \& Romanowsky (2018) (bulges)',color='k',linewidth=2)
 
 
+def plot_gas_obs(axes):
+  #D. Obreschkow and K. Glazebrook
+  m_ast=np.array([10.1,9.9,9.7,10.8,9.1,10.3,10.1,10.4,10.7,10.6,10.3,10.8,10.6,10.5,10.9,9.5])
+  m_gas=np.array([9.8,9.8,9.5,10.1,8.4,9.7,10.1,9.4,10.1,9.4,9.0,10.2,9.8,10.0,10.2,9.2])
+  m_bary=np.array([10.27,10.16,9.91,10.88,9.18,10.41,10.41,10.44,10.81,10.62,10.32,10.91,10.66,10.62,10.99,9.69])
+  j_ast=np.array([2.98,2.94,2.62,3.40,2.03,3.03,2.97,2.91,3.06,2.84,2.34,3.18,3.18,3.02,3.35,2.43]) #log kpc km /s
+  #axes.scatter(m_ast,j_ast,c=10**m_gas/(10**m_gas+10**m_ast),s=20,cmap=cm,vmin=0,vmax=1,edgecolors='k')
+  axes.scatter(m_ast,j_ast,c=(10**m_bary-10**m_ast)/(10**m_bary),s=30,cmap=cm,vmin=0,vmax=1,edgecolors='k',label='Obreschkow and Glazebrook (2014)')
+  
 
 if __name__=='__main__':
   filename='paper1_T125'#str(sys.argv[1])#'bulges_update0915_ddsf'
@@ -240,14 +265,16 @@ if __name__=='__main__':
   AMhalo=gals['Spin']*np.sqrt(2)*gals['Mvir']*gals['Vvir']*gals['Rvir']
   
   #Convergence selection
-  selection=(AMhalo>1e-1)
-  gals=gals[selection]
-  AM=AM[selection]
-  AMhalo=AMhalo[selection]
+  #selection=(AMhalo>1e-1)
+  #gals=gals[selection]
+  #AM=AM[selection]
+  #AMhalo=AMhalo[selection]
 
   AMratio=AM/AMhalo
   diskMass=(gals['StellarMass']-gals['BulgeStellarMass'])*1e10
-  massRatio=diskMass/(gals['Mvir']*1e10)
+  stellarMass=gals['StellarMass']*1e10
+  diskMassRatio=diskMass/(gals['Mvir']*1e10)
+  totalMassRatio=gals['StellarMass']/gals['Mvir']
 
   #plot_jm_vs_m(AMratio,massRatio,gals)
 
@@ -262,18 +289,18 @@ if __name__=='__main__':
   
   #Plot j*/jh vs M*d
   fig1,axes1=plt.subplots(1,4,gridspec_kw = {'wspace':0,'width_ratios':[4,4,0.4,4.8]},figsize=(7.2,3)) 
-  plot_y_vs_x_hist(AMratio/massRatio,diskMass,axes1[0],type='StellarMass',range=([7,9.9],[0,1.4]))
+  plot_y_vs_x_hist(AMratio/totalMassRatio,stellarMass,axes1[0],type='StellarMass',range=([7,11.9],[0,1.4]))
   axes1[0].plot([8,8],[0,1.5],'--',color=[0.5,0.5,0.5])
-  axes1[0].set_xlabel(r'$\log(M_{\ast~\rm{disc}})$')
+  axes1[0].set_xlabel(r'$\log(M_{\ast})$')
   axes1[0].set_ylabel(r'$j_\ast/j_{\rm{H}}$')
   ##plt.savefig('/home/mmarshal/results/plots/AngularMomentumMass.pdf', format='pdf')
   #plt.show()
   
   #Plot j*/jh vs Mh
-  plot_y_vs_x_hist(AMratio/massRatio,gals['Mvir']*1e10,axes1[1],type='VirialMass',range=([10,12.5],[0,1.4]),cbar=axes1[2])
-  print("Maximum j/jh = {}".format(max(AMratio/massRatio)))
-  print("Minimum j/jh = {}".format(min(AMratio/massRatio)))
-  axes1[1].plot([10.4,10.4],[0,1.5],'--',color=[0.5,0.5,0.5],label='Convergence Limits')
+  plot_y_vs_x_hist(AMratio/totalMassRatio,gals['Mvir']*1e10,axes1[1],type='VirialMass',range=([9.8,13],[0,1.4]),cbar=axes1[2])
+  print("Maximum j/jh = {}".format(max(AMratio/totalMassRatio)))
+  print("Minimum j/jh = {}".format(min(AMratio/totalMassRatio)))
+  axes1[1].plot([10.3,10.3],[0,1.5],'--',color=[0.5,0.5,0.5],label='Convergence Limits')
   axes1[1].set_xlabel(r'$\log(M_{\rm{vir}})$')
   axes1[1].set_yticklabels([])
   axes1[3].axis('off')
@@ -284,12 +311,15 @@ if __name__=='__main__':
 
   #Plot j* vs M*
   fig2,axes2=plt.subplots(2,2,figsize=(3.75,4.1),gridspec_kw ={'height_ratios':[3.5,1],'width_ratios':[4,0.3],'wspace':0})
-  plot_jstar_vs_mstar(AM,gals['StellarMass']*1e10,axes2[0,0],range=([7,12],[0,4.2]),cbar=axes2[0,1])
+  #plot_jstar_vs_mstar(AM,diskMass,axes2[0,0],range=([7,12],[0,4.2]),cbar=axes2[0,1])
+  plot_jstar_vs_mstar(AM,stellarMass,axes2[0,0],range=([7,12],[0,4.2]),cbar=axes2[0,1])
   axes2[1,0].axis('off')
   axes2[1,1].axis('off')
-  axes2[0,0].plot([8,8],[0,5],'--',color=[0.5,0.5,0.5])
-  axes2[0,0].plot([7,12],[1.5,1.5],'--',color=[0.5,0.5,0.5],label='Convergence Limits')
+  axes2[0,0].plot([8.65,8.65],[0,5],'--',color=[0.5,0.5,0.5])
+  #axes2[0,0].plot([7,12],[1.6,1.6],'--',color=[0.5,0.5,0.5],label='Convergence Limits')
   axes2[0,0].legend(fontsize='small',loc=(-0.18,-0.59),ncol=2)
+  axes2[0,0].set_xlabel(r'$\log(M_\ast/M_\odot)$')
+  axes2[0,0].set_ylabel(r'$\log(j_\ast (\rm{km~kpc/s}))$')
   fig2.subplots_adjust(left=0.125,right=0.85,top=0.97)
   #plt.tight_layout()
   fig2.savefig('/home/mmarshal/results/plots/Paper1/AngularMomentumMass.pdf', format='pdf')
@@ -302,27 +332,46 @@ if __name__=='__main__':
   gals=load_data(filename,snapshot,props='All',centrals=True)
   AM=np.sqrt(gals['AMstars'][:,0]**2+gals['AMstars'][:,1]**2+gals['AMstars'][:,2]**2)
   AMhalo=gals['Spin']*np.sqrt(2)*gals['Mvir']*gals['Vvir']*gals['Rvir']
+  stellarMass=gals['StellarMass']*1e10
   
   #Convergence selection
-  selection=(AMhalo>1e-1)
-  gals=gals[selection]
-  AM=AM[selection]
-  AMhalo=AMhalo[selection]
+  #selection=(AMhalo>1e-1)
+  #gals=gals[selection]
+  #AM=AM[selection]
+  #AMhalo=AMhalo[selection]
   specificAM=AM/((gals['StellarMass']))
-  im=axes3[0,0].scatter(np.log10(gals['StellarMass']*1e10),np.log10(specificAM)+3,c=gals['BulgeStellarMass']/gals['StellarMass'],s=2,cmap=cm)
+  im=axes3[0,0].scatter(np.log10(stellarMass),np.log10(specificAM)+3,c=gals['BulgeStellarMass']/gals['StellarMass'],s=2,cmap=cm,vmin=0,vmax=1)
   plot_morphology_obs(axes3[0,0])
-  axes3[0,0].plot([8,8],[-4,6],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  axes3[0,0].plot([8.65,8.65],[-4,6],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
   axes3[0,0].legend(fontsize='small',loc=(0.05,-0.41))
 
   cb=plt.colorbar(im,cax=axes3[0,1],use_gridspec=True)
   cb.set_label(r'B/T')
   axes3[0,0].set_xlabel(r'$\log(M_\ast/M_\odot)$')
-  axes3[0,0].set_ylabel(r'$\log(j_T (\rm{km~kpc/s}))$')
+  axes3[0,0].set_ylabel(r'$\log(j_\ast (\rm{km~kpc/s}))$')
   axes3[1,0].axis('off')
   axes3[1,1].axis('off')
   axes3[0,0].set_ylim(-4,6)
-  axes3[0,0].set_xlim(7,13)
+  axes3[0,0].set_xlim(7,12)
   plt.tight_layout()
   fig3.subplots_adjust(left=0.125,right=0.85,top=0.97)
   plt.savefig('/home/mmarshal/results/plots/Paper1/AngularMomentumMass_BT.png', format='png',dpi=500)
+  
+  fig4,axes4=plt.subplots(2,2,gridspec_kw={'width_ratios':[4,0.3],'height_ratios':[4,1],'wspace':0,'hspace':0})
+  im=axes4[0,0].scatter(np.log10(stellarMass),np.log10(specificAM)+3,c=gals['ColdGas']/(gals['StellarMass']+gals['ColdGas']),s=2,cmap=cm)
+  plot_gas_obs(axes4[0,0])
+  axes4[0,0].plot([8.65,8.65],[-4,6],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  axes4[0,0].legend(fontsize='small',loc=(0.05,-0.41))
+
+  cb=plt.colorbar(im,cax=axes4[0,1],use_gridspec=True)
+  cb.set_label(r'$f_{\rm{gas}}$')
+  axes4[0,0].set_xlabel(r'$\log(M_\ast/M_\odot)$')
+  axes4[0,0].set_ylabel(r'$\log(j_\ast (\rm{km~kpc/s}))$')
+  axes4[1,0].axis('off')
+  axes4[1,1].axis('off')
+  axes4[0,0].set_ylim(-4,6)
+  axes4[0,0].set_xlim(7,12)
+  plt.tight_layout()
+  fig4.subplots_adjust(left=0.125,right=0.85,top=0.97)
+  plt.savefig('/home/mmarshal/results/plots/Paper1/AngularMomentumMass_fgas.png', format='png',dpi=500)
   plt.show()

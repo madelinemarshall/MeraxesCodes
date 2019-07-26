@@ -22,7 +22,7 @@ color         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
 
 
 def plot_hist2d(gals,ax,cbar=True,move_cbar=False):
-  xlims=[7,10.9]
+  xlims=[7,11.9]
   ylims=[-6,3]
   H, xedges, yedges, im=ax.hist2d(np.log10(gals['StellarMass']*1e10), np.log10(gals['Sfr']), bins=20, range=[xlims,ylims], weights=None, cmin=1, cmax=1e5, data=None,cmap='Blues',norm=matplotlib.colors.LogNorm(),vmax=1e5)
   #extent = [yedges[0], yedges[-1], xedges[0], xedges[-1]]
@@ -38,6 +38,7 @@ def plot_hist2d(gals,ax,cbar=True,move_cbar=False):
   ax.set_aspect('auto')
   ax.set_ylim(ylims)
   ax.set_xlim(xlims)
+
 
 
 def plot_hist3d(gals):
@@ -74,14 +75,42 @@ def plot_obs(axes):
   SFR=np.log10(np.array([4.7073727,7.914956,14.433758,23.877958,31.4691,36.42118,38.865368]))
   SFR_low=np.log10(np.array([1.8960778,3.0364738,6.203913,9.775229,13.308174,15.154303,17.82616]))
   SFR_high=np.log10(np.array([11.498701,19.972073,34.689453,57.387226,76.86959,88.96604,87.53305]))
-  axes.errorbar(M,SFR,yerr=(np.array([SFR-SFR_low,SFR_high-SFR])),xerr=(np.array([M-M_low,M_high-M])),color='k',label='Lee et al. (2015)\n $z\leq 1.3$',zorder=106)
+  axes.errorbar(M,SFR,yerr=(np.array([SFR-SFR_low,SFR_high-SFR])),xerr=(np.array([M-M_low,M_high-M])),color=color[0],label='Lee et al. (2015)\n $z\leq 1.3$',zorder=106)
 
-  axes.errorbar([7,11],0.867*np.array([7,11])-7.484,yerr=[0.354,0.354],color=color[3],linestyle='-',label='Kurczynski et al. (2016)\n $1.5<z\leq 2.0$',linewidth=2.5,zorder=102)
+  axes.errorbar([7,11],0.867*np.array([7,11])-7.484,yerr=[0.354,0.354],color=color[3],linestyle='-',label='Kurczynski et al. (2016)\n $1.5<z\leq 2.0$',linewidth=2,zorder=102)
 
-  axes.plot([7.94287,11.0],[-1.24521,0.409962],':',color=color[4],label='Bisigello et al. (2017) \nQuenched galaxies, $1<z<2$',linewidth=2.5,zorder=103)
-  axes.plot([7.94287,11.0],[-0.59386975,2.0421455],'--',color=color[4],label='Bisigello et al. (2017) \nMain sequence, $1<z<2$',linewidth=2.5,zorder=104)
+  axes.plot([7.94287,11.0],[-1.24521,0.409962],':',color=color[4],label='Bisigello et al. (2017) \nQuenched galaxies, $1<z<2$',linewidth=2,zorder=103)
+  axes.plot([7.94287,11.0],[-0.59386975,2.0421455],'--',color=color[4],label='Bisigello et al. (2017) \nMain sequence, $1<z<2$',linewidth=2,zorder=104)
 
-  axes.plot([7.6,11.0],1.04*(np.array([7.6,11.0])-9.7)+1.04,color=color[7],label='Santini et al. (2017) \n$1.3\leq z<2.0$',linewidth=2.5,zorder=101)
+  var,=axes.plot([7.6,11.0],1.04*(np.array([7.6,11.0])-9.7)+1.04,'-.',color=color[7],label='Santini et al. (2017) \n$1.3\leq z<2.0$',linewidth=2,zorder=101)
+
+def plot_avg(xdata,ydata,axes,xlims,bin_width):
+  min_bin=np.floor(xlims[0])
+  max_bin=np.ceil(xlims[1])
+  n_bins=np.int((max_bin-min_bin)/bin_width)
+  avg_r=np.zeros(n_bins)
+  pct_r_16=np.zeros(n_bins)
+  pct_r_84=np.zeros(n_bins)
+  bin_centre=np.zeros(n_bins)
+
+  bin_start=min_bin
+  bin_end=min_bin+1
+  bin_num=0
+  while bin_num<n_bins:
+    y=ydata[(xdata<bin_end)&(xdata>=bin_start)]
+    if True:#np.size(y)>=20:
+      avg_r[bin_num]=np.median(y)
+      pct_r_16[bin_num]=np.percentile(y,16)
+      pct_r_84[bin_num]=np.percentile(y,84)
+    else:
+      avg_r[bin_num]=np.nan
+      pct_r_16[bin_num]=np.nan
+      pct_r_84[bin_num]=np.nan
+    bin_centre[bin_num]=bin_start+bin_width/2
+    bin_start+=bin_width
+    bin_end+=bin_width
+    bin_num+=1
+  axes.errorbar(bin_centre,avg_r,yerr=np.array([avg_r-pct_r_16,pct_r_84-avg_r]),color='k',marker='s',markersize=4,zorder=1000,label='Median')
 
 
 if __name__=="__main__":
@@ -94,10 +123,16 @@ if __name__=="__main__":
   fig, axes = plt.subplots(1, 4,gridspec_kw = {'wspace':0, 'hspace':0, 'width_ratios':[4,4,0.4,4.5]})
   plot_hist2d(default,axes[0],False)
   plot_hist2d(gals1,axes[1],True,True)
+  plot_avg(np.log10(default[default['Sfr']>0]['StellarMass']*1e10), np.log10(default[default['Sfr']>0]['Sfr']),axes[0],[7,12],0.5)
+  plot_avg(np.log10(gals1[gals1['Sfr']>0]['StellarMass']*1e10), np.log10(gals1[gals1['Sfr']>0]['Sfr']),axes[1],[7,12],0.5)
+  
   plot_obs(axes[0])
   plot_obs(axes[1])
-  axes[0].text(8, -5.5, r'$  z=1.5$'+'\n '+r'Q17 Meraxes',weight='bold',size='large')
-  axes[1].text(8, -5.5,  r'$  z=1.5$'+'\n '+r'M19 Meraxes',weight='bold',size='large')
+  axes[0].plot([8.65,8.65],[-8,4],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  axes[1].plot([8.65,8.65],[-8,4],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  
+  axes[0].text(9, -5.5, r'$  z=1.5$'+'\n '+r'Q17 Meraxes',weight='bold',size='large')
+  axes[1].text(9, -5.5,  r'$  z=1.5$'+'\n '+r'M19 Meraxes',weight='bold',size='large')
   axes[0].set_xlabel(r'$\log(M_\ast/M_\odot)$')
   axes[0].set_ylabel(r'$\log(\textrm{SFR} M_\odot^{-1} \rm{yr})$')
   axes[1].set_xlabel(r'$\log(M_\ast/M_\odot)$')

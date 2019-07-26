@@ -252,6 +252,6 @@ if __name__=="__main__":
   plt.tight_layout()
   lgd=axes_frac.legend(fontsize='small',loc='upper center', bbox_to_anchor=(0.5, -0.2))
   
-  fig_frac.savefig('/home/mmarshal/results/plots/Paper1/BulgeFrac_z={}_points.pdf'.format(redshift[snapshot]),format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
-  fig.savefig('/home/mmarshal/results/plots/Paper1/SMF_morphology.pdf',format='pdf')
+  #fig_frac.savefig('/home/mmarshal/results/plots/Paper1/BulgeFrac_z={}_points.pdf'.format(redshift[snapshot]),format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  #fig.savefig('/home/mmarshal/results/plots/Paper1/SMF_morphology.pdf',format='pdf')
   plt.show()

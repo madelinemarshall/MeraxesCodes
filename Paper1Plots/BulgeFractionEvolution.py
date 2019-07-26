@@ -24,7 +24,7 @@ color=['#ff7f00','#4daf4a','#984ea3','#98ff98']#,\'#377eb8'
 
 def plot_disk_frac(gals,axes,label,split,bulge_frac,mags):
   MaxMass=11.5
-  MinMass=7.8
+  MinMass=7.0
   BinWidth=0.2 #Same as obs
   nBins=int(np.ceil((MaxMass-MinMass)/BinWidth))
   TotMinBin=np.zeros(nBins)
@@ -57,9 +57,10 @@ def plot_disk_frac(gals,axes,label,split,bulge_frac,mags):
 
   if split:
     if  not mags:
-      axes.plot(BinStart[BinFull]+0.5*BinWidth,IFracInBin[BinFull][:,1],label=label+r'Instability-driven Bulge',lw=2,color=color[0])
+      axes.plot(BinStart[BinFull]+0.5*BinWidth,IFracInBin[BinFull][:,1],label=label+r'Instability-driven Bulge',lw=2,color=color[0],linestyle='--')
       axes.fill_between(BinStart[BinFull]+0.5*BinWidth,IFracInBin[BinFull][:,0],IFracInBin[BinFull][:,2],alpha=0.2,color=color[0])
-      axes.plot(BinStart[BinFull]+0.5*BinWidth,MFracInBin[BinFull][:,1],label=label+r'Merger-driven Bulge',lw=2,color=color[1])
+      var, = axes.plot(BinStart[BinFull]+0.5*BinWidth,MFracInBin[BinFull][:,1],label=label+r'Merger-driven Bulge',lw=2,color=color[1],linestyle='-.')
+      var.set_dashes([2,2,5,2])
       axes.fill_between(BinStart[BinFull]+0.5*BinWidth,MFracInBin[BinFull][:,0],MFracInBin[BinFull][:,2],alpha=0.2,color=color[1])
       axes.plot(BinStart[BinFull]+0.5*BinWidth,BFracInBin[BinFull][:,1],label=label+r'Total Bulge',lw=2,color=color[2])
       axes.fill_between(BinStart[BinFull]+0.5*BinWidth,BFracInBin[BinFull][:,0],BFracInBin[BinFull][:,2],alpha=0.2,color=color[2])
@@ -129,7 +130,7 @@ if __name__=="__main__":
       axes[jj,ii].set_ylabel(r'$M_{\mathrm{Bulge}}/M_\ast$')
     #else:
     #  axes[jj,ii].set_yticklabels([])
-    axes[jj,ii].text(10.5, 0.1, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
+    axes[jj,ii].text(10, 0.1, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
   
   axes[0,3].axis('off')
   axes[1,3].axis('off')

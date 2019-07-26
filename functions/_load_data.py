@@ -34,8 +34,8 @@ def load_data(filename,snapshot,props,centrals=False):
     h=cosmo['h'],quiet=True)
   gals=gals[gals['GhostFlag']==0]
   gals=gals[gals['StellarMass']*1e10>1e7]
-  if 'BlackHoleMass' in props:
-    gals=gals[gals['BlackHoleMass']*1e10>1e5]
+  #if 'BlackHoleMass' in props:
+  #  gals=gals[gals['BlackHoleMass']*1e10>1e5]
   if centrals==True:
     gals=gals[gals['Type']==0]
   return gals

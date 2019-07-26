@@ -127,8 +127,8 @@ if __name__=="__main__":
   prop='BlackHoleMass'
   
   
-  filename_default='paper1_matching_eta_0p06'
-  filename_default125='paper1_T125_matching_eta_0p06'
+  filename_default='dragons10'
+  filename_default125='dragons10_T125'
   filename='paper1'
   meraxes_loc2='/output/'+'meraxes'+'.hdf5'
   boxwidth=100
@@ -146,23 +146,23 @@ if __name__=="__main__":
   for snapshot in snapshots:
     if (snapshot<164):
       gals_default=load_data(filename_default,meraxes_loc,snapshot,prop,cosmo)
-      plot_BHMF(gals_default,prop,boxwidth,axes,**{'linestyle':'--','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-      gals_bulges=load_data(filename,meraxes_loc2,snapshot,prop,cosmo)
-      plot_BHMF(gals_bulges,prop,boxwidth,axes,**{'linestyle':'-','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-    else:
-      gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
-      gals_default=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
-      plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'-','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-      plot_BHMF(gals_default,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-  #plot_obs(axes,0)
-  #plot_obs(axes,0.5)
+      plot_BHMF(gals_default,prop,boxwidth,axes,**{'linestyle':'-','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
+      #gals_bulges=load_data(filename,meraxes_loc2,snapshot,prop,cosmo)
+      #plot_BHMF(gals_bulges,prop,boxwidth,axes,**{'linestyle':'-','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
+    #else:
+    #gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
+    gals_default=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
+    #plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
+    plot_BHMF(gals_default,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
+  plot_obs(axes,0)
+  plot_obs(axes,0.5)
   plot_Shankar(axes)
   plot_Davis(axes)
   plot_derived(axes)
   axes.set_xlabel(r'$\log (\mathrm{M}_{\mathrm{BH}}/M_\odot)$')
   axes.set_ylabel(r'$\log (\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3})$')
-  axes.set_xlim([5.5,10])
-  axes.set_ylim([-5,-2])
+  axes.set_xlim([3,10])
+  axes.set_ylim([-5,0])
   
   #plot_obsBHMF(axes[1],0.5,hubble_h=cosmo['h'],markersize=3,legend=False,silent=False,color='gray',alpha=1.0)
   #plot_obsBHMF(axes[1],0,hubble_h=cosmo['h'],markersize=3,legend=False,silent=False,color='lightgreen',alpha=1.0)

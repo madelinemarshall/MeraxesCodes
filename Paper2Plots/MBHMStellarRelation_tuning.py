@@ -10,17 +10,18 @@ sys.path.append('/home/mmarshal/simulation_codes/Yuxiang/')
 sys.path.append('/home/mmarshal/simulation_codes')
 from _plot_obsGSMF import plot_obsGSMF
 from scipy.optimize import curve_fit
-import ContourPlot as cp
+#import ContourPlot as cp
 from _load_data import load_data
 
 #Sets plot defaults
 import matplotlib
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (6.6,3.2)
-matplotlib.rcParams['lines.linewidth'] = 2.5
+matplotlib.rcParams['figure.figsize'] = (7.2,3.2)
+#matplotlib.rcParams['lines.linewidth'] = 2.5
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
+markers        = ['s','v','^','<','>','p','*','D','8']*4
 colors         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
                   '#ff7f00','#a65628','#f781bf','#98ff98']*4
 
@@ -35,6 +36,17 @@ cosmo = {'omega_M_0' : 0.308,
 }
 
 
+def plot_hist2d(xdata,ydata,axes,cmax=None,cbar=False):
+  xlims=[7.8,12.6]
+  ylims=[5.5,10.6]#[np.nanmin(y),np.nanmax(y)]
+  H, xedges, yedges, img=axes.hist2d(xdata, ydata, bins=40, range=[xlims,ylims], weights=None, cmin=1, vmin=1, vmax=cmax, data=None,cmap='Blues',norm=matplotlib.colors.LogNorm())
+  axes.set_ylim(ylims)
+  axes.set_xlim(xlims)
+  if True:#cbar:
+    cb=plt.colorbar(img, cax=ax[2],use_gridspec=True)
+    cb.set_label('Number of Galaxies')#; Total N = {:.0e}'.format(np.size(gals)))
+ 
+
 def plot_observations(axes,color,mass):
   #Kormendy & Ho (2013):
   #MBH/10^9=(0.49\pm0.6)(Mbulge/10^11)^(1.17\pm0.08), intrinsic scatter 0.28 dex (p571)
@@ -44,24 +56,24 @@ def plot_observations(axes,color,mass):
   kh=pd.read_csv('/home/mmarshal/simulation_codes/data/KormendyHo_ellipticals_MBHMbulge.csv')
   logMBH=np.log10(kh['log(M_BH) [Msun]'])
   logMbulge=kh['log(M) [Msun]']-2*np.log10(cosmo['h']/0.705)
-  axes.plot(logMbulge,logMBH,'o',color=colors[1],label="Kormendy \& Ho (2013)\n- Ellipticals",markersize=3)
+  axes.plot(logMbulge,logMBH,'o',color=colors[3],label="Kormendy \& Ho (2013)\n- Ellipticals",markersize=3,zorder=100)
   
   kh=pd.read_csv('/home/mmarshal/simulation_codes/data/KormendyHo_classicalbulges_MBHMbulge.csv')
   logMBH=np.log10(kh['log(M_BH) [Msun]'])
   logMbulge=kh['log(M) [Msun]']-2*np.log10(cosmo['h']/0.705)
-  axes.plot(logMbulge,logMBH,'^',color=colors[1],label="Kormendy \& Ho (2013)\n- Classical Bulges",markersize=3)
+  axes.plot(logMbulge,logMBH,'^',color=colors[3],label="Kormendy \& Ho (2013)\n- Classical Bulges",markersize=3.5,zorder=101)
 
   if mass == 'stellar':
     rv=pd.read_csv('/home/mmarshal/simulation_codes/data/ReinesVolonteri.csv',comment='#')
     logMstar=rv['logM*[Msun]'] -2*np.log10(cosmo['h']/0.70)
     logMBH=rv['logMBH']
-    axes.plot(logMstar,logMBH,'o',color=colors[0],label="Reines \& Volonteri (2015)",markersize=3)
+    axes.plot(logMstar,logMBH,color=colors[0],label="Reines \& Volonteri (2015)",markersize=2,marker='o',linestyle='')
 
   else:
     scott=pd.read_csv('/home/mmarshal/simulation_codes/data/Scott2013_MBHMbulge.csv')
     logMBH=np.log10(scott['M_BH [$10^8$ M$_\odot$]']*1e8)
     logMbulge=np.log10(scott['M_sph [$10^{10}$ M$_\odot$]']*1e10)
-    axes.plot(logMbulge,logMBH,'s',label="Scott et al. (2013)",color=colors[-2],markersize=3)
+    axes.plot(logMbulge,logMBH,label="Scott et al. (2013)",color=colors[4],markersize=2.5,marker=markers[-2],linestyle='')
 
     #jiang=pd.read_csv('/home/mmarshal/simulation_codes/data/Jiang2011_MBHMbulge.csv')
     #logMBH=jiang['logMbh [Msun]']
@@ -71,8 +83,9 @@ def plot_observations(axes,color,mass):
     grah=pd.read_csv('/home/mmarshal/simulation_codes/data/GrahamScott2015_MBHMbulge.csv')
     logMBH=np.log10(grah['Mbh [10+5Msun]']*1e5)
     logMbulge=np.log10(grah['Msph [GMsun]']*1e9)
-    axes.plot(logMbulge,logMBH,'o',color=colors[4],label="Graham and Scott (2015)",markersize=3)
-    axes.plot(0,0,'o',color=colors[0],label="Reines \& Volonteri (2015)",markersize=3)
+    axes.plot(logMbulge,logMBH,color=colors[2],label="Graham and Scott (2015)",markersize=3,marker=markers[4],linestyle='')
+
+    axes.plot(0,0,color=colors[0],label="Reines \& Volonteri (2015)",markersize=2,marker='o',linestyle='')
 
 
 def func(x,a,b):
@@ -109,7 +122,7 @@ def best_fit(z,logMstellar):
   return slope*logMstellar+inter
 
 
-def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,color,axes):
+def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,axes,cbar=False):
   slope=np.zeros(len(snapshots))
   slope_errs=np.zeros(len(snapshots))
   inter=np.zeros(len(snapshots))
@@ -144,11 +157,12 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
     logMstel=np.log10(Mstel)
     logMBH=np.log10(MBH)
     
-    cp.contour_plot(logMstel,logMBH,xlab=None,ylab=None,xlims=[9.1,11.6],ylims=[6,9.5],axes=axes,colors='gray',linewidth=0.9)#,levels=np.logspace(-2,1,7))
+    #cp.contour_plot(logMstel,logMBH,xlab=None,ylab=None,xlims=[7,11.6],ylims=[5,9.5],axes=axes,colors='gray',linewidth=0.9)#,levels=np.logspace(-2,1,7))
+    plot_hist2d(logMstel,logMBH,axes,cmax=800,cbar=cbar)
     
-    #logMBH_cut=logMBH[(logMstel>9.5)]#&(logMBH>6.5)]
-    #logMstel=logMstel[(logMstel>9.5)]#&(logMBH>6.5)]
-    #logMBH=logMBH_cut
+    logMBH_cut=logMBH[(logMstel>9.5)]#&(logMBH>6.5)]
+    logMstel=logMstel[(logMstel>9.5)]#&(logMBH>6.5)]
+    logMBH=logMBH_cut
     #Bulge stellar mass
     bin_width=0.5
     min_mass=np.min(logMstel)
@@ -170,11 +184,11 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,split,bulge_type,contours,col
     
     from scipy.stats import linregress
     sl,inter,rval,stderr_s,sterr_i=lsqfity(logMstel,logMBH)
-    axes.plot([9.5,11.6],inter+sl*np.array([9.5,11.6]),'k',lw=2.5,label='$z=0$ (Tiamat-125-HR)')
+    axes.plot([9.5,12.6],inter+sl*np.array([9.5,12.6]),'k',lw=2.5,label=r'Tiamat-125-HR ($M>10^{9.5}M_\odot$)')
     print("corr. coeff. = {}, mass_bulge = {}".format(lsqfity(logMstel,logMBH),mass_bulge))
     ii+=1
-  #axes.set_xlim([9.51,11.6])
-  #axes.set_ylim([6.5,9.5])
+  axes.set_xlim([7.8,12.6])
+  axes.set_ylim([5.5,10.2])
 
 
 def lsqfity(X, Y):
@@ -251,7 +265,7 @@ if __name__=='__main__':
   contour=1 #Plot contours of z=2 distribution?
   
   ##PLOT
-  fig,ax = plt.subplots(1,2,gridspec_kw = {'wspace':0, 'hspace':0},sharex=True,sharey=True)
+  fig,ax = plt.subplots(1,4,gridspec_kw = {'wspace':0, 'hspace':0,'width_ratios':[4,4,0.4,5]})#,sharex=True,sharey=True)
   #fig,axes=plt.subplots(1,1)
   plot_type
   if plot_type==1: 
@@ -260,26 +274,33 @@ if __name__=='__main__':
     plot_observations(ax[0],color,"bulge")
     plot_observations(ax[1],color,"stellar")
     if z0:
-      plot_MBHMstellar(filename_125,[250],True,split,bulge_type,contour,color,ax[0])
-      plot_MBHMstellar(filename_125,[250],False,split,bulge_type,contour,color,ax[1])
+      plot_MBHMstellar(filename_125,[250],True,split,bulge_type,ax[0])
+      plot_MBHMstellar(filename_125,[250],False,split,bulge_type,ax[1],cbar=ax[2])
     ax[1].set_xlabel(r'$\log(M_\ast/M_\odot)$')
     ax[0].set_xlabel(r'$\log(M_{\textrm{bulge}}/M_\odot)$')
   elif plot_type==2: 
     plot_observations(ax[0],color,"bulge")
     plot_observations(ax[1],color,"stellar")
     if z0:
-      plot_MBHMstellar(filename_125,[250],True,split,1,contour,color,ax[0])
-      plot_MBHMstellar(filename_125,[250],True,split,2,contour,color,ax[1])
+      plot_MBHMstellar(filename_125,[250],True,split,1,ax[0])
+      plot_MBHMstellar(filename_125,[250],True,split,2,ax[1])
     ax[1].set_xlabel(r'$\log(M_{\textrm{merger-driven bulge}})$')
     ax[0].set_xlabel(r'$\log(M_{\textrm{instability-driven bulge}})$')
 
 
-  lgd=ax[0].legend(fontsize='small',loc='upper center', bbox_to_anchor=(2.35, 0.7))  
+  ax[0].plot([8.65,8.65],[0,20],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  ax[1].plot([8.65,8.65],[0,20],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  ax[0].plot([5,20],[7.35,7.35],'--',color=[0.5,0.5,0.5],label='__nolabel__')
+  ax[1].plot([5,20],[7.35,7.35],'--',color=[0.5,0.5,0.5],label='__nolabel__')
+  lgd=ax[0].legend(fontsize='small',loc='upper center', bbox_to_anchor=(2.9, 0.7))  
   ax[0].set_ylabel(r'$\log(M_{\rm{BH}}/M_\odot)$') 
+  ax[1].set_yticks([])  
+  ax[3].axis('off')
+  plt.tight_layout()
   if plot_type==1:
-    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_z0.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_z0.pdf', format='pdf')
   else:
-    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_BulgeType_z0.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_BulgeType_z0.pdf', format='pdf')
   plt.show()
 
   ##PERFORM STATISTICS

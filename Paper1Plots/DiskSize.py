@@ -8,7 +8,7 @@ sys.path.append('/home/mmarshal/simulation_codes')
 import ContourPlot as cp
 import pandas as pd
 from _load_data import load_data
-
+from collections import OrderedDict
 #Sets plot defaults
 matplotlib.rcParams['font.size'] = (9)
 matplotlib.rcParams['figure.figsize'] = (3.5,3.5)
@@ -17,6 +17,19 @@ plt.rc('font', family='serif')
 color         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
                   '#ff7f00','#a65628','#f781bf','#98ff98']*4
 # red,blue,green,purple,orange,brown,pink,mint
+linestyles = OrderedDict(
+    [('solid',               (0, ())),
+     ('dotted',              (0, (1, 5))),
+     ('densely dotted',      (0, (1, 1))),
+
+     ('dashed',              (0, (5, 5))),
+     ('densely dashed',      (0, (5, 1))),
+
+     ('dashdotted',          (0, (3, 5, 1, 5))),
+     ('densely dashdotted',  (0, (3, 1, 1, 1))),
+
+     ('dashdotdotted',         (0, (3, 5, 1, 5, 1, 5)))])
+
 
 def plot_hist2d(xdata,ydata,axes,cmax=None,cbar=False):
   xlims=[7,12]
@@ -38,7 +51,7 @@ def plot_gadotti(axes):
   rad=np.log10(dat[0]) #scalelength
   #half_mass_rad=rad*1.67835
   diskmass=np.log10(dat[4])
-  axes.plot(diskmass[dat[2]<0.3],rad[dat[2]<0.3],'o',color=color[4],label='Gadotti et al. (2009)',markersize=2)
+  axes.plot(diskmass[dat[2]<0.3],rad[dat[2]<0.3],'o',color=color[4],label='Gadotti et al. (2009)',markersize=2,markerfacecolor='none',markeredgewidth=0.5)
 
 
 def plot_obs(axes):
@@ -47,8 +60,8 @@ def plot_obs(axes):
   MonM0=10**(logM-10.44)
   R=10**0.72*MonM0**0.18*(0.5+0.5*MonM0**1.8)**((0.52-0.18)/1.8)
   scat=0.27+(0.47-0.27)/(1+MonM0**2.2) 
-  axes.plot(logM,np.log10(R),color=color[0],label='Dutton et al. (2011)',linewidth=2.5)
-  axes.fill_between(logM,np.log10(R)-scat,np.log10(R)+scat,color=color[0],label='__nolabel__',alpha=0.3)
+  axes.plot(logM,np.log10(R),color=color[0],label='Dutton et al. (2011)',linewidth=2,linestyle=linestyles['densely dashdotted'])
+  axes.fill_between(logM,np.log10(R)-scat,np.log10(R)+scat,color=color[0],label='__nolabel__',alpha=0.2)
   #axes.plot(logM,np.log10(R)-np.log10(1.67835),color=color[0],label='Dutton et al. (2010)',linewidth=2.5)
   #axes.fill_between(logM,np.log10(R)-np.log10(1.67835)-scat,np.log10(R)-np.log10(1.67835)+scat,color=color[0],label='__nolabel__',alpha=0.3)
 
@@ -59,19 +72,49 @@ def plot_obs(axes):
   scatter=np.array([0.185,0.176,0.17,0.151,0.133,0.15,0.202])
   #axes.plot(np.log10(M),np.log10(R)-np.log10(1.67835),color='k',linewidth=2.5,label="Lange et al. (2016)",zorder=100)
   #axes.fill_between(np.log10(M),np.log10(R)-np.log10(1.67835)-scatter,np.log10(R)-np.log10(1.67835)+scatter,alpha=0.3,color='k',label="__nolabel__",zorder=101)
-  axes.plot(np.log10(M),np.log10(R),color='k',linewidth=2.5,label="Lange et al. (2016)",zorder=100)
-  axes.fill_between(np.log10(M),np.log10(R)-scatter,np.log10(R)+scatter,alpha=0.3,color='k',label="__nolabel__",zorder=101)
+  axes.plot(np.log10(M),np.log10(R),color=color[3],linewidth=2,label="Lange et al. (2016)",zorder=100,linestyle=linestyles['densely dashed'])
+  axes.fill_between(np.log10(M),np.log10(R)-scatter,np.log10(R)+scatter,alpha=0.3,color=color[3],label="__nolabel__",zorder=101)
   
   #Wu+17 - scalelength
-  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343+np.log10(1.67835),color=color[2],label='Wu (2017)',linewidth=2.5)
-  axes.fill_between([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343-0.36+np.log10(1.67835),0.321*(np.array([7.25,11.25])-10)+0.343+0.36+np.log10(1.67835),color=color[2],label='__nolabel__',alpha=0.4)
+  axes.plot([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343+np.log10(1.67835),color=color[2],label='Wu (2017)',linewidth=3,linestyle=linestyles['densely dotted'])
+  axes.fill_between([7.25,11.25],0.321*(np.array([7.25,11.25])-10)+0.343-0.36+np.log10(1.67835),0.321*(np.array([7.25,11.25])-10)+0.343+0.36+np.log10(1.67835),color=color[2],label='__nolabel__',alpha=0.2)
 
   #Lapi+18 - half-mass
   logM=np.linspace(9,11.5)
   logRe=0.7519 + 0.2333*(logM-10.5) +0.0494*(logM-10.5)**2+0.0267*(logM-10.5)**3
   #axes.plot(logM,logRe-np.log10(1.67835),color=color[3],label='Lapi et al. (2018)',linewidth=2.5)
-  axes.plot(logM,logRe,color=color[3],label='Lapi et al. (2018)',linewidth=2.5)
+  axes.plot(logM,logRe,color=color[6],label='Lapi et al. (2018)',linewidth=2,linestyle='--')
  
+
+def plot_avg(xdata,ydata,axes,xlims,bin_width):
+  min_bin=np.floor(xlims[0])
+  max_bin=np.ceil(xlims[1])
+  n_bins=np.int((max_bin-min_bin)/bin_width)
+  avg_r=np.zeros(n_bins)
+  pct_r_16=np.zeros(n_bins)
+  pct_r_84=np.zeros(n_bins)
+  bin_centre=np.zeros(n_bins)
+
+  bin_start=min_bin
+  bin_end=min_bin+1
+  bin_num=0
+  while bin_num<n_bins:
+    y=ydata[(xdata<bin_end)&(xdata>=bin_start)]
+    if np.size(y)>=20:
+      avg_r[bin_num]=np.median(y)
+      pct_r_16[bin_num]=np.percentile(y,16)
+      pct_r_84[bin_num]=np.percentile(y,84)
+    else:
+      avg_r[bin_num]=np.nan
+      pct_r_16[bin_num]=np.nan
+      pct_r_84[bin_num]=np.nan
+    bin_centre[bin_num]=bin_start+bin_width/2
+    bin_start+=bin_width
+    bin_end+=bin_width
+    bin_num+=1
+  
+  axes.errorbar(bin_centre,avg_r,yerr=np.array([avg_r-pct_r_16,pct_r_84-avg_r]),color='k',marker='s',markersize=4,label='M19 - Median',zorder=1000)
+
 
 if __name__=='__main__':
   filename='paper1_T125'
@@ -85,9 +128,10 @@ if __name__=='__main__':
   ### scale radius = half_mass_rad/1.67835 -> log(Rscale)=log(halfmass)-log(1.67835)
   fig,axes=plt.subplots(1,2,gridspec_kw ={'wspace':0,'width_ratios':[4,0.4]})
   plot_hist2d(np.log10((disks['StellarMass'])*1e10),scale_rad,axes[0],cbar=axes[1])
+  plot_avg(np.log10((disks['StellarMass'])*1e10),scale_rad,axes[0],[7,12],0.5)
   plot_gadotti(axes[0])
   plot_obs(axes[0])
-  axes[0].plot([8,8],[-3,2],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  axes[0].plot([8.65,8.65],[-3,2],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
   axes[0].set_xlabel(r'$\log (M_{\ast}/M_\odot)$')
   axes[0].set_ylabel(r'$\log(R_e/\mathrm{kpc})$')
 

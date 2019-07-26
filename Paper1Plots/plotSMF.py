@@ -14,14 +14,14 @@ def flip(items, ncol):
 
 #Sets plot defaults
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (7.3,6)
+matplotlib.rcParams['figure.figsize'] = (7.3,6.4)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 colors         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
                   '#ff7f00','#a65628','#f781bf','#98ff98']*4
 color_maps     = ['Reds', 'Blues', 'Greens'] *4
-markers        = ['o','s','v','^','<','>','p','*','D','8']*4
-linestyles     = ['-','-.']*4
+markers        = ['o','s','D','>','p','*','^','8','<','v']*4
+linestyles     = ['-','-.','--']*4
 
 cosmo = {'omega_M_0' : 0.308,
 'omega_lambda_0' : 0.692, 'omega_b_0' : 0.04839912,
@@ -103,12 +103,13 @@ def make_legend(ax):
     plot_SMF(gals_default,prop,vol_def,ax,**{'linestyle':'-','label':'Q17 Meraxes\n(Tiamat)','linewidth':2,'color':[0.35,0.35,0.35],'zorder':999})
     plot_SMF(gals_125,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'M19 Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':'k','zorder':1001})
     plot_SMF(gals_default,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'Q17 Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':[0.35,0.35,0.35],'zorder':1001})
+    ax.plot([0,0],[0,0],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
     labels_dict={}
     kk=0
     for snapshot in [52,63,78,100,116,134,158,250]:
       kk=plot_obs(ax,redshift[snapshot],1,labels_dict,kk)
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(flip(handles, 4), flip(labels, 4),fontsize='small',ncol=4,loc=(-1.635,0))
+    ax.legend(flip(handles, 4), flip(labels, 4),fontsize='small',ncol=4,loc=(-1.635,-0.6))#(-1.635,0))
     ax.axis('off')
     ax.set_xlim(8,8.1)
     ax.set_ylim(-6,-5.8)
@@ -118,14 +119,14 @@ if __name__=="__main__":
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,250:0}
   prop='StellarMass'
 
-  filename='paper1_false_eta_0p4_2'
+  filename='paper1'
   vol=100
-  filename125='paper1_T125_false_eta_0p4_2'
+  filename125='paper1_T125'
   default='dragons10'
   vol_def=100
   default_125='dragons10_T125'
   labels_dict={}
-  fig, axes = plt.subplots(3, 4,gridspec_kw = {'wspace':0, 'hspace':0})
+  fig, axes = plt.subplots(3, 4,gridspec_kw = {'wspace':0, 'hspace':0,'height_ratios':[3,3,1.5]})
   ii=-1
   j=0
   kk=0
@@ -158,11 +159,13 @@ if __name__=="__main__":
       axes[j,ii].set_ylabel(r'$\log(\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3})$')
     else:
       axes[j,ii].set_yticklabels([])
-    axes[j,ii].set_xlim([7.5,12.3])
-    axes[j,ii].set_ylim([-5.8,-1.5])
+    axes[j,ii].set_xlim([7,12.3])
+    axes[j,ii].set_ylim([-5.8,-0.6])
     axes[j,ii].text(8.1, -5.6, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
     axes[j,ii].grid(color=[0.8,0.8,0.8],linestyle='--')
 
+  axes[1,3].plot([8.65,8.65],[-6.5,1],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  
   make_legend(axes[2,1])
   axes[2,0].axis('off')
   axes[2,1].axis('off')

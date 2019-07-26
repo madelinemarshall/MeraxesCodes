@@ -9,7 +9,7 @@ import pandas as pd
 
 #Sets plot defaults
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (7.2,3.6)
+matplotlib.rcParams['figure.figsize'] = (3.6,3.6)
 #matplotlib.rcParams['font.size'] = (12)
 #matplotlib.rcParams['figure.figsize'] = (8.27,6)
 #plt.rc('text', usetex=True)
@@ -31,7 +31,7 @@ def load_data(filename,snapshot,cosmo):
 
 def plot_BH_frac(gals,axes,linestyle='-',lw=2.5):
   #Figure 9
-  MaxMass=10.5
+  MaxMass=9
   MinMass=6
   BinWidth=0.25
   nBins=int(np.ceil((MaxMass-MinMass)/BinWidth))
@@ -89,33 +89,33 @@ if __name__=="__main__":
   #meraxes_loc='/output/'+str(sys.argv[1])+'.hdf5'
   redshift={63:7,78:6,100:5,116:4,134:3,158:2,192:1,213:0.55,250:0}
   
-  filename='tuned_reion'
-  filename_125='tuned_reion_T125'
+  filename='paper2'
+  filename_125='paper2_T125'
 
-  fig,axes=plt.subplots(1,3,gridspec_kw = {'wspace':0, 'hspace':0})
+  fig,axes=plt.subplots()#1,3,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
-  for snapshot in [250]:
+  for snapshot in [116]:
     ii+=1
-    gals=load_data(filename_125,snapshot,cosmo)
-    gals_d=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
-    gals_b=gals[gals['BulgeStellarMass']/gals['StellarMass']>0.7]
-    plot_BH_frac(gals,axes[0])
-    plot_BH_frac(gals_b,axes[1])
-    plot_BH_frac(gals_d,axes[2])
+    gals=load_data(filename,snapshot,cosmo)
+    #gals_d=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
+    #gals_b=gals[gals['BulgeStellarMass']/gals['StellarMass']>0.7]
+    plot_BH_frac(gals,axes)
+    #plot_BH_frac(gals_b,axes[1])
+    #plot_BH_frac(gals_d,axes[2])
     
     #axes[2].plot([1,1.1],[1,1.1],linewidth=2.5,linestyle='-',color=colors[3],label='Tiamat')
     #axes[2].plot([1,1.1],[1,1.1],linewidth=1.5,linestyle='-',color=colors[3],label='Tiamat-125-HR')
-    lgd=axes[1].legend(loc='lower left', bbox_to_anchor=(0, -0.4))
+    lgd=axes.legend()#loc='lower left', bbox_to_anchor=(0, -0.4))
 
 
-    axes[2].set_yticks([])
-    axes[1].set_yticks([])
-    axes[0].set_ylabel(r'Fraction of BH Mass from Growth Mode')
-  axes[0].set_title('All\nGalaxies') 
-  axes[1].set_title('Bulge-Dominated\nGalaxies') 
-  axes[2].set_title('Disc-Dominated\nGalaxies') 
+    #axes[2].set_yticks([])
+    #axes[1].set_yticks([])
+    axes.set_ylabel(r'Fraction of BH Mass from Growth Mode')
+  #axes[0].set_title('All\nGalaxies') 
+  #axes[1].set_title('Bulge-Dominated\nGalaxies') 
+  #axes[2].set_title('Disc-Dominated\nGalaxies') 
   
-  #plt.tight_layout()
+  plt.tight_layout()
   
   plt.savefig('/home/mmarshal/results/plots/BHGrowthModes_talk.pdf', format='pdf', bbox_inches='tight')
   plt.show()

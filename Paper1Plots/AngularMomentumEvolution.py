@@ -7,6 +7,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from _load_data import load_data
 import sys
+from collections import OrderedDict
 sys.path.append('/home/mmarshal/simulation_codes')
 
 #Sets plot defaults
@@ -18,6 +19,31 @@ colors         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
                   '#ff7f00','#a65628','#f781bf','#98ff98']*4
 color_maps     = ['Reds', 'Blues', 'Greens'] *4
 markers        = ['o','s','v','^','<','>','p','*','D','8']*4
+#ls = OrderedDict(
+#    [('solid',               (0, ())),
+#     ('dotted',              (0, (1, 1.5))),
+#     ('densely dotted',      (0, (1, 1))),
+#
+#     ('dashed',              (0, (5, 3))),
+#     ('densely dashed',      (0, (5, 1))),
+#
+#     ('dashdotted',          (0, (3, 3, 1, 3))),
+#     ('densely dashdotted',  (0, (3, 1, 1, 1))),
+#
+#     ('dashdotdotted',         (0, (3, 2, 1, 2, 1, 2)))])
+ls = OrderedDict(
+    [(158,               (0, ())),
+     (116,              (0, (1, 2))),
+     (78,      (0, (1, 1))),
+
+     ('dashed',              (0, (5, 3))),
+     (134,      (0, (5, 1))),
+
+     ('dashdotted',          (0, (3, 3, 1, 3))),
+     (63,  (0, (3, 1, 1, 1))),
+
+     (100,         (0, (3, 2, 1, 2, 1, 2)))])
+
 
 #Setup
 cosmo = {'omega_M_0' : 0.308,
@@ -66,9 +92,9 @@ def plot_avg(xdata,ydata,axes,xlims,bin_width,redshiftPlot=False):
   
   if redshiftPlot:
     if snapshot<158:
-      axes.plot(bin_centre,avg_r,color=color[snapshot],label=r'$z={}$'.format(redshift[snapshot]))
+      axes.plot(bin_centre,avg_r,color=color[snapshot],label=r'$z={}$'.format(redshift[snapshot]),linestyle=ls[snapshot],lw=2)
     else:
-      axes.plot(bin_centre,avg_r,color=color[snapshot],label=r'$z={}$'.format(redshift[snapshot]))
+      axes.plot(bin_centre,avg_r,color=color[snapshot],label=r'$z={}$'.format(redshift[snapshot]),linestyle=ls[snapshot],lw=2)
       axes.fill_between(bin_centre,pct_r_16,pct_r_84,color=color[snapshot],alpha=0.2)
   else:
     axes.errorbar(bin_centre,avg_r,yerr=np.array([avg_r-pct_r_16,pct_r_84-avg_r]),color='k',marker='s',markersize=4,label='M19 - Median')
@@ -235,7 +261,7 @@ def plot_jstar_vs_mstar(AM,x,axes,range=None):
   ylims=range[1]
   selection=(y>0)&(x>0)
   plot_hist2d(np.log10(x[selection]),np.log10(y[selection]),axes,xlims,ylims)
-  plot_avg(np.log10(x[selection]),np.log10(y[selection]),axes,xlims,0.25)
+  plot_avg(np.log10(x[selection]),np.log10(y[selection]),axes,xlims,0.5)
 
 
 if __name__=='__main__':
@@ -277,38 +303,40 @@ if __name__=='__main__':
     AMhalo=gals['Spin']*np.sqrt(2)*gals['Mvir']*gals['Vvir']*gals['Rvir']
     
     #Convergence selection
-    selection=(AMhalo>1e-2) #Tiamat unresolved for $j_H\sim10^{1} \textrm{km kpc s}^{-1}$, this is in Mpc
-    gals=gals[selection]
-    AM=AM[selection]
-    AMhalo=AMhalo[selection]
+    #selection=(AMhalo>1e-2) #Tiamat unresolved for $j_H\sim10^{1} \textrm{km kpc s}^{-1}$, this is in Mpc
+    #gals=gals[selection]
+    #AM=AM[selection]
+    #AMhalo=AMhalo[selection]
 
 
     AMratio=AM/AMhalo
     diskMass=(gals['StellarMass']-gals['BulgeStellarMass'])*1e10
-    massRatio=diskMass/(gals['Mvir']*1e10)
+    stellarMass=(gals['StellarMass'])*1e10
+    diskMassRatio=diskMass/(gals['Mvir']*1e10)
+    totalMassRatio=stellarMass/(gals['Mvir']*1e10)
 
 
     #plot_jm_vs_m(AMratio,massRatio,gals)
 
-    plot_y_vs_x(np.log10((AM*1e3)/(diskMass*1e-10)),diskMass,axes1[j,ii],MassRatio=0,range=([7,9],[1,2.7]),redshiftAxes=axes4[0])
+    plot_y_vs_x(np.log10((AM*1e3)/(gals['StellarMass'])),gals['StellarMass']*1e10,axes1[j,ii],MassRatio=0,range=([7,9.6],[1,2.7]),redshiftAxes=axes4[0])
     #plt.savefig('/home/mmarshal/results/plots/AngularMomentumMass.pdf', format='pdf')
   
-    plot_y_vs_x(AMratio/massRatio,diskMass,axes2[j,ii],MassRatio=0,Okamura_Fig8=0,range=([7,9],[0.25,1.1]),redshiftAxes=axes4[2])
+    plot_y_vs_x(AMratio/totalMassRatio,stellarMass,axes2[j,ii],MassRatio=0,Okamura_Fig8=0,range=([7,9.6],[0.25,1.1]),redshiftAxes=axes4[2])
     #plt.savefig('/home/mmarshal/results/plots/AngularMomentumMass.pdf', format='pdf')
   
-    plot_y_vs_x(AMratio/massRatio,gals['Mvir']*1e10,axes3[j,ii],MassRatio=0,Okamura_Fig8=0,range=([9.5,12.3],[0.25,1.1]),redshiftAxes=axes4[3])
+    plot_y_vs_x(AMratio/totalMassRatio,gals['Mvir']*1e10,axes3[j,ii],MassRatio=0,Okamura_Fig8=0,range=([9.5,12.6],[0.25,1.1]),redshiftAxes=axes4[3])
 
     
     if j==1:
-      axes1[j,ii].set_xlabel(r'$\log(M_{\ast~\rm{disc}})$')
-      axes2[j,ii].set_xlabel(r'$\log(M_{\ast~\rm{disc}})$')
+      axes1[j,ii].set_xlabel(r'$\log(M_{\ast})$')
+      axes2[j,ii].set_xlabel(r'$\log(M_{\ast})$')
       axes3[j,ii].set_xlabel(r'$\log(M_{\rm{vir}})$')
     else: 
       axes1[j,ii].set_xticklabels([])
       axes2[j,ii].set_xticklabels([])
       axes3[j,ii].set_xticklabels([])
     if ii==0:
-      axes1[j,ii].set_ylabel(r'$\log(j_\ast (\rm{kpc km s}^{-1})$')
+      axes1[j,ii].set_ylabel(r'$\log(j_\ast (\rm{kpc~km~s}^{-1})$')
       axes2[j,ii].set_ylabel(r'$j_\ast/j_{\rm{H}}$')
       axes3[j,ii].set_ylabel(r'$j_\ast/j_{\rm{H}}$')
       #axes[j,ii].set_ylabel(r'$\log(R_e/\mathrm{kpc})$')
@@ -323,17 +351,18 @@ if __name__=='__main__':
     axes3[j,ii].text(11, -3.5, r'$z={}$'.format(redshift[snapshot]))
     
   ##Okamura+17
-  axes4[3].plot([10.9,12.3],[0.77]*2,'--',color=colors[4],label='Okamura et al. (2018)')
-  axes4[3].plot([10.9,12.3],[0.70]*2,':',color=colors[4],label='__nolegend')
-  axes4[3].plot([10.9,12.3],[0.96]*2,':',color=colors[4],label='__nolegend__')
+  axes4[3].plot([10.9,12.3],[0.77]*2,'-',color=colors[4],label='Okamura et al. (2018)',lw=1)
+  axes4[3].fill_between([10.9,12.3],[0.70]*2,[0.96]*2,color=colors[4],alpha=0.2)
+  #axes4[3].plot([10.9,12.3],[0.70]*2,':',color=colors[4],label='__nolegend',lw=1)
+  #axes4[3].plot([10.9,12.3],[0.96]*2,':',color=colors[4],label='__nolegend__',lw=1)
 
 
-  axes4[0].set_ylabel(r'$\log(j_\ast (\rm{kpc km s}^{-1})$')
+  axes4[0].set_ylabel(r'$\log(j_\ast (\rm{kpc~km~s}^{-1})$')
   axes4[2].set_ylabel(r'$j_\ast/j_{\rm{H}}$')
   #axes4[3].set_ylabel(r'$j_\ast/j_{\rm{DM}}$')
   axes4[3].set_yticks([])  
-  axes4[0].set_xlabel(r'$\log(M_{\ast~\rm{disc}})$')
-  axes4[2].set_xlabel(r'$\log(M_{\ast~\rm{disc}})$')
+  axes4[0].set_xlabel(r'$\log(M_{\ast})$')
+  axes4[2].set_xlabel(r'$\log(M_{\ast})$')
   axes4[3].set_xlabel(r'$\log(M_{\rm{vir}})$')
   axes4[1].axis('off')
   axes4[4].axis('off')

@@ -72,20 +72,20 @@ def plot_obs_lum(axes,z):
   #Kawamata+18 (from fit)
   if z==9:
     kaw_mass=np.array([-21.5,-18])
-    axes.plot(kaw_mass,-0.4*0.56*(kaw_mass+21)+np.log10(1.2),'-',color=colors[2],label='Kawamata et al. (2018)')
+    axes.plot(kaw_mass,-0.4*0.56*(kaw_mass+21)+np.log10(1.2),'--',color=colors[2],label='Kawamata et al. (2018)')
   if z==6 or z==7:
     kaw_mass=np.array([-21,-15])
-    axes.plot(kaw_mass,-0.4*0.46*(kaw_mass+21)+np.log10(0.94),'-',color=colors[2],label='Kawamata et al. (2018)')
+    axes.plot(kaw_mass,-0.4*0.46*(kaw_mass+21)+np.log10(0.94),'--',color=colors[2],label='Kawamata et al. (2018)')
   if z==8:
     kaw_mass=np.array([-21.5,-16.5])
-    axes.plot(kaw_mass,-0.4*0.38*(kaw_mass+21)+np.log10(0.81),'-',color=colors[2],label='Kawamata et al. (2018)')
+    axes.plot(kaw_mass,-0.4*0.38*(kaw_mass+21)+np.log10(0.81),'--',color=colors[2],label='Kawamata et al. (2018)')
   
 
   mag=np.array([-18,-21.6])
   if z==4:
-    axes.plot(mag,mag_to_R(1.34,0.22,mag),'-',label='Huang et al. (2013)',color=colors[3],zorder=100) #verified same eqn from original paper
+    axes.plot(mag,mag_to_R(1.34,0.22,mag),'-.',label='Huang et al. (2013)',color=colors[3],zorder=100) #verified same eqn from original paper
   if z==5:
-    axes.plot(mag,mag_to_R(1.19,0.25,mag),'-',label='Huang et al. (2013)',color=colors[3],zorder=100)
+    axes.plot(mag,mag_to_R(1.19,0.25,mag),'-.',label='Huang et al. (2013)',color=colors[3],zorder=100)
   #if z==7:
     #axes.plot(mag,mag_to_R(1.55,1.05,mag),'--',label='Ono et al. (2013)',color=colors[0])
     #axes.plot(mag,mag_to_R(0.86,0.24,mag),'--',label='Grazian et al. (2012)',color=colors[3])
@@ -237,8 +237,8 @@ def make_legend_lum(ax):
     ax.errorbar([0],[0],yerr=[1],color='k',marker='s',markersize=4,label='M19 - Median')
     ax.errorbar([0],[0],yerr=[1],color=[0.5,0.5,0.5],marker='o',markersize=4,label='L16 - Median')
     
-    ax.plot([0,0],[0,0],'-',color=colors[2],label='Kawamata et al. (2018)')
-    ax.plot([0,0],[0,0],'-',label='Huang et al. (2013)',color=colors[3])
+    ax.plot([0,0],[0,0],'--',color=colors[2],label='Kawamata et al. (2018)')
+    ax.plot([0,0],[0,0],'-.',label='Huang et al. (2013)',color=colors[3])
     ax.errorbar(0,0,yerr=1,color=colors[3],marker='h',markersize=5,label='Holwerda et al. (2015)',linestyle='',elinewidth=0.5,capthick=0.5)
     ax.errorbar(0,0,yerr=1,xerr=1,color=colors[0],marker='o',markersize=5,label='Ono et al. (2013)',linestyle='',elinewidth=0.5,capthick=0.5)
     ax.errorbar(0,0,yerr=1,xerr=1,color=colors[4],marker='p',markersize=5,label='Grazian et al. (2012)',linestyle='',elinewidth=0.5,capthick=0.5)
@@ -293,37 +293,38 @@ if __name__=="__main__":
     fit_equation_mass(np.log10(gals_no_cut['StellarMass']*1e10),np.log10(gals_no_cut['StellarDiskScaleLength']*1000*1.67835),axes2[j,ii],snapshot)
 
     #axes2[j,ii].legend(fontsize='small')
-    
-    mag=load_mags(filename,snapshot)
-    mag=mag[selection]
-    mag_default=load_mags(filename_default,snapshot)
-    mag_default=mag_default[selection_default]
-    #mag=mag[(gals['BulgeStellarMass']/gals['StellarMass']<0.3)&(gals['StellarDiskScaleLength']>0)]
-    #gals=gals[(gals['BulgeStellarMass']/gals['StellarMass']<0.3)&(gals['StellarDiskScaleLength']>0)]
-    #gals=gals[selection]
-    #gals_default=gals_default[selection_default]
+    if True: 
+      mag=load_mags(filename,snapshot)
+      mag=mag[selection]
+      mag_default=load_mags(filename_default,snapshot)
+      mag_default=mag_default[selection_default]
+      #mag=mag[(gals['BulgeStellarMass']/gals['StellarMass']<0.3)&(gals['StellarDiskScaleLength']>0)]
+      #gals=gals[(gals['BulgeStellarMass']/gals['StellarMass']<0.3)&(gals['StellarDiskScaleLength']>0)]
+      #gals=gals[selection]
+      #gals_default=gals_default[selection_default]
 
-    if (ii==2):
-      cbar=axes[j,3]
-    else:
-      cbar=False
+      if (ii==2):
+        cbar=axes[j,3]
+      else:
+        cbar=False
    
-    plot_hist2d(mag,np.log10(gals['StellarDiskScaleLength']*1000*1.67835),axes[j,ii],maglims,ylims,cbar=cbar,cmax=6e2)
-    plot_avg(mag_default,np.log10(gals_default['DiskScaleLength']*1000*1.67835),axes[j,ii],maglims,bin_width=1,**{'color':[0.5,0.5,0.5],'marker':'o','markersize':4,'label':'L16 - Median'})
-    plot_avg(mag,np.log10(gals['StellarDiskScaleLength']*1000*1.67835),axes[j,ii],maglims,bin_width=1,**{'color':'k','marker':'s','markersize':4,'label':'M19 - Median'})
-    plot_obs_lum(axes[j,ii],redshift[snapshot])
-    #fit_equation_lum(mag,np.log10(gals['StellarDiskScaleLength']*1000*1.67835),axes[j,ii],snapshot)
-    fit_equation_lum_cut(mag[mag<-18],np.log10(gals['StellarDiskScaleLength'][mag<-18]*1000*1.67835),axes[j,ii],snapshot)
+      plot_hist2d(mag,np.log10(gals['StellarDiskScaleLength']*1000*1.67835),axes[j,ii],maglims,ylims,cbar=cbar,cmax=6e2)
+      plot_avg(mag_default,np.log10(gals_default['DiskScaleLength']*1000*1.67835),axes[j,ii],maglims,bin_width=1,**{'color':[0.5,0.5,0.5],'marker':'o','markersize':4,'label':'L16 - Median'})
+      plot_avg(mag,np.log10(gals['StellarDiskScaleLength']*1000*1.67835),axes[j,ii],maglims,bin_width=1,**{'color':'k','marker':'s','markersize':4,'label':'M19 - Median'})
+      plot_obs_lum(axes[j,ii],redshift[snapshot])
+      #fit_equation_lum(mag,np.log10(gals['StellarDiskScaleLength']*1000*1.67835),axes[j,ii],snapshot)
+      fit_equation_lum_cut(mag[mag<-18],np.log10(gals['StellarDiskScaleLength'][mag<-18]*1000*1.67835),axes[j,ii],snapshot)
 
 
-    #axes[j,ii].legend(fontsize='small')
-    #axes[j,ii].scatter(mag,np.log10(gals['StellarDiskScaleLength']*1000),c=gals['BulgeStellarMass']/gals['StellarMass'])
-    #axes[j,ii].set_xlim(xlims)
-    #axes[j,ii].set_ylim(ylims)
-    #plt.plot(mag,np.log10(gals['StellarDiskScaleLength']*1000))
+      #axes[j,ii].legend(fontsize='small')
+      #axes[j,ii].scatter(mag,np.log10(gals['StellarDiskScaleLength']*1000),c=gals['BulgeStellarMass']/gals['StellarMass'])
+      #axes[j,ii].set_xlim(xlims)
+      #axes[j,ii].set_ylim(ylims)
+      #plt.plot(mag,np.log10(gals['StellarDiskScaleLength']*1000))
+
     if j==1:
       axes[j,ii].set_xlabel('$M_{UV}$')
-      axes2[j,ii].set_xlabel(r'$\log(M_{\ast \textrm{total} }/M_\odot)$')
+      axes2[j,ii].set_xlabel(r'$\log(M_{\ast}/M_\odot)$')
     else: 
       axes[j,ii].set_xticklabels([])
       axes2[j,ii].set_xticklabels([])

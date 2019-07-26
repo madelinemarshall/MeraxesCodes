@@ -5,7 +5,6 @@ from dragons import meraxes
 import os
 import matplotlib
 import matplotlib.pyplot as plt
-from _load_data import load_data
 import sys
 sys.path.append('/home/mmarshal/simulation_codes')
 
@@ -29,6 +28,16 @@ cosmo = {'omega_M_0' : 0.308,
 'n' : 0.968,
 'sigma_8' : 0.815
 }
+
+def load_data(filename,snapshot,cosmo):
+  data_folder='/home/mmarshal/data_dragons/'
+  meraxes_loc='/output/meraxes.hdf5'
+  gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
+      snapshot=snapshot,props=['StellarMass','GhostFlag','BlackHoleMass','BulgeStellarMass','AMstars','Spin','Vvir','Rvir','Mvir'],\
+      h=cosmo['h'],quiet=True)
+  gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
+  return gals
+
 
 def plot_hist2d(xdata,ydata,axes,xlims,ylims):
   H, xedges, yedges, img=axes.hist2d(xdata, ydata, bins=40, range=[xlims,ylims], weights=None, cmin=1, cmax=None, data=None,cmap='Blues',norm=matplotlib.colors.LogNorm())
@@ -96,25 +105,25 @@ def plot_y_vs_x(y,x,axes,T125=0,range=None,redshiftAxes=None):
 def plot_AMF(data,boxwidth,axes,**kwargs):
     maxval=np.nanmax(np.log10(data[data>0])) 
     minval=np.nanmin(np.log10(data[data>0]))
-    hist, bin_edges = np.histogram(np.log10(data[data>0]),range=(minval,maxval),bins=30)
+    hist, bin_edges = np.histogram(np.log10(data[data>0]),range=(minval,maxval),bins=60)
     bin_edges=np.array(bin_edges, dtype=np.float128)
     Max=bin_edges[0:-1] + (bin_edges[1]-bin_edges[0])/2.
-    Max=Max[hist>5]
-    hist=hist[hist>5]
-    hist_plus=hist+np.sqrt(hist)
-    hist_minus=hist-np.sqrt(hist)
+    #Max=Max[hist>5]
+    #hist=hist[hist>5]
+    #hist_plus=hist+np.sqrt(hist)
+    #hist_minus=hist-np.sqrt(hist)
     phi=np.log10(hist/(bin_edges[1]-bin_edges[0])/boxwidth**3)
-    phi_plus=np.log10(hist_plus/(bin_edges[1]-bin_edges[0])/boxwidth**3)
-    phi_minus=np.log10(hist_minus/(bin_edges[1]-bin_edges[0])/boxwidth**3)
+    #phi_plus=np.log10(hist_plus/(bin_edges[1]-bin_edges[0])/boxwidth**3)
+    #phi_minus=np.log10(hist_minus/(bin_edges[1]-bin_edges[0])/boxwidth**3)
     axes.plot(Max,phi,**kwargs)
-    axes.fill_between(Max, phi_plus, phi_minus, alpha=0.5,color=kwargs['color'],label='__nolegend__')
+    #axes.fill_between(Max, phi_plus, phi_minus, alpha=0.5,color=kwargs['color'],label='__nolegend__')
     axes.set_ylabel(r'$\phi$')
     return axes
 
 
 if __name__=='__main__':
-  filename='draft2_reion'#str(sys.argv[1])#'bulges_update0915_ddsf'
-  filename_T125='draft2_reion_T125'
+  filename='paper1'#str(sys.argv[1])#'bulges_update0915_ddsf'
+  filename_T125='paper1_T125'
   
   fig1,axes1=plt.subplots(3,3,gridspec_kw = {'wspace':0, 'hspace':0,'height_ratios':[3,3,1]})
   fig2,axes2=plt.subplots(3,3,gridspec_kw = {'wspace':0, 'hspace':0,'height_ratios':[3,3,1]})
@@ -131,39 +140,41 @@ if __name__=='__main__':
   ii=-1
   j=0
   #for snapshot in np.flip([63,78,100,116,134,158],0):
-  for snapshot in np.flip([100,116,134,158],0):
+  for snapshot in np.flip([100,116,134,158,250],0):
     ii+=1
     if ii==3:
       j+=1
       ii=0
-    gals=load_data(filename,snapshot,props='All')
-    #gals=gals[gals['Type']==0]
-    #gals=gals[(gals['Mvir']>1e2)
-    gals_T125=load_data(filename_T125,snapshot,props='All')
-    #gals_T125=gals_T125[gals_T125['Type']==0]
+    
+    if snapshot<160: 
+      gals=load_data(filename,snapshot,cosmo)
+      AM=np.sqrt(gals['AMstars'][:,0]**2+gals['AMstars'][:,1]**2+gals['AMstars'][:,2]**2)
+      diskMass=gals['StellarMass']-gals['BulgeStellarMass']
+      AMhalo=gals['Spin']*np.sqrt(2)*gals['Vvir']*gals['Rvir']
+      plot_y_vs_x(np.log10((AMhalo)),gals['Mvir'],axes1[j,ii],T125=0,redshiftAxes=axes4[2],range=([0,3],[0,3]))
+      plot_y_vs_x(np.log10((AMhalo)/(gals['Mvir'])),gals['Mvir'],axes1[j,ii],T125=0,redshiftAxes=axes4[0],range=([0,3],[0,0.7]))
+      plot_AMF(AMhalo,100,axes5,**{'color':color[snapshot],'label':'T z={}'.format(redshift[snapshot])})
+      plot_AMF(AM,100,axes6,**{'color':color[snapshot],'label':'T z={}'.format(redshift[snapshot])})
+      plot_AMF(AM[diskMass>0]/diskMass[diskMass>0]*1e3,100,axes7,**{'color':color[snapshot],'label':'T z={}'.format(redshift[snapshot])})
+    
+
+    gals_T125=load_data(filename_T125,snapshot,cosmo)
   
-    AM=np.sqrt(gals['AMstars'][:,0]**2+gals['AMstars'][:,1]**2+gals['AMstars'][:,2]**2)
     AM_T125=np.sqrt(gals_T125['AMstars'][:,0]**2+gals_T125['AMstars'][:,1]**2+gals_T125['AMstars'][:,2]**2)
-    diskMass=gals['StellarMass']-gals['BulgeStellarMass']
     diskMass_T125=gals_T125['StellarMass']-gals_T125['BulgeStellarMass']
-    AMhalo=gals['Spin']*np.sqrt(2)*gals['Vvir']*gals['Rvir']
     AMhalo_T125=gals_T125['Spin']*np.sqrt(2)*gals_T125['Vvir']*gals_T125['Rvir']
 
-    plot_y_vs_x(np.log10((AMhalo)/(gals['Mvir'])),gals['Mvir'],axes1[j,ii],T125=0,redshiftAxes=axes4[0],range=([0,3],[0,0.7]))
     plot_y_vs_x(np.log10((AMhalo_T125)/(gals_T125['Mvir'])),gals_T125['Mvir'],axes1[j,ii],T125=1,redshiftAxes=axes4[0],range=([0,3],[0,0.7]))
-    plot_y_vs_x(np.log10((AMhalo)),gals['Mvir'],axes1[j,ii],T125=0,redshiftAxes=axes4[2],range=([0,3],[0,3]))
     plot_y_vs_x(np.log10((AMhalo_T125)),gals_T125['Mvir'],axes1[j,ii],T125=1,redshiftAxes=axes4[2],range=([0,3],[0,3]))
     
-    plot_AMF(AMhalo,100,axes5,**{'color':color[snapshot],'label':'T z={}'.format(redshift[snapshot])})
     plot_AMF(AMhalo_T125,125/cosmo['h'],axes5,**{'color':color[snapshot],'label':'T125 z={}'.format(redshift[snapshot]),'linestyle':'--'})
-    axes5.set_xlabel(r'Halo j')
-    plot_AMF(AM,100,axes6,**{'color':color[snapshot],'label':'T z={}'.format(redshift[snapshot])})
     plot_AMF(AM_T125,125/cosmo['h'],axes6,**{'color':color[snapshot],'label':'T125 z={}'.format(redshift[snapshot]),'linestyle':'--'})
-    axes6.set_xlabel(r'Galaxy J (km/s Mpc)')
-    plot_AMF(AM[diskMass>0]/diskMass[diskMass>0],100,axes7,**{'color':color[snapshot],'label':'T z={}'.format(redshift[snapshot])})
-    plot_AMF(AM_T125[diskMass_T125>0]/diskMass_T125[diskMass_T125>0],125/cosmo['h'],axes7,**{'color':color[snapshot],'label':'T125 z={}'.format(redshift[snapshot]),'linestyle':'--'})
-    axes7.set_xlabel(r'Galaxy j (km/s Mpc)')
+    plot_AMF(AM_T125[diskMass_T125>0]/diskMass_T125[diskMass_T125>0]*1e3,125/cosmo['h'],axes7,**{'color':color[snapshot],'label':'T125 z={}'.format(redshift[snapshot]),'linestyle':'--'})
+
+  axes5.set_xlabel(r'Halo j')
   axes5.legend()
+  axes6.set_xlabel(r'Galaxy J (km/s Mpc)')
   axes6.legend()
   axes7.legend()
+  axes7.set_xlabel(r'Galaxy j (km/s kpc)')
   plt.show()
