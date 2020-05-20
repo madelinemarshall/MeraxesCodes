@@ -2,26 +2,26 @@ import numpy as np
 from dragons import meraxes
 import os
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import pandas as pd
 from astrodatapy.number_density import number_density
 import itertools
+from _load_data import load_data
 
 def flip(items, ncol):
   return itertools.chain(*[items[i::ncol] for i in range(ncol)])
 
 #Sets plot defaults
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (7.3,3)
+matplotlib.rcParams['figure.figsize'] = (7.3,4)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 colors         = ['#e41a1c','#377eb8','#4daf4a','#984ea3',\
                   '#ff7f00','#a65628','#f781bf','#98ff98']*4
 color_maps     = ['Reds', 'Blues', 'Greens'] *4
-markers        = ['o','s','v','^','<','>','p','*','D','8']*4
-linestyles     = ['-','-.']*4
+markers        = ['o','s','D','>','p','*','^','8','<','v']*4
+linestyles     = ['-','-.','--']*4
 
 cosmo = {'omega_M_0' : 0.308,
 'omega_lambda_0' : 0.692, 'omega_b_0' : 0.04839912,
@@ -97,57 +97,67 @@ def plot_obs(ax,z,make_legend,labels_dict,jj):
             k_func +=1
     return jj
 
-
 def make_legend(ax):
-    plot_SMF(gals_bulges,prop,vol,ax,**{'linestyle':'-','label':'M19 Meraxes\n(Tiamat)','linewidth':2,'color':'k','zorder':1000})
-    plot_SMF(gals_default,prop,vol_def,ax,**{'linestyle':'-','label':'Q17 Meraxes\n(Tiamat)','linewidth':2,'color':[0.35,0.35,0.35],'zorder':999})
-    plot_SMF(gals_125,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'M19 Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':'k','zorder':1001})
-    plot_SMF(gals_default,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'Q17 Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':[0.35,0.35,0.35],'zorder':1001})
+    plot_SMF(gals_bulges,prop,vol,ax,**{'linestyle':'-','label':'Meraxes\n(Tiamat)','linewidth':2,'color':'k','zorder':1000})
+    plot_SMF(gals_125,prop,125/cosmo['h'],ax,**{'linestyle':'--','label':'Meraxes\n(Tiamat-125-HR)','linewidth':1,'color':'k','zorder':1001})
+    ax.plot([0,0],[0,0],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
     labels_dict={}
     kk=0
-    for snapshot in [52,63,78,100,116,134,158,250]:
+    for snapshot in [52,78,116,158,250]:
       kk=plot_obs(ax,redshift[snapshot],1,labels_dict,kk)
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(flip(handles, 4), flip(labels, 4),fontsize='small',ncol=4,loc=(-1.635,0))
+    ax.legend(flip(handles, 4), flip(labels, 4),fontsize='small',ncol=4,loc=(-1.35,-0.3))#(-1.635,0))
     ax.axis('off')
     ax.set_xlim(8,8.1)
     ax.set_ylim(-6,-5.8)
-
-def load_data(filename,snapshot,prop,cosmo):
-  data_folder='/home/mmarshal/data_dragons/'
-  gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
-      snapshot=snapshot,props=[prop,'GhostFlag'],\
-      h=cosmo['h'],quiet=True)
-  gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
-  return gals
+    return
 
 
 if __name__=="__main__":
   redshift={52:8,63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,250:0}
   prop='StellarMass'
 
-  filename125='tuning_Tiamat/'
-  meraxes_loc=str(sys.argv[1])
+  filename='paper2'
+  vol=100
+  filename125='paper2_T125'
   labels_dict={}
-  fig, axes = plt.subplots(1, 4,gridspec_kw = {'wspace':0, 'hspace':0})
+  fig, axes = plt.subplots(2, 5,gridspec_kw = {'wspace':0, 'hspace':0,'height_ratios':[3,2]})
+  ii=-1
+  j=0
   kk=0
-  for ii, snapshot in enumerate([63,78,116,158]):
-    gals_125=load_data(filename125,snapshot,prop,cosmo)
-
-    plot_SMF(gals_125,prop,100,axes[ii],**{'linestyle':'-','label':'M19 Meraxes\n (Tiamat-125-HR)','linewidth':2,'color':'k','zorder':1002})
-    kk=plot_obs(axes[ii],redshift[snapshot],0,labels_dict,kk)
-
-
-    axes[ii].set_xlabel(r'$\log(M_\ast/M_\odot$)')
-    if ii==0:
-      axes[ii].set_ylabel(r'$\log(\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3})$')
+  for snapshot in [52,78,116,158,250]:
+    ii+=1
+    if (snapshot!=194)&(snapshot!=250):
+      gals_bulges=load_data(filename,snapshot,prop)
     else:
-      axes[ii].set_yticklabels([])
-    axes[ii].set_xlim([7.5,12.3])
-    axes[ii].set_ylim([-5.8,-1.5])
-    axes[ii].text(8.1, -5.6, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
-    axes[ii].grid(color=[0.8,0.8,0.8],linestyle='--')
+      gals_125=load_data(filename125,snapshot,prop)
 
-  plt.tight_layout()
-  plt.savefig('/home/mmarshal/results/plots/tuning_paper2/Tiamat/SMF_{}.pdf'.format(int(meraxes_loc[-8:-5])),format='pdf')
+    if (snapshot!=194)&(snapshot!=250):
+      plot_SMF(gals_bulges,prop,vol,axes[0,ii],**{'linestyle':'-','label':'Meraxes (Tiamat)','linewidth':2,'color':'k','zorder':1000})
+    else:
+      plot_SMF(gals_125,prop,125/cosmo['h'],axes[0,ii],**{'linestyle':'--','label':'Meraxes (Tiamat-125-HR)','linewidth':2,'color':'k','zorder':1002})
+    kk=plot_obs(axes[0,ii],redshift[snapshot],0,labels_dict,kk)
+
+
+    axes[0,ii].set_xlabel(r'$\log(M_\ast/M_\odot$)')
+    if ii==0:
+      axes[0,ii].set_ylabel(r'$\log(\Phi\,/\,\mathrm{dex}^{-1}\,\mathrm{Mpc}^{-3})$')
+    else:
+      axes[0,ii].set_yticklabels([])
+    axes[0,ii].set_xlim([7,12.3])
+    axes[0,ii].set_ylim([-5.8,-0.6])
+    axes[0,ii].text(7.1, -5.6, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
+    axes[0,ii].grid(color=[0.8,0.8,0.8],linestyle='--')
+
+  axes[0,-1].plot([8.65,8.65],[-6.5,1],'--',color=[0.5,0.5,0.5],label='Convergence Limit')
+  
+  make_legend(axes[1,1])
+  axes[1,0].axis('off')
+  axes[1,1].axis('off')
+  axes[1,2].axis('off')
+  axes[1,3].axis('off')
+  axes[1,4].axis('off')
+  plt.subplots_adjust(left=0.07, right=0.97)
+  #plt.tight_layout()
+  plt.savefig('/home/mmarshal/results/plots/Paper2/SMF.pdf',format='pdf')
   plt.show()

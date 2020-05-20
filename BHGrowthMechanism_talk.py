@@ -9,7 +9,7 @@ import pandas as pd
 
 #Sets plot defaults
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (3.6,3.6)
+matplotlib.rcParams['figure.figsize'] = (5,3.6)
 #matplotlib.rcParams['font.size'] = (12)
 #matplotlib.rcParams['figure.figsize'] = (8.27,6)
 #plt.rc('text', usetex=True)

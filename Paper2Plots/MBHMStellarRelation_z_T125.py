@@ -2,6 +2,7 @@ import numpy as np
 from dragons import meraxes
 import os
 import matplotlib
+matplotlib.use('Agg')
 import sys
 sys.path.append('/home/mmarshal/simulation_codes/Yuxiang/')
 sys.path.append('/home/mmarshal/simulation_codes')
@@ -198,7 +199,7 @@ if __name__=='__main__':
   snapshots=[78,100,116,134,158]
   prop='StellarMass'
   color={63:'pink',78:'#ff7f00',100:'#a65628',116:'#e41a1c',134:'yellow',100:'#4daf4a',158:'#f781bf',194:'#a65628',250:'black'}
-  filename='paper2'
+  filename='paper2_T125'
 
   ##OPTIONS	
   plot_type=1 #Plot MBH vs Mstellar and Mbulge (1) or vs Mbulge for different bulge types (2)
@@ -238,9 +239,9 @@ if __name__=='__main__':
   plt.tight_layout()
   lgd=ax[0].legend(fontsize='small',loc='upper left')#, bbox_to_anchor=(1.13, 0.7))  
   if plot_type==1:
-    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_T125.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   else:
-    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_BulgeType.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_BulgeType_T125.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
   fit_params=fit_params.astype(float)
   fit_params=fit_params.round({'a':3,'a_err': 3,'a_B':3,'a_err_B':3,'b':2,'b_err': 2,'b_B':2,'b_err_B': 2,'s': 2,'s_B':2,'N':0})

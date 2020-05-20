@@ -96,6 +96,35 @@ def _quasar_luminosity_boot(BHM, accretedColdBHM, delta_t,Nboot=100, eta=0.1, Ed
 
     return QuasarLuminosity
 
+def _AGN_luminosity_boot(BHM, accretedHotBHM, accretedColdBHM, delta_t,Nboot=100, eta=0.1, EddingtonRatio=1.0,seed=None):
+    if len(BHM)!=len(accretedHotBHM) or len(BHM)!=len(accretedColdBHM):
+        print("BHM and accretedBHM should have the same length!!")
+        return -1
+    
+    if seed: np.random.seed(seed=seed)
+    glow_time = np.random.random([Nboot,len(BHM)]) * delta_t
+   
+    m0=BHM
+    QuasarLuminosity=np.zeros((Nboot,len(BHM)))  
+    AGNLuminosity=np.zeros((Nboot,len(BHM)))
+
+    #Quasar mode
+    m0 -= (1.- eta)*accretedColdBHM 
+    accretion_timeQ = np.log(accretedColdBHM/m0 +1.)*eta*450./EddingtonRatio
+    QuasarLuminosity = solarM2L*EddingtonRatio*m0*np.exp(EddingtonRatio*glow_time/eta/450.)/450.
+    QuasarLuminosity[glow_time>accretion_timeQ]=0 
+    QuasarLuminosity[:,accretedColdBHM<=0]=0
+      
+    #Radio mode
+    m0 -= (1.0 - eta)*accretedHotBHM
+    accretion_timeR = np.log(accretedHotBHM/m0 +1.)*eta*450./EddingtonRatio
+    AGNLuminosity = solarM2L*EddingtonRatio*m0*np.exp(EddingtonRatio*glow_time/eta/450.)/450.
+    AGNLuminosity[glow_time>accretion_timeR]=0
+    AGNLuminosity[:,accretedHotBHM==0]=0
+
+    return QuasarLuminosity+AGNLuminosity
+
+
 from scipy import integrate
 def _mass_weighted_electron_optical_depth(z_list, xHII, OmegaM, OmegaB, Hubble_h):
 

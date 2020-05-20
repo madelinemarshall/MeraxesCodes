@@ -128,8 +128,8 @@ if __name__=="__main__":
   prop='BlackHoleMass'
   
   
-  filename_default='paper1'
-  filename_default125='paper1_T125'
+  filename_default='paper2_nofeedback'
+  filename_default125='paper2_nofeedback_T125'
   filename='paper2'
   meraxes_loc2='/output/'+'meraxes'+'.hdf5'
   boxwidth=100
@@ -137,34 +137,26 @@ if __name__=="__main__":
   plot_z0=1
 
   if plot_z0:
-    snapshots=[63,78,100,116,134,158,192,250]
+    snapshots=[78,116,158,250]
   else:
-    snapshots=[63,78,100,116,134,158]
+    snapshots=[78,116,158]
 
   fig, axes = plt.subplots(1,1)
   for snapshot in snapshots:
     if (snapshot<164):
-      #gals_default=load_data(filename_default,meraxes_loc,snapshot,prop,cosmo)
       gals_bulges=load_data(filename,meraxes_loc2,snapshot,prop,cosmo)
       plot_BHMF(gals_bulges,prop,boxwidth,axes,**{'linestyle':'-','label':'$z={}$'.format(redshift[snapshot]),'linewidth':2,'color':color[snapshot],'zorder':101})
-      #gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
-      #plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2.5,'color':color[snapshot],'zorder':101})
-      #plot_BHMF(gals_125,prop,125/cosmo['h'],axes[1],**{'linestyle':'-','label':'Bulge Model\n (Tiamat-125-HR)','linewidth':0.8,'color':'Purple','zorder':101})
-      #plot_BHMF(gals_default,prop,100,axes,**{'linestyle':'-','label':'Default Meraxes','linewidth':2.5,'color':'C9','zorder':102})
-      gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
-      plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'__nolabel__'.format(redshift[snapshot]),'linewidth':1.5,'color':color[snapshot],'zorder':101})
+      gals_def=load_data(filename_default,meraxes_loc,snapshot,prop,cosmo)
+      plot_BHMF(gals_def,prop,boxwidth,axes,**{'linestyle':':','label':'$z={}$ No feedback'.format(redshift[snapshot]),'linewidth':2,'color':color[snapshot],'zorder':101})
     elif snapshot==250:
       gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
-      plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':2,'color':color[snapshot],'zorder':101})
-      gals_def=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
-      plot_BHMF(gals_def,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'M19 Meraxes\n$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':1,'color':[0.8,0.8,0.8],'zorder':101})
-    else:
-      gals_125=load_data(filename125,meraxes_loc2,snapshot,prop,cosmo)
       plot_BHMF(gals_125,prop,125/cosmo['h'],axes,**{'linestyle':'--','label':'$z={}$ (Tiamat-125-HR)'.format(redshift[snapshot]),'linewidth':1.5,'color':color[snapshot],'zorder':101})
+      gals_def=load_data(filename_default125,meraxes_loc,snapshot,prop,cosmo)
+      plot_BHMF(gals_def,prop,125/cosmo['h'],axes,**{'linestyle':':','label':'$z={}$ (Tiamat-125-HR) \nNo feedback'.format(redshift[snapshot]),'linewidth':2,'color':color[snapshot],'zorder':101})
   
   #plot_obs(axes,0)
-  plot_Davis(axes)
-  plot_Shankar(axes)
+  #plot_Davis(axes)
+  #plot_Shankar(axes)
   #plot_derived(axes)
   #plot_obs(axes,0.5)
   axes.set_xlabel(r'$\log (\mathrm{M}_{\mathrm{BH}}/M_\odot)$')
@@ -179,7 +171,7 @@ if __name__=="__main__":
   #fig.subplots_adjust(hspace=0, wspace=0)
   #plt.tight_layout()
   ##plt.savefig('/home/mmarshal/PhD/plots/BHMF.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
-  plt.savefig('/home/mmarshal/results/plots/Paper2/BHMF_T125.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/Paper2/BHMF_nofeedback.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
 
 

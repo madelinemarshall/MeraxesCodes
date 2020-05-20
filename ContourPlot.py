@@ -20,24 +20,24 @@ def density_estimation(m1, m2):
     return X, Y, Z
 
 
-def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=None,levels=None,linewidth=2.5):
+def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=None,levels=None,linewidth=2.5,linestyle='-'):
     X,Y,Z=density_estimation(x,y)
     Z=Z/np.sum(Z)
     n = 1000
     t = np.linspace(0, np.amax(Z), n)
     integral = ((Z >= t[:, None, None]) * Z).sum(axis=(1,2))
     f = interpolate.interp1d(integral, t)
-    if levels==None:
-      levels = f(np.array([0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]))
-    else:
+    if levels.all():
       levels = f(np.array(np.flip(levels,0)))
+    else:  
+      levels = f(np.array([0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]))
 
 
     if axes==None:
       #if levels==None:
       #  plt.contour(X, Y, Z,colors=colors,linewidths=linewidth)
       #else:
-      plt.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth)
+      plt.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth,linestyles=linestyle)
       if xlab is not None:
         plt.xlabel('{}'.format(xlab))
       if ylab is not None:
@@ -60,7 +60,7 @@ def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=
       #levels=[10,20,30,40,50,60,70,80,90]/max(Z)
       
 
-      CS=axes.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth)
+      CS=axes.contour(X, Y, Z,colors=colors,levels=levels,linewidths=linewidth,linestyles=linestyle)
       #axes.clabel(CS, inline=1, fontsize=10)
       if xlab is not None:
         axes.set_xlabel('{}'.format(xlab))
@@ -74,4 +74,8 @@ def contour_plot(x,y,xlab=None,ylab=None,xlims=None,ylims=None,axes=None,colors=
         axes.set_ylim([min(y),max(y)])
       else:
         axes.set_ylim(ylims);
-#    plt.show()
+    #    plt.show()
+    return
+
+
+

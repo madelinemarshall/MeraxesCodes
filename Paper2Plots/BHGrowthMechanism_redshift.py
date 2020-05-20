@@ -38,7 +38,7 @@ if __name__=="__main__":
       gals_bulges=load_data(filename,snapshot,props)
       gals_bulges_past=load_data(filename,snapshot-1,props)
       jj=0
-      for BHlimit in [6,7,8]:
+      for BHlimit in [6]:
         gals_bulges=gals_bulges[gals_bulges['BlackHoleMass']*1e10>10**BHlimit]
         gals_bulges_past=gals_bulges_past[gals_bulges_past['BlackHoleMass']*1e10>10**BHlimit]
         BHgrowth[ii,jj]=(np.sum(gals_bulges['BlackHoleMass'])-np.sum(gals_bulges_past['BlackHoleMass']))/len(gals_bulges)
@@ -55,10 +55,10 @@ if __name__=="__main__":
       axes.plot(np.array(list(redshift.values())),BHgrowth_Coalescence[:,jj]/BHgrowth[:,jj],lines[jj],label='BH-BH Coalescence',color=colors[2],lw=2.5)
       axes.plot(np.array(list(redshift.values())),BHgrowth_Radio[:,jj]/BHgrowth[:,jj],lines[jj],label='Radio-Mode',color=colors[1],lw=2.5)
       if jj==0:
-        axes.plot(0,0,'-',color=colors[1],label=r'$M_{\rm{BH}}>10^6M_\odot$',lw=2.5) 
-        axes.plot(0,0,'--',color=colors[1],label=r'$M_{\rm{BH}}>10^7M_\odot$',lw=2.5) 
-        axes.plot(0,0,':',color=colors[1],label=r'$M_{\rm{BH}}>10^8M_\odot$',lw=2.5) 
-        lgd=plt.legend(loc='upper center', bbox_to_anchor=(0.45, -0.2),ncol=2)
+      #  axes.plot(0,0,'-',color=colors[1],label=r'$M_{\rm{BH}}>10^6M_\odot$',lw=2.5) 
+      #  axes.plot(0,0,'--',color=colors[1],label=r'$M_{\rm{BH}}>10^7M_\odot$',lw=2.5) 
+      #  axes.plot(0,0,':',color=colors[1],label=r'$M_{\rm{BH}}>10^8M_\odot$',lw=2.5) 
+        lgd=plt.legend(loc='upper center', bbox_to_anchor=(0.45, -0.2))
       jj+=1
   
   axes.set_xlabel('Redshift')

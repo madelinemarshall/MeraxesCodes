@@ -16,7 +16,7 @@ random.seed(2)
 #Sets plot defaults
 import matplotlib
 matplotlib.rcParams['font.size'] = (9)
-matplotlib.rcParams['figure.figsize'] = (7.6,2.5)
+matplotlib.rcParams['figure.figsize'] = (7.6,2.1)
 #matplotlib.rcParams['font.size'] = (12)
 #matplotlib.rcParams['figure.figsize'] = (8.27,6)
 plt.rc('text', usetex=True)
@@ -147,25 +147,29 @@ def plot_obsQLF_B(ax,z,make_legend,labels_dict,jj):
 def plot_obsQLF_X(axes,z):
     erg_conv=1/(3.839*1e33)
     ##Ebrero+09
+    if z<1:
+      L=np.logspace(40,47)
+    if z==1:
+      L=np.logspace(40.5,47)
     if z==2:
       L=np.logspace(41,47)
     elif z==3:
       L=np.logspace(42,47)
-    if (z==3) or (z==2):
+    if z<=3:
       Ebrero={'A':4.78*(cosmo['h']/0.7)**3,'L0':10**(43.91)*(cosmo['h']/0.7)**-2,'gamma1':0.96,'gamma2':2.35,'p1':4.07,'p2':-1.5,'zc':1.9,'La':10**(44.6)*(cosmo['h']/0.7)**-2,'alpha':0.245}
-      axes.plot(np.log10(L*erg_conv),obsLF(L,z,Ebrero),label='Ebrero et al. (2009)',linestyle=':',color='#ffbf00',linewidth=2)
+      axes.plot(np.log10(L*erg_conv),obsLF(L,z,Ebrero),label='Ebrero et al. (2009)',linestyle=':',color='#ffbf00',linewidth=1.5)
 
     L=np.logspace(42.5,47)
     # La Franca + (model 4) ??no h dependence of L0 and La mentioned in text??
     if z<=4:
       LaFranca={'A':1.21*(cosmo['h']/0.7)**3,'L0':10**(44.25)*(cosmo['h']/0.7)**-2,'gamma1':1.01,'gamma2':2.38,'p1':4.62,'p2':-1.15,'zc':2.29,'La':10**(45.74)*(cosmo['h']/0.7)**-2,'alpha':0.22}
-      axes.plot(np.log10(L*erg_conv),obsLF(L,z,LaFranca),label='La Franca et al. (2005)',linestyle='--',color=colors[2],linewidth=2)
+      axes.plot(np.log10(L*erg_conv),obsLF(L,z,LaFranca),label='La Franca et al. (2005)',linestyle='--',color=colors[2],linewidth=1.5)
 
     
     if z<=3:
       L=np.logspace(44,47)
       Ueda={'A':5.04*(cosmo['h']/0.7)**3,'L0':10**(43.94)*(cosmo['h']/0.7)**-2,'gamma1':0.86,'gamma2':2.23,'p1':4.23,'p2':-1.5,'zc':1.9,'La':10**(44.6)*(cosmo['h']/0.7)**-2,'alpha':0.335}
-      axes.plot(np.log10(L*erg_conv),obsLF(L,z,Ueda),label='Ueda et al. (2003)',linestyle='-.',color=colors[3],linewidth=2)
+      axes.plot(np.log10(L*erg_conv),obsLF(L,z,Ueda),label='Ueda et al. (2003)',linestyle='-.',color=colors[3],linewidth=1.5)
     
     #Yencho={'A':(1e6*10**(-6.140))*(cosmo['h']/0.7)**3,'L0':10**(44.40)*(cosmo['h']/0.7)**-2,'gamma1':0.872,'gamma2':2.36,'p1':3.61,'p2':-2.83,'zc':2.18,'La':10**(45.09)*(cosmo['h']/0.7)**-2,'alpha':0.208}
     #axes.plot(np.log10(L*erg_conv),obsLF(L,z,Yencho))
@@ -195,14 +199,14 @@ def make_legend(ax):
     #labels_dict={}
     #kk=0
     ax.plot([0,0.1],[0,0.1],**{'linestyle':'-','label':'This Work','linewidth':1.5,'color':'k','zorder':0})
-    ax.plot([0,0.1],[0,0.1],**{'linestyle':'--','label':'M19 Meraxes','linewidth':1.5,'color':'gray','zorder':1})
+    ax.plot([0,0.1],[0,0.1],**{'linestyle':':','label':'M19 Meraxes','linewidth':1,'color':[0.7,0.7,0.7],'zorder':1})
     for snapshot in [78,100,116,134]:
       #kk=plot_obs(ax,redshift[snapshot],1,labels_dict,kk)
       plot_Kulkarni(redshift[snapshot]-0.2,redshift[snapshot]+0.2,ax,10)
     ax.plot([0,0.1],[0,0.1],**{'linestyle':'-','label':'Kulkarni et al. (2019)','linewidth':1.5,'color':'#ffbf00','zorder':3})
     handles, labels = ax.get_legend_handles_labels()
     #ax.legend(flip(handles, 4), flip(labels, 4),fontsize='small',ncol=4,loc=(0,0))
-    lgd=ax.legend(fontsize='small',loc=(0.04,-0.02))
+    lgd=ax.legend(fontsize='small',loc=(0.04,-0.1))
     ax.axis('off')
     ax.set_xlim(8,8.1)
     ax.set_ylim(-6,-5.8)
@@ -223,37 +227,48 @@ if __name__=="__main__":
   }
   data_folder='/home/mmarshal/data_dragons/'
   meraxes_loc='/output/meraxes.hdf5'
-  redshift={63:7,78:6,100:5,116:4,134:3,158:2,194:0.95,213:0.55}
+  redshift={63:7,78:6,100:5,116:4,134:3,158:2,192:1,250:0,235:0.2}
   prop='BlackHoleMass'
   
   filename='paper2'
   filename_def='paper1'
+  filename_T125='paper2_T125'
+  filename_def_T125='paper1_T125'
   eta={filename:0.06,filename_def:0.2}
   fname_d=data_folder+filename_def+meraxes_loc
   fname_1=data_folder+filename+meraxes_loc
+  fname_d_125=data_folder+filename_def_T125+meraxes_loc
+  fname_1_125=data_folder+filename_T125+meraxes_loc
   #fname_2=data_folder+filename125+meraxes_loc
   
-  fig, axes = plt.subplots(1, 5,gridspec_kw = {'wspace':0, 'hspace':0})
+  fig, axes = plt.subplots(1, 7,gridspec_kw = {'wspace':0, 'hspace':0})
   ii=-1
   j=0
   kk=0
   labels_dict={}
   #for snapshot in [78,100,116,134]:
-  for snapshot in [100,116,134,158]:
+  for snapshot in [100,116,134,158,192,235]:
   #for snapshot in [78,116,158,213]:
     ii+=1
-    if (snapshot<160):
-      gals_default=load_data(filename_def,snapshot,[prop,'BlackHoleAccretedColdMass','GhostFlag','dt'])
-      gals_bulges=load_data(filename,snapshot,[prop,'BlackHoleAccretedColdMass','GhostFlag','dt'])
-
-    if (snapshot<160):
+    if (snapshot<=158):
+      gals_default=load_data(filename_def,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
+      gals_bulges=load_data(filename,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
       calculateQLF(gals_bulges,fname_1,'UV',axes[ii],eta=eta[filename],**{'linestyle':'-','label':'This Work','linewidth':1.5,'color':'k','zorder':100})
-      calculateQLF(gals_default,fname_d,'UV',axes[ii],eta=eta[filename_def],**{'linestyle':'--','label':'M19 Meraxes','linewidth':1.5,'color':'gray','zorder':102})
+      calculateQLF(gals_default,fname_d,'UV',axes[ii],eta=eta[filename_def],**{'linestyle':':','label':'M19 Meraxes','linewidth':1,'color':[0.7,0.7,0.7],'zorder':102})
+    else:
+      gals_default=load_data(filename_def_T125,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
+      calculateQLF(gals_default,fname_d_125,'UV',axes[ii],eta=eta[filename_def],**{'linestyle':':','label':'M19 Meraxes','linewidth':1,'color':[0.7,0.7,0.7],'zorder':102})
+
+      gals_bulges=load_data(filename_T125,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
+      calculateQLF(gals_bulges,fname_1_125,'UV',axes[ii],eta=eta[filename],**{'linestyle':':','label':'This Work','linewidth':1.5,'color':'k','zorder':100})
     #if (snapshot==158)|(snapshot==213):
     #  kk=plot_obsQLF_B(axes[ii],redshift[snapshot],0,labels_dict,kk)
     #  axes[ii].set_xlabel(r'$M_{B}$)')
     #else:
-    plot_Kulkarni(redshift[snapshot]-0.2,redshift[snapshot]+0.2,axes[ii],10)#00)
+    if snapshot>200:
+      plot_Kulkarni(0,0.4,axes[ii],10)#00)
+    else:
+      plot_Kulkarni(redshift[snapshot]-0.2,redshift[snapshot]+0.2,axes[ii],100)#00)
     axes[ii].set_xlabel(r'$M_{1450}$')
 
     if ii==0:
@@ -264,29 +279,37 @@ if __name__=="__main__":
     axes[ii].set_xlim([-18,-29])
     axes[ii].set_ylim([-10,-4.7])
     axes[ii].text(-19.8, -9.5, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
-    
   
-  lgd=make_legend(axes[4])
-  axes[4].axis('off')
-  plt.tight_layout()
-  plt.savefig('/home/mmarshal/results/plots/Paper2/UVQLF.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  lgd=make_legend(axes[6])
+  axes[6].axis('off')
+  plt.subplots_adjust(bottom=0.2,left=0.08,right=0.95)
+  #plt.tight_layout()
+  plt.savefig('/home/mmarshal/results/plots/Paper2/UVQLF_T125.pdf',format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()
   
   color={63:'#e41a1c',78:'#984ea3',100:'#377eb8',116:'#4daf4a',\
                   134:'#ff7f00',158:'#f781bf',192:'#a65628',250:'black'}
 ##XRAY
-  figX, axesX = plt.subplots(1, 5,gridspec_kw = {'wspace':0, 'hspace':0},sharex=True,sharey=True)
+  figX, axesX = plt.subplots(1, 7,gridspec_kw = {'wspace':0, 'hspace':0},sharex=True,sharey=True)
   ii=-1
-  for snapshot in [100,116,134,158]:
+  for snapshot in [100,116,134,158,192,235]:
     ii+=1
-    gals_default=load_data(filename_def,snapshot,[prop,'BlackHoleAccretedColdMass','GhostFlag','dt'])
-    gals_bulges=load_data(filename,snapshot,[prop,'BlackHoleAccretedColdMass','GhostFlag','dt'])
+    if snapshot>158:
+      gals_default=load_data(filename_def_T125,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
+      gals_bulges=load_data(filename_T125,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
+    else:
+      gals_default=load_data(filename_def,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
+      gals_bulges=load_data(filename,snapshot,[prop,'BlackHoleAccretedColdMass','BlackHoleAccretedHotMass','GhostFlag','dt'])
 
     gals_default=gals_default[gals_default['BlackHoleMass']*1e10>1e6]
     gals_bulges=gals_bulges[gals_bulges['BlackHoleMass']*1e10>1e6]
 
-    calculateQLF(gals_bulges,fname_1,'hardX',axesX[ii],eta=eta[filename],**{'linestyle':'-','label':'This Work','linewidth':2,'color':'k','zorder':100})
-    calculateQLF(gals_default,fname_d,'hardX',axesX[ii],eta=eta[filename_def],**{'linestyle':'--','label':'M19 Meraxes','linewidth':2,'color':'gray','zorder':102})
+    if snapshot>158:
+      calculateQLF(gals_bulges,fname_1_125,'hardX',axesX[ii],eta=eta[filename],**{'linestyle':':','label':'This Work','linewidth':1.5,'color':'k','zorder':100})
+      calculateQLF(gals_default,fname_d_125,'hardX',axesX[ii],eta=eta[filename_def],**{'linestyle':':','label':'M19 Meraxes','linewidth':1,'color':[0.7,0.7,0.7],'zorder':102})
+    else:
+      calculateQLF(gals_bulges,fname_1,'hardX',axesX[ii],eta=eta[filename],**{'linestyle':'-','label':'This Work','linewidth':1.5,'color':'k','zorder':100})
+      calculateQLF(gals_default,fname_d,'hardX',axesX[ii],eta=eta[filename_def],**{'linestyle':':','label':'M19 Meraxes','linewidth':1,'color':[0.7,0.7,0.7],'zorder':102})
     #calculateQLF(gals_bulges,fname_1,'bol',axesX[ii],**{'linestyle':'-','label':'M18 Model','linewidth':2,'color':color[snapshot],'zorder':100})
     #calculateQLF(gals_default,fname_d,'bol',axesX[ii],**{'linestyle':'--','label':'Q17 Meraxes','linewidth':2,'color':color[snapshot],'zorder':102})
     plot_obsQLF_X(axesX[ii],redshift[snapshot])
@@ -298,14 +321,15 @@ if __name__=="__main__":
     #  axesX[ii].set_yticklabels([])
     axesX[ii].set_xlim([8.5,12.5])
     axesX[ii].set_ylim([-8,-2.5])
+    axesX[ii].set_xticks(np.array([10,12]))
+    axesX[ii].set_xticklabels([r'$10^{10}$',r'$10^{12}$'])
     axesX[ii].text(9, -7.5, r'$z={}$'.format(redshift[snapshot]),weight='bold',size='large')
     #axes[j,ii].grid(color=[0.8,0.8,0.8],linestyle='--') 
   
-
-  lgdX=axesX[-2].legend(loc=(1.05,0.2),fontsize='small')
+  lgdX=axesX[3].legend(loc=(3.05,0.2),fontsize='small')
   axesX[-1].axis('off')
   plt.subplots_adjust(bottom=0.2,left=0.08,right=0.95)
   #plt.tight_layout()
-  plt.savefig('/home/mmarshal/results/plots/Paper2/XrayQLF.pdf',format='pdf')#,bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/Paper2/XrayQLF_T125.pdf',format='pdf',bbox_extra_artists=(lgdX,), bbox_inches='tight')
   plt.show()
 

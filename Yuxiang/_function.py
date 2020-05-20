@@ -361,7 +361,7 @@ def _gaussian_distribution_fit_bootstrap(data, num_samples = 10000, statistic = 
             return (np.nan, np.nan)
 
 
-def _polyfit_bootstrap(x,y,order,sigma=[], num_samples = 100000, alpha=0.95, asymmetric=True):
+def _polyfit_bootstrap(x,y,order,sigma=[], num_samples = 100000, alpha=0.95, asymmetric=True,cov=False):
     if len(x) != len(y):
         print('x, y have different length!')
         return -1
@@ -370,24 +370,45 @@ def _polyfit_bootstrap(x,y,order,sigma=[], num_samples = 100000, alpha=0.95, asy
         return -2
     else:
         fit = np.empty([num_samples,order+1]) 
+        if cov:
+          cov_mat = np.empty([num_samples,order+1,order+1])
         for i in range(num_samples):  
             index = np.random.randint(0, len(x), len(x))
             x_sample = x[index]
             y_sample = y[index]
             if len(sigma)>0:
                 sigma_sample = sigma[index]
-                fit[i] = np.polyfit(x_sample, y_sample,order, w=sigma_sample)
+                if cov:
+                  fit[i],cov_mat[i] = np.polyfit(x_sample, y_sample,order, w=sigma_sample,cov=cov)
+                else:
+                  fit[i] = np.polyfit(x_sample, y_sample,order, w=sigma_sample)
             else:
-                fit[i] = np.polyfit(x_sample, y_sample,order)
+                if cov:
+                  fit[i],cov_mat[i] = np.polyfit(x_sample, y_sample,order,cov=cov)
+                else:
+                  fit[i] = np.polyfit(x_sample, y_sample,order)
         fit = np.transpose(fit)
         stat = np.array([np.sort(fit[i]) for i in range(order+1)])
+
+        if cov:
+            sort_array = np.array([np.argsort(fit[i]) for i in range(order+1)])
+            cov_mat_sort_0=cov_mat[sort_array[0]]
+            cov_mat_sort_1=cov_mat[sort_array[1]]
+            cov_mean_0 = cov_mat_sort_0[int(0.5*num_samples)]
+            cov_mean_1 = cov_mat_sort_1[int(0.5*num_samples)]
         fit_mean = stat[:,int(0.5*num_samples)]
         fit_err = -stat[:,int((1-alpha)/2.0*num_samples)]+fit_mean
         fit_err2 = stat[:,int((1+alpha)/2.0*num_samples)]-fit_mean
         if asymmetric:
-            return fit_mean, fit_err, fit_err2
+            if cov:
+              return fit_mean, fit_err, fit_err2, cov_mean_0,cov_mean_1
+            else:
+              return fit_mean, fit_err, fit_err2
         else:
-            return fit_mean, (fit_err+fit_err2)/2.0
+            if cov:
+              return fit_mean, (fit_err+fit_err2)/2.0, cov_mean_0,cov_mean_1
+            else:
+              return fit_mean, (fit_err+fit_err2)/2.0
 
 # Cooling Function
 #import h5py

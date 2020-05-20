@@ -36,7 +36,7 @@ if __name__=="__main__":
   #props=['BlackHoleMass','GhostFlag','ID']
   props=['ID','BlackHoleMass','BlackHoleMass_ID','BlackHoleMass_MD','GhostFlag','BlackHoleMass_Coalescence','BlackHoleMass_Radio']
   fig, axes = plt.subplots(1, 1)
-  filenames=['paper2','paper2_low_edd']#'paper1_T125_both']#'draft2_reion_T125']#'tuned_reion_T125','tuned_T125_MR','tuned_T125_NR','tuned_reion']
+  filenames=['paper2','paper2_high_eta']#'paper1_T125_both']#'draft2_reion_T125']#'tuned_reion_T125','tuned_T125_MR','tuned_T125_NR','tuned_reion']
   volume=100**3#(125/cosmo['h'])**3
   for filename in filenames:
     ii=-1

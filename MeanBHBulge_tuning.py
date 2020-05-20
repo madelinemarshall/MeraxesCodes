@@ -11,16 +11,33 @@ import pylab as p
 import scipy.stats as stats
 from scipy.optimize import curve_fit
 import itertools
-from _load_data import load_data
 
-def flip(items, ncol):
-    return itertools.chain(*[items[i::ncol] for i in range(ncol)])
-
+cosmo = {'omega_M_0' : 0.308,
+  'omega_lambda_0' : 0.692, 'omega_b_0' : 0.04839912,
+  'omega_b_0' : 0.04839912,
+  'omega_n_0' : 0.0,
+  'N_nu' : 0,
+  'h' : 0.678,
+  'n' : 0.968,
+  'sigma_8' : 0.815
+}
+data_folder='/home/mmarshal/data_dragons/'
+meraxes_loc=str(sys.argv[1])
 matplotlib.rcParams['font.size'] = (9)
 matplotlib.rcParams['figure.figsize'] = (3.5,5.5)#(3.7,5.5)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
+def flip(items, ncol):
+    return itertools.chain(*[items[i::ncol] for i in range(ncol)])
+
+
+def load_data(filename,snapshot):
+  gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
+      snapshot=snapshot,\
+      h=cosmo['h'],quiet=True)
+  gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
+  return gals
 
 def plot_median_ratio(redshift,med,pctile84,pctile16,axes,color='b',**kwargs):
   axes.fill_between(np.array(list(redshift.values())),np.array(list(pctile84.values())),\
@@ -64,14 +81,9 @@ def plot_schulze(axes):
 
 
 if __name__=="__main__":
-  filename='paper2'
-  filename2='paper2_T125'
-  #snapshots=np.linspace(52,158,10) #30
-  snapshots=np.linspace(37,158,10) #30
-  snapshots2=np.linspace(158,250,5)
-  #snapshots=np.linspace(52,158,8)
-  #snapshots2=np.linspace(158,250,3)
-  bulge_split=1 #plot BH bulge relation split into BH mass bins
+  filename='tuning_Tiamat/'
+  bulge_split=0 #plot BH bulge relation split into BH mass bins
+  snapshots=[52,63,78,100,116,134,158]
 
   colors=['#e41a1c','#377eb8','#4daf4a']
 
@@ -87,25 +99,6 @@ if __name__=="__main__":
   med_125={}
   pctile84_125={}
   pctile16_125={}
-  if bulge_split:
-    med_1e5bulges={}
-    pctile84_1e5bulges={}
-    pctile16_1e5bulges={}
-    med_1e7bulges={}
-    pctile84_1e7bulges={}
-    pctile16_1e7bulges={}
-    med_1e9bulges={}
-    pctile84_1e9bulges={}
-    pctile16_1e9bulges={}
-    pctile84_1e5bulges_125={}
-    med_1e5bulges_125={}
-    pctile16_1e5bulges_125={}
-    med_1e7bulges_125={}
-    pctile84_1e7bulges_125={}
-    pctile16_1e7bulges_125={}
-    med_1e9bulges_125={}
-    pctile84_1e9bulges_125={}
-    pctile16_1e9bulges_125={}
   med_onlybulges={}
   pctile84_onlybulges={}
   pctile16_onlybulges={}
@@ -115,77 +108,25 @@ if __name__=="__main__":
 
   redshift={}
   for snapshot in snapshots:
-    redshift[snapshot]=meraxes.io.grab_redshift('/home/mmarshal/data_dragons/'+filename+'/output/meraxes.hdf5', int(snapshot))
-    gals=load_data(filename,snapshot,['StellarMass','BulgeStellarMass','BlackHoleMass'])
+    redshift[snapshot]=meraxes.io.grab_redshift('/home/mmarshal/data_dragons/'+filename+meraxes_loc, int(snapshot))
+    gals=load_data(filename,snapshot)
     gals=gals[(gals['BlackHoleMass']*1e10>1e6)]
-    if bulge_split:
-      gals_1e5bulges=gals[(gals['BlackHoleMass']*1e10>1e6)&(gals['BlackHoleMass']*1e10<1e7)]
-      gals_1e7bulges=gals[(gals['BlackHoleMass']*1e10>1e7)&(gals['BlackHoleMass']*1e10<1e8)]
-      gals_1e9bulges=gals[(gals['BlackHoleMass']*1e10>1e8)]
     gals_onlybulges=gals[gals['BulgeStellarMass']/gals['StellarMass']>0.7]
     gals_onlydisks=gals[gals['BulgeStellarMass']/gals['StellarMass']<0.3]
 
-    if bulge_split:
-      med_1e5bulges[snapshot],pctile84_1e5bulges[snapshot],pctile16_1e5bulges[snapshot]=find_med(gals_1e5bulges,'StellarMass')
-      med_1e7bulges[snapshot],pctile84_1e7bulges[snapshot],pctile16_1e7bulges[snapshot]=find_med(gals_1e7bulges,'StellarMass')
-      med_1e9bulges[snapshot],pctile84_1e9bulges[snapshot],pctile16_1e9bulges[snapshot]=find_med(gals_1e9bulges,'StellarMass')
     med_onlybulges[snapshot],pctile84_onlybulges[snapshot],pctile16_onlybulges[snapshot]=find_med(gals_onlybulges,'StellarMass')
     med_onlydisks[snapshot],pctile84_onlydisks[snapshot],pctile16_onlydisks[snapshot]=find_med(gals_onlydisks,'StellarMass')
   
     med[snapshot],pctile84[snapshot],pctile16[snapshot]=find_med(gals,'StellarMass')
     med_b[snapshot],pctile84_b[snapshot],pctile16_b[snapshot]=find_med(gals,'BulgeStellarMass')
    
-  redshift2={}
-  for snapshot in snapshots2:
-    redshift2[snapshot]=meraxes.io.grab_redshift('/home/mmarshal/data_dragons/'+filename2+'/output/meraxes.hdf5', int(snapshot))
-    gals_125=load_data(filename2,snapshot,['StellarMass','BulgeStellarMass','BlackHoleMass'])
-    gals_125=gals_125[(gals_125['BlackHoleMass']*1e10>1e6)]
-    med_125[snapshot],pctile84_125[snapshot],pctile16_125[snapshot]=find_med(gals_125,'StellarMass')
-    med_125_b[snapshot],pctile84_125_b[snapshot],pctile16_125_b[snapshot]=find_med(gals_125,'BulgeStellarMass')
-    if bulge_split:
-      gals_1e5bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e6)&(gals_125['BlackHoleMass']*1e10<1e7)]
-      gals_1e7bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e7)&(gals_125['BlackHoleMass']*1e10<1e8)]
-      gals_1e9bulges=gals_125[(gals_125['BlackHoleMass']*1e10>1e8)]
-      med_1e5bulges_125[snapshot],pctile84_1e5bulges_125[snapshot],pctile16_1e5bulges_125[snapshot]=find_med(gals_1e5bulges,'StellarMass')
-      med_1e7bulges_125[snapshot],pctile84_1e7bulges_125[snapshot],pctile16_1e7bulges_125[snapshot]=find_med(gals_1e7bulges,'StellarMass')
-      med_1e9bulges_125[snapshot],pctile84_1e9bulges_125[snapshot],pctile16_1e9bulges_125[snapshot]=find_med(gals_1e9bulges,'StellarMass')
-
-  redshift_tot=redshift.copy()
-  redshift_tot.update(redshift2)
-
-
   fig,axes=plt.subplots(2,1,gridspec_kw = {'hspace':0})
-  ##Bulge masses
-  if bulge_split:
-    plot_median_ratio(redshift,med_1e5bulges,pctile84_1e5bulges,pctile16_1e5bulges,axes[1],color=colors[0],**{'label':r'$10^6M_\odot<M_{\mathrm{BH}}<10^7M_\odot$'})
-    plot_median_ratio(redshift,med_1e7bulges,pctile84_1e7bulges,pctile16_1e7bulges,axes[1],color=colors[1],**{'label':r'$10^7M_\odot<M_{\mathrm{BH}}<10^8M_\odot$'})
-    plot_median_ratio(redshift,med_1e9bulges,pctile84_1e9bulges,pctile16_1e9bulges,axes[1],color=colors[2],**{'label':r'$M_{\mathrm{BH}}>10^8M_\odot$'})
-    plot_median_ratio(redshift2,med_1e5bulges_125,pctile84_1e5bulges_125,pctile16_1e5bulges_125,axes[1],color=colors[0],**{'label':'__nolabel__','linestyle':'--'})
-    plot_median_ratio(redshift2,med_1e7bulges_125,pctile84_1e7bulges_125,pctile16_1e7bulges_125,axes[1],color=colors[1],**{'label':'__nolabel__','linestyle':'--'})
-    plot_median_ratio(redshift2,med_1e9bulges_125,pctile84_1e9bulges_125,pctile16_1e9bulges_125,axes[1],color=colors[2],**{'label':'__nolabel__','linestyle':'--'})
-    axes[1].set_xlabel('Redshift')
-    axes[1].set_ylabel(r'$\log(M_{\mathrm{BH}}/M_\ast)$')
-    axes[1].invert_xaxis()
-    axes[1].set_xlim([8,-0.04])  
-    axes[1].set_ylim([-3.9,-1.9])  
-    from matplotlib.ticker import FormatStrFormatter
-    axes[1].yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-    axes[1].legend(loc='lower right',fontsize='small')
-    axes[0].set_xticklabels([])
-  else:
-    axes[1].axis('off')
-    axes[0].set_xlabel('Redshift')
+  axes[1].axis('off')
+  axes[0].set_xlabel('Redshift')
 
 ##Total stellar masses
-  plot_median_ratio(redshift,med,pctile84,pctile16,axes[0],color='orchid',**{'label':r'$M=M_{\ast}$'})
-  plot_median_ratio(redshift,med_b,pctile84_b,pctile16_b,axes[0],color='aquamarine',**{'label':r'$M=M_{\ast\textrm{, bulge}}$'})
-  plot_median_ratio(redshift2,med_125,pctile84_125,pctile16_125,axes[0],color='orchid',**{'label':'__nolabel__','linestyle':'--','lw':1})
-  plot_median_ratio(redshift2,med_125_b,pctile84_125_b,pctile16_125_b,axes[0],color='aquamarine',**{'label':'__nolabel__','linestyle':'--','lw':1})
-  #lab='N={}'.format(np.size(gals_onlybulges))
-  #plot_median_ratio(redshift,med_onlybulges,pctile84_onlybulges,pctile16_onlybulges,axes[1],color='aquamarine',**{'label':r'$B/T>0.7,$ '+lab})
-  #lab='N={}'.format(np.size(gals_onlydisks))
-  #plot_median_ratio(redshift,med_onlydisks,pctile84_onlydisks,pctile16_onlydisks,axes[1],color='orange',**{'label':r'$B/T<0.3,$ '+lab})
-    
+  plot_median_ratio(redshift,med,pctile84,pctile16,axes[0],color='orchid',**{'label':r'$M_{\ast\textrm{, total}}$'})
+  plot_median_ratio(redshift,med_b,pctile84_b,pctile16_b,axes[0],color='aquamarine',**{'label':r'$M_{\ast\textrm{, bulge}}$'})
   #axes[0].errorbar(0,-2.85,yerr=0.15,color='black',fmt='o',capsize=2,label=r'Kormendy \& Ho (2013)')
   plot_schulze(axes[0])
 
@@ -233,7 +174,7 @@ if __name__=="__main__":
     #axes[1].axvspan(8,6, alpha=0.2, color='gray')
 
   #axes[0].set_xlabel('Redshift')
-  axes[0].set_ylabel(r'$\log(M_{\mathrm{BH}}/M)$')
+  axes[0].set_ylabel(r'$\log(M_{\mathrm{BH}}/M_{\ast})$')
   axes[0].invert_xaxis()
   #axes[0].set_xlabel('Redshift')
   axes[0].set_xlim([8,-0.04])  
@@ -249,5 +190,5 @@ if __name__=="__main__":
 
 
   plt.tight_layout()
-  fig.savefig('/home/mmarshal/results/plots/Paper2/MeanBHBulge.pdf', format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
+  plt.savefig('/home/mmarshal/results/plots/tuning_paper2/Tiamat/MeanBHB_{}.pdf'.format(int(meraxes_loc[-8:-5])),format='pdf',bbox_extra_artists=(lgd,), bbox_inches='tight')
   plt.show()

@@ -10,7 +10,7 @@ from _plot_obsGSMF import plot_obsGSMF
 from scipy.optimize import curve_fit
 import ContourPlot as cp
 import matplotlib.lines as mlines
-from _load_data import load_data
+
 
 #Sets plot defaults
 import matplotlib
@@ -20,6 +20,21 @@ matplotlib.rcParams['lines.linewidth'] = 2.5
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
+def load_data(filename,snapshot):
+  cosmo = {'omega_M_0' : 0.308,
+  'omega_lambda_0' : 0.692, 'omega_b_0' : 0.04839912,
+  'omega_b_0' : 0.04839912,
+  'omega_n_0' : 0.0,
+  'N_nu' : 0,
+  'h' : 0.678,
+  'n' : 0.968,
+  'sigma_8' : 0.815
+  }
+  gals=meraxes.io.read_gals(data_folder+filename+meraxes_loc,\
+      snapshot=snapshot,\
+      h=cosmo['h'],quiet=True)
+  gals=gals[(gals["GhostFlag"]==0)]#remove ghosts
+  return gals
 
 def plot_observations(axes,color):
   #Kormendy & Ho (2013):
@@ -36,8 +51,8 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,color,axes):
   inter_errs=np.zeros(len(snapshots))
   ii=0
   for snap in snapshots:
-    gals=load_data(filename,snap,['GhostFlag','Mvir','StellarMass','BlackHoleMass','CentralGal','BulgeStellarMass'])
-    gals=gals[gals['BlackHoleMass']*1e10>10**5.3]#.8]
+    gals=load_data(filename,snap)
+    gals=gals[gals['BlackHoleMass']*1e10>10**5.8]
     if mass_bulge==0:
       Mstellar=gals['StellarMass']*1e10
       Mbulge=gals['BulgeStellarMass']*1e10
@@ -59,13 +74,12 @@ def plot_MBHMstellar(filename,snapshots,mass_bulge,color,axes):
     logMBH_bulge=logMBH[BT>0.7]
     logMstel_disk=logMstel[BT<0.3]
     logMstel_bulge=logMstel[BT>0.7]
-    cp.contour_plot(logMstel,logMBH,xlab=None,ylab=None,xlims=[8,11.6],ylims=[6,9.2],axes=axes,colors='grey',linewidth=1,levels=[0.2,0.4,0.6,0.8])#,linestyle='dashed')
-    cp.contour_plot(logMstel_bulge,logMBH_bulge,xlab=None,ylab=None,xlims=[8,11.6],ylims=[6,9.2],axes=axes,colors='#e41a1c',linewidth=1,levels=[0.2,0.4,0.6,0.8])#,linestyle='dashed')
-    cp.contour_plot(logMstel_disk,logMBH_disk,xlab=None,ylab=None,xlims=[8,11.6],ylims=[6,9.2],axes=axes,colors='#377eb8',linewidth=1.8,levels=[0.2,0.4,0.6,0.8])#levels=np.logspace(-2,1,7)
-    #axes.plot(logMstel_disk,logMBH_disk,'.',color='#377eb8')
+    cp.contour_plot(logMstel_bulge,logMBH_bulge,xlab=None,ylab=None,xlims=[8,11.6],ylims=[6,9.2],axes=axes,colors='#e41a1c',linewidth=0.9,levels=[0.2,0.4,0.6,0.8])
+    cp.contour_plot(logMstel_disk,logMBH_disk,xlab=None,ylab=None,xlims=[8,11.6],ylims=[6,9.2],axes=axes,colors='#377eb8',linewidth=0.9,levels=[0.2,0.4,0.6,0.8])#levels=np.logspace(-2,1,7)
+    axes.plot(logMstel_disk,logMBH_disk,'.',color='#377eb8')
     ii+=1
-  axes.set_xlim([8.3,11.6])
-  axes.set_ylim([5.3,9.2])
+  axes.set_xlim([8.05,11.6])
+  axes.set_ylim([6,9.2])
 
 
 def plot_MBHMstellar_line(filename,snapshots,mass_bulge,color,axes):
@@ -80,7 +94,7 @@ def plot_MBHMstellar_line(filename,snapshots,mass_bulge,color,axes):
     if mass_bulge==0:
       Mstel=Mstellar
     else: ##Bulge Mass
-      #gals=gals[gals['BulgeStellarMass']>0]
+      gals=gals[gals['BulgeStellarMass']>0]
       Mbulge=gals['BulgeStellarMass']*1e10
       Mstel=Mbulge
       
@@ -114,16 +128,17 @@ if __name__=='__main__':
   snapshots=[250]
   prop='StellarMass'
   color={52:'C0',63:'C1',78:'C2',100:'C3',116:'C4',134:'aqua',158:'pink',213:'k',250:'k'}
-  filename='paper2_T125'
+  data_folder='/home/mmarshal/data_dragons/'
+  filename='tuning/'
+  meraxes_loc=str(sys.argv[1])
   
   ##PLOT
   fig,ax = plt.subplots(1,2,gridspec_kw = {'wspace':0, 'hspace':0},sharex=True,sharey=True)
   plot_MBHMstellar(filename,snapshots,True,color,ax[0])
   #plot_MBHMstellar_line(filename,snapshots,True,color,ax[0])
-  black_line = mlines.Line2D([], [], color='grey', label='All Galaxies',linewidth=1)
-  pink_line = mlines.Line2D([], [], color='#e41a1c', label='Bulge Dominated Galaxies',linewidth=1)
-  blue_line = mlines.Line2D([], [], color='#377eb8', label='Disc Dominated Galaxies',linewidth=1.8)
-  hand=[black_line,pink_line,blue_line]#,obs]
+  pink_line = mlines.Line2D([], [], color='#e41a1c', label='Bulge Dominated Galaxies')
+  blue_line = mlines.Line2D([], [], color='#377eb8', label='Disc Dominated Galaxies')
+  hand=[pink_line,blue_line]#,obs]
   lgd=ax[0].legend(handles=hand,fontsize='small',loc='upper left')  
   
   plot_MBHMstellar(filename,snapshots,False,color,ax[1])
@@ -133,7 +148,7 @@ if __name__=='__main__':
 
   ax[0].set_ylabel(r'$\log(\textrm{M}_{\textrm{BH}}/M_\odot)$') 
   plt.tight_layout()
-  plt.savefig('/home/mmarshal/results/plots/Paper2/MBHMStellarRelation_BT.pdf', format='pdf')
+  plt.savefig('/home/mmarshal/results/plots/tuning_paper2/BHMF_{}.pdf'.format(int(meraxes_loc[-8:-5])),format='pdf')
   plt.show()
 
   ##PERFORM STATISTICS
